@@ -1,9 +1,11 @@
 from finviz.screener import Screener
 import os
 import datetime
+import pandas as pd
 # BDay is business day, not birthday...
 from pandas.tseries.offsets import BDay
 import time
+import csv
 
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
@@ -20,10 +22,16 @@ def small_mc_rel_vol():
 
 def analysts_buy():
     filters = ['f=an_recom_strongbuy','sh_price_u5','targetprice_a50']
-    stock_list = Screener(filters=filters, table='Performance', order='price')
+    stock_list = Screener(filters=filters, table='Performance', order='Recom')
 
-    # Export the screener results to .csv
-    stock_list.to_csv(os.path.join(folder_path, ("analysts buy\\" + str(last_business_day) + ".csv")))
+    path = os.path.join(folder_path, ("analysts buy\\" + str(last_business_day) + ".csv"))
+
+    my_df = pd.DataFrame(stock_list[-20:])
+
+    my_df.to_csv(path, index=False, mode='w', header=['No.','Ticker', 'Perf Week', 'Perf Month', 'Perf Quart', 'Perf Half',
+                              'Perf Year', 'Perf YTD', 'Volatility W', 'Volatility M',
+                              'Recom', 'Avg Volume', 'Rel Volume', 'Price', 'Change',
+                              'Volume'])
 
 
 def bankruptcy_squeeze_candidates():
@@ -199,11 +207,47 @@ def undervalued_dividend_growth():
     # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, ("undervalued dividend growth\\" + str(last_business_day) + ".csv")))
 
+def top_gainers():
+    # small market cap stocks with few shares outstanding
+    filters = ['s=ta_topgainers']
+    stock_list = Screener(filters=filters, table='Performance', order='Change')
 
-small_mc_rel_vol()
-time.sleep(15)
+    path = os.path.join(folder_path, ("top gainers\\" + str(last_business_day) + ".csv"))
+
+    my_df = pd.DataFrame(stock_list[-20:])
+
+    my_df.to_csv(path, index=False, mode='w', header=['No.','Ticker', 'Perf Week', 'Perf Month', 'Perf Quart', 'Perf Half',
+                              'Perf Year', 'Perf YTD', 'Volatility W', 'Volatility M',
+                              'Recom', 'Avg Volume', 'Rel Volume', 'Price', 'Change',
+                              'Volume'])
+
+
+def top_losers():
+    # small market cap stocks with few shares outstanding
+    filters = ['s=ta_tolosers']
+    stock_list = Screener(filters=filters, table='Performance', order='Change')
+
+    path = os.path.join(folder_path, ("top losers\\" + str(last_business_day) + ".csv"))
+
+    my_df = pd.DataFrame(stock_list[0:20])
+
+
+    my_df.to_csv(path, index=False, mode='w', header=['No.','Ticker', 'Perf Week', 'Perf Month', 'Perf Quart', 'Perf Half',
+                              'Perf Year', 'Perf YTD', 'Volatility W', 'Volatility M',
+                              'Recom', 'Avg Volume', 'Rel Volume', 'Price', 'Change',
+                              'Volume'])
+
 
 analysts_buy()
+time.sleep(15)
+
+top_losers()
+time.sleep(15)
+
+top_gainers()
+time.sleep(15)
+
+small_mc_rel_vol()
 time.sleep(15)
 
 bankruptcy_squeeze_candidates()
@@ -256,5 +300,9 @@ time.sleep(15)
 
 sma_crossover()
 time.sleep(15)
+
+sma_crossover()
+time.sleep(15)
+
 
 undervalued_dividend_growth()
