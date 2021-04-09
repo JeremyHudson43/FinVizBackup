@@ -37,12 +37,12 @@ for filename in os.listdir(folder_path):
 
                 # Open our existing CSV file in append mode
                 # Create a file object for this file
-                with open(filepath, 'a') as f_object:
+                with open(filepath, 'w+') as f_object:
 
                     header = ['Perf Week', 'Perf Month', 'Perf Quart', 'Perf Half',
                               'Perf Year', 'Perf YTD', 'Volatility W', 'Volatility M',
                               'Recom', 'Avg Volume', 'Rel Volume', 'Price', 'Change',
-                              'Volume']
+                              'Volume', 'Date']
 
                     writer_object = writer(f_object)
                     writer_object.writerow(header)
@@ -64,6 +64,8 @@ for filename in os.listdir(folder_path):
                         x = x.replace("]", "")
                         x = x.replace(",", "")
                         new_split.append(x)
+
+                    new_split.append(filename.split()[0].replace(".csv", ""))
 
                     new_split.pop(0)
 
