@@ -26,7 +26,7 @@ def analysts_buy():
 
     path = os.path.join(folder_path, ("analysts buy\\" + str(last_business_day) + ".csv"))
 
-    my_df = pd.DataFrame(stock_list[-20:])
+    my_df = pd.DataFrame(stock_list[0:20])
 
     my_df.to_csv(path, index=False, mode='w', header=['No.','Ticker', 'Perf Week', 'Perf Month', 'Perf Quart', 'Perf Half',
                               'Perf Year', 'Perf YTD', 'Volatility W', 'Volatility M',
