@@ -3,6 +3,7 @@ import os
 import datetime
 # BDay is business day, not birthday...
 from pandas.tseries.offsets import BDay
+import time
 
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
@@ -54,7 +55,7 @@ def breaking_out():
 
 def buy_and_hold_value():
     # small market cap stocks with few shares outstanding
-    filters = ['f=cap_microover','fa_curratio_o1.5','fa_estltgrowth_o10','fa_peg_o1,fa_roe_o15','ta_beta_o1.5','ta_sma20_pa']
+    filters = ['f=cap_microover','fa_curratio_o1.5','fa_estltgrowth_o10','fa_peg_o1','fa_roe_o15','ta_beta_o1.5','ta_sma20_pa']
     stock_list = Screener(filters=filters, table='Performance', order='price')
 
     # Export the screener results to .csv
@@ -72,8 +73,10 @@ def canslim():
 
 def consistent_growth_bullish_trend():
     # small market cap stocks with few shares outstanding
+
     filters = ['f=fa_eps5years_pos','fa_epsqoq_o20','fa_epsyoy_o25','fa_epsyoy1_o15','fa_estltgrowth_pos',
                'fa_roe_o15','sh_instown_o10','sh_price_o15','ta_highlow52w_a90h','ta_rsi_nos50']
+
     stock_list = Screener(filters=filters, table='Performance', order='price')
 
     # Export the screener results to .csv
@@ -82,7 +85,7 @@ def consistent_growth_bullish_trend():
 
 def earnings_gap_up():
     # small market cap stocks with few shares outstanding
-    filters = ['f=earningsdate_tomorrowafter','sh_avgvol_o400','sh_curvol_o50','sh_short_u25','ta_averagetruerange_o0.5,ta_gap_u2']
+    filters = ['f=earningsdate_tomorrowafter','sh_avgvol_o400','sh_curvol_o50','sh_short_u25','ta_averagetruerange_o0.5','ta_gap_u2']
     stock_list = Screener(filters=filters, table='Performance', order='price')
 
     # Export the screener results to .csv
@@ -198,22 +201,60 @@ def undervalued_dividend_growth():
 
 
 small_mc_rel_vol()
+time.sleep(15)
+
 analysts_buy()
+time.sleep(15)
+
 bankruptcy_squeeze_candidates()
+time.sleep(15)
+
 bounce_at_moving_average()
+time.sleep(15)
+
 breaking_out()
+time.sleep(15)
+
 buy_and_hold_value()
+time.sleep(15)
+
 canslim()
+time.sleep(15)
+
 consistent_growth_bullish_trend()
+time.sleep(15)
+
 earnings_gap_up()
+time.sleep(15)
+
 high_earnings_growth()
+time.sleep(15)
+
 high_relative_volume()
+time.sleep(15)
+
 low_pe_value()
+time.sleep(15)
+
 new_highs()
+time.sleep(15)
+
 oversold_reversal()
+time.sleep(15)
+
 oversold_upcoming_earnings()
+time.sleep(15)
+
 potential_uptrend_from_lows()
+time.sleep(15)
+
 short_squeeze()
+time.sleep(15)
+
 shorted_stocks()
+time.sleep(15)
+
 sma_crossover()
+time.sleep(15)
+
 undervalued_dividend_growth()
