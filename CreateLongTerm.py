@@ -1,11 +1,9 @@
+# scan through all folders
 import pandas as pd
 import os
-import finviz
-import csv
 import datetime
 from pandas.tseries.offsets import BDay
 
-# scan through all folders
 folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
 
 r = []
@@ -28,7 +26,7 @@ if 6 > weekno > 0:
 
         check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-        if((os.path.isfile(check_path))):
+        if os.path.isfile(check_path):
 
             df = (pd.read_csv(os.path.join(path, str(last_business_day) + ".csv")))
 
@@ -36,27 +34,11 @@ if 6 > weekno > 0:
 
                 ticker = row['Ticker']
 
-                only_ticker = df[df['Ticker'] == ticker]
+                with open(r"C:\Users\Frank Einstein\Desktop\long term records\list of tickers.txt", "a+") as myfile:
 
-                filepath = os.path.join(x, (ticker + ".csv"))
+                        if not(ticker in myfile.readlines()):
+                            myfile.writelines(ticker + '\n')
 
-                stock = finviz.get_stock(ticker)
+                            tickers = myfile.readlines()
 
-                stock['Date'] = str(last_business_day)
-
-                if (not (os.path.isfile(filepath))):
-
-                    with open(filepath, 'w+') as f:
-                        w = csv.DictWriter(f, stock.keys())
-                        w.writeheader()
-                        w.writerow(stock)
-
-                else:
-                    with open(filepath, 'a') as f:
-                        w = csv.DictWriter(f, stock.keys())
-                        w.writerow(stock)
-
-
-
-
-
+                        myfile.close()
