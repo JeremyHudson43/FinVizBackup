@@ -1,24 +1,58 @@
 import pandas as pd
 import os
-import glob
+import finviz
+import csv
+import datetime
+from pandas.tseries.offsets import BDay
 
 # scan through all folders
-folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\analysts buy"
-unique = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\analysts buy\\unique"
+folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
 
-all_files = glob.glob(os.path.join(folder_path, "*.csv"))
+r = []
 
-df = (pd.read_csv(f) for f in all_files)
-df = pd.concat(df, ignore_index=True)
+today = datetime.datetime.today()
+last_business_day = (today - BDay(1)).date()
 
-for index, row in df.iterrows():
 
-    ticker = row['Ticker']
+for root, dirs, files in os.walk(folder_path):
+    for name in dirs:
+        path = os.path.join(root, name)
+        r.append(path)
 
-    only_ticker = df[df['Ticker'] == ticker]
 
-    filepath = os.path.join(unique, (ticker + ".csv"))
+for x in r[23:]:
 
-    only_ticker.to_csv(filepath)
+    path = x.replace("unique", "")
+
+    check_path = os.path.join(path, str(last_business_day) + ".csv")
+
+    if((os.path.isfile(check_path))):
+
+        df = (pd.read_csv(os.path.join(path, str(last_business_day) + ".csv")))
+
+        for index, row in df.iterrows():
+
+            ticker = row['Ticker']
+
+            only_ticker = df[df['Ticker'] == ticker]
+
+            filepath = os.path.join(x, (ticker + ".csv"))
+
+            stock = finviz.get_stock(ticker)
+
+            if (not (os.path.isfile(filepath))):
+
+                with open(filepath, 'w') as f:
+                    w = csv.DictWriter(f, stock.keys())
+                    w.writeheader()
+                    w.writerow(stock)
+
+            else:
+                with open(filepath, 'a') as f:
+                    w = csv.DictWriter(f, stock.keys())
+                    w.writerow(stock)
+
+
+
 
 
