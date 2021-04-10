@@ -13,44 +13,46 @@ r = []
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
 
+weekno = datetime.datetime.today().weekday()
 
-for root, dirs, files in os.walk(folder_path):
-    for name in dirs:
-        path = os.path.join(root, name)
-        r.append(path)
+if 6 > weekno > 0:
 
+    for root, dirs, files in os.walk(folder_path):
+        for name in dirs:
+            path = os.path.join(root, name)
+            r.append(path)
 
-for x in r[23:]:
+    for x in r[23:]:
 
-    path = x.replace("unique", "")
+        path = x.replace("unique", "")
 
-    check_path = os.path.join(path, str(last_business_day) + ".csv")
+        check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-    if((os.path.isfile(check_path))):
+        if((os.path.isfile(check_path))):
 
-        df = (pd.read_csv(os.path.join(path, str(last_business_day) + ".csv")))
+            df = (pd.read_csv(os.path.join(path, str(last_business_day) + ".csv")))
 
-        for index, row in df.iterrows():
+            for index, row in df.iterrows():
 
-            ticker = row['Ticker']
+                ticker = row['Ticker']
 
-            only_ticker = df[df['Ticker'] == ticker]
+                only_ticker = df[df['Ticker'] == ticker]
 
-            filepath = os.path.join(x, (ticker + ".csv"))
+                filepath = os.path.join(x, (ticker + ".csv"))
 
-            stock = finviz.get_stock(ticker)
+                stock = finviz.get_stock(ticker)
 
-            if (not (os.path.isfile(filepath))):
+                if (not (os.path.isfile(filepath))):
 
-                with open(filepath, 'w') as f:
-                    w = csv.DictWriter(f, stock.keys())
-                    w.writeheader()
-                    w.writerow(stock)
+                    with open(filepath, 'w') as f:
+                        w = csv.DictWriter(f, stock.keys())
+                        w.writeheader()
+                        w.writerow(stock)
 
-            else:
-                with open(filepath, 'a') as f:
-                    w = csv.DictWriter(f, stock.keys())
-                    w.writerow(stock)
+                else:
+                    with open(filepath, 'a') as f:
+                        w = csv.DictWriter(f, stock.keys())
+                        w.writerow(stock)
 
 
 
