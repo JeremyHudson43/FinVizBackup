@@ -42,6 +42,8 @@ if 6 > weekno > 0:
 
                 stock = finviz.get_stock(ticker)
 
+                stock['Date'] = str(last_business_day)
+
                 if (not (os.path.isfile(filepath))):
 
                     with open(filepath, 'w') as f:
