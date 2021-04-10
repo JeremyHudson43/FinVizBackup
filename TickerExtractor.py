@@ -54,7 +54,3 @@ if 6 > weekno > 0:
                         w = csv.DictWriter(f, stock.keys())
                         w.writerow(stock)
 
-
-
-
-
