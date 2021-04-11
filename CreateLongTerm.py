@@ -20,7 +20,7 @@ if 6 > weekno > 0:
             path = os.path.join(root, name)
             r.append(path)
 
-    for x in r[23:]:
+    for x in r[24:]:
 
         path = x.replace("unique", "")
 
