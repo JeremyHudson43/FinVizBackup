@@ -5,7 +5,6 @@ import pandas as pd
 # BDay is business day, not birthday...
 from pandas.tseries.offsets import BDay
 import time
-import csv
 
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
@@ -238,6 +237,15 @@ def top_losers():
                               'Volume'])
 
 
+def low_rsi():
+    # small market cap stocks with few shares outstanding
+    filters = ['f=ta_rsi_os30']
+    stock_list = Screener(filters=filters, table='Performance', order='price')
+
+    # Export the screener results to .csv
+    stock_list.to_csv(os.path.join(folder_path, ("low rsi\\" + str(last_business_day) + ".csv")))
+
+
 analysts_buy()
 time.sleep(15)
 
@@ -304,5 +312,9 @@ time.sleep(15)
 sma_crossover()
 time.sleep(15)
 
-
 undervalued_dividend_growth()
+time.sleep(15)
+
+low_rsi()
+
+
