@@ -31,7 +31,7 @@ if 6 > weekno > 0:
 
         if os.path.isfile(check_path):
 
-            df = (pd.read_csv(os.path.join(path, str(last_business_day) + ".csv")))
+            df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
 
             for index, row in df.iterrows():
 
