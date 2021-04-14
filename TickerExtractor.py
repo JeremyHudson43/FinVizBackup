@@ -28,9 +28,9 @@ if 6 > weekno > 0:
 
         check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-        if((os.path.isfile(check_path))):
+        if os.path.isfile(check_path):
 
-            df = (pd.read_csv(os.path.join(path, str(last_business_day) + ".csv")))
+            df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
 
             for index, row in df.iterrows():
 
@@ -44,7 +44,7 @@ if 6 > weekno > 0:
 
                 stock['Date'] = str(last_business_day)
 
-                if (not (os.path.isfile(filepath))):
+                if not os.path.isfile(filepath):
 
                     with open(filepath, 'w+') as f:
                         w = csv.DictWriter(f, stock.keys())
@@ -55,8 +55,4 @@ if 6 > weekno > 0:
                     with open(filepath, 'a') as f:
                         w = csv.DictWriter(f, stock.keys())
                         w.writerow(stock)
-
-
-
-
 
