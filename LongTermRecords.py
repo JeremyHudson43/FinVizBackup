@@ -53,6 +53,9 @@ if 6 > weekno > 0:
 
     for line in file.readlines():
         stock = finviz.get_stock(line)
+
+        stock['Date'] = str(last_business_day)
+            
         ticker_file = os.path.join(long_term_path, line[:-2] + ".csv")
 
         if not os.path.isfile(ticker_file):
