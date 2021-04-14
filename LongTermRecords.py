@@ -15,36 +15,33 @@ folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
 long_term_path = r"C:\Users\Frank Einstein\Desktop\long term records"
 list_of_tickers = r"C:\Users\Frank Einstein\Desktop\long term records\list of tickers.txt"
 
-ninth = "2021-04-09"
-
 r = []
 
 if 6 > weekno > 0:
 
-            for root, dirs, files in os.walk(folder_path):
-                for name in dirs:
-                    path = os.path.join(root, name)
-                    r.append(path)
+    for root, dirs, files in os.walk(folder_path):
+        for name in dirs:
+            path = os.path.join(root, name)
+            r.append(path)
 
-            for x in r[24:]:
+    for x in r[24:]:
 
-                path = x.replace("unique", "")
+        path = x.replace("unique", "")
+        check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-                check_path = os.path.join(path, str(last_business_day) + ".csv")
+        if os.path.isfile(check_path):
 
-                if os.path.isfile(check_path):
+            df = (pd.read_csv(os.path.join(path, str(last_business_day) + ".csv")))
 
-                    df = (pd.read_csv(os.path.join(path, str(last_business_day) + ".csv")))
+            for index, row in df.iterrows():
 
-                    for index, row in df.iterrows():
+                ticker = row['Ticker']
 
-                        ticker = row['Ticker']
-
-                        # add ticker to text file
-                        file = open(list_of_tickers, "a+")  # append mode
-                        if ticker not in file.readlines():
-                            file.write(ticker + "\n")
-                            file.close()
+                # add ticker to text file
+                file = open(list_of_tickers, "a+")  # append mode
+                if ticker not in file.readlines():
+                    file.write(ticker + "\n")
+                    file.close()
 
 if 6 > weekno > 0:
 
@@ -55,7 +52,7 @@ if 6 > weekno > 0:
         stock = finviz.get_stock(line)
 
         stock['Date'] = str(last_business_day)
-            
+
         ticker_file = os.path.join(long_term_path, line[:-2] + ".csv")
 
         if not os.path.isfile(ticker_file):
