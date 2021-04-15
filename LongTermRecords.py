@@ -16,71 +16,81 @@ list_of_tickers = r"C:\Users\Frank Einstein\Desktop\long term records\list of ti
 
 r = []
 
-if 6 > weekno > 0:
+def block_one():
 
-    for root, dirs, files in os.walk(folder_path):
-        for name in dirs:
-            path = os.path.join(root, name)
-            r.append(path)
+    if 6 > weekno > 0:
 
-    for x in r[24:]:
+        for root, dirs, files in os.walk(folder_path):
+            for name in dirs:
+                path = os.path.join(root, name)
+                r.append(path)
 
-        path = x.replace("unique", "")
-        check_path = os.path.join(path, str(last_business_day) + ".csv")
+        for x in r[24:]:
 
-        if os.path.isfile(check_path):
+            path = x.replace("unique", "")
+            check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-            df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
+            if os.path.isfile(check_path):
 
-            for index, row in df.iterrows():
+                df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
 
-                ticker = row['Ticker']
+                for index, row in df.iterrows():
 
-                # add ticker to text file
-                file = open(list_of_tickers, "a+")  # append mode
-                if ticker not in file.readlines()[:-1]:
-                    file.write(ticker + '\n')
+                    ticker = row['Ticker']
 
-                file.close()
+                    # add ticker to text file
+                    file = open(list_of_tickers, "a+")  # append mode
+                    if ticker not in file.readlines()[:-1]:
+                        file.write(ticker + '\n')
 
+                    file.close()
 
-if 6 > weekno > 0:
+def block_two():
 
-    # add ticker to text file
-    file = open(list_of_tickers, "r")  # append mode
+    if 6 > weekno > 0:
 
-    for line in file.readlines():
+        # add ticker to text file
+        file = open(list_of_tickers, "r")  # append mode
 
-        line = line.strip('\n')
+        for line in file.readlines():
 
-        stock = finviz.get_stock(line)
+            line = line.strip('\n')
 
-        stock['Date'] = str(last_business_day)
+            stock = finviz.get_stock(line)
 
-        ticker_file = os.path.join(long_term_path, line + ".csv")
+            stock['Date'] = str(last_business_day)
 
-        if not os.path.isfile(ticker_file):
+            ticker_file = os.path.join(long_term_path, line + ".csv")
 
-            with open(ticker_file, 'w') as f:
-                w = csv.DictWriter(f, stock.keys())
-                w.writeheader()
-                w.writerow(stock)
-                
-if 6 > weekno > 0:
+            if not os.path.isfile(ticker_file):
 
-    for root, dirs, files in os.walk(long_term_path):
-        for filename in files:
-            if filename.endswith(".csv"):
-
-                replaced_file = filename.replace(".csv", "")
-
-                stock = finviz.get_stock(replaced_file)
-
-                stock['Date'] = str(last_business_day)
-
-                ticker_file = os.path.join(long_term_path, filename)
-
-                with open(ticker_file, 'a') as f:
+                with open(ticker_file, 'w') as f:
                     w = csv.DictWriter(f, stock.keys())
+                    w.writeheader()
                     w.writerow(stock)
-                    f.close()
+
+def block_three():
+
+    if 6 > weekno > 0:
+
+        for root, dirs, files in os.walk(long_term_path):
+            for filename in files:
+                if filename.endswith(".csv"):
+
+                    replaced_file = filename.replace(".csv", "")
+
+                    stock = finviz.get_stock(replaced_file)
+
+                    stock['Date'] = str(last_business_day)
+
+                    ticker_file = os.path.join(long_term_path, filename)
+
+                    with open(ticker_file, 'a') as f:
+                        w = csv.DictWriter(f, stock.keys())
+                        w.writerow(stock)
+                        f.close()
+
+
+block_one()
+block_two()
+block_three()
