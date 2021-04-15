@@ -40,7 +40,7 @@ def block_one():
 
                     # add ticker to text file
                     file = open(list_of_tickers, "a+")  # append mode
-                    if ticker not in file.readlines()[:-1]:
+                    if ticker not in file.readlines():
                         file.write(ticker + '\n')
 
                     file.close()
