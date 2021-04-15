@@ -1,4 +1,3 @@
-import os
 import datetime
 from pandas.tseries.offsets import BDay
 import finviz
@@ -39,9 +38,11 @@ if 6 > weekno > 0:
 
                 # add ticker to text file
                 file = open(list_of_tickers, "a+")  # append mode
-                if ticker not in file.readlines():
-                    file.write(ticker + "\n")
-                    file.close()
+                if ticker not in file.readlines()[:-1]:
+                    file.write(ticker + '\n')
+
+                file.close()
+
 
 if 6 > weekno > 0:
 
@@ -49,21 +50,37 @@ if 6 > weekno > 0:
     file = open(list_of_tickers, "r")  # append mode
 
     for line in file.readlines():
+
+        line = line.strip('\n')
+
         stock = finviz.get_stock(line)
 
         stock['Date'] = str(last_business_day)
 
-        ticker_file = os.path.join(long_term_path, line[:-2] + ".csv")
+        ticker_file = os.path.join(long_term_path, line + ".csv")
 
         if not os.path.isfile(ticker_file):
 
-            with open(ticker_file, 'w+') as f:
-                    w = csv.DictWriter(f, stock.keys())
-                    w.writeheader()
-                    w.writerow(stock)
-
-        else:
-            with open(ticker_file, 'a') as f:
+            with open(ticker_file, 'w') as f:
                 w = csv.DictWriter(f, stock.keys())
+                w.writeheader()
                 w.writerow(stock)
+                
+if 6 > weekno > 0:
 
+    for root, dirs, files in os.walk(long_term_path):
+        for filename in files:
+            if filename.endswith(".csv"):
+
+                replaced_file = filename.replace(".csv", "")
+
+                stock = finviz.get_stock(replaced_file)
+
+                stock['Date'] = str(last_business_day)
+
+                ticker_file = os.path.join(long_term_path, filename)
+
+                with open(ticker_file, 'a') as f:
+                    w = csv.DictWriter(f, stock.keys())
+                    w.writerow(stock)
+                    f.close()
