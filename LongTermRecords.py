@@ -69,6 +69,9 @@ def block_two():
                     w.writeheader()
                     w.writerow(stock)
 
+            else:
+                block_three()
+
 def block_three():
 
     if 6 > weekno > 0:
@@ -93,4 +96,3 @@ def block_three():
 
 block_one()
 block_two()
-block_three()
