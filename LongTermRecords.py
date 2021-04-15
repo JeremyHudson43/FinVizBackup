@@ -64,13 +64,11 @@ def block_two():
 
             if not os.path.isfile(ticker_file):
 
-                with open(ticker_file, 'w') as f:
+                with open(ticker_file, 'w+') as f:
                     w = csv.DictWriter(f, stock.keys())
                     w.writeheader()
-                    w.writerow(stock)
+                    f.close()
 
-            else:
-                block_three()
 
 def block_three():
 
@@ -96,3 +94,4 @@ def block_three():
 
 block_one()
 block_two()
+block_three()
