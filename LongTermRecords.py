@@ -86,10 +86,14 @@ def block_three():
 
                     ticker_file = os.path.join(long_term_path, filename)
 
-                    with open(ticker_file, 'a') as f:
-                        w = csv.DictWriter(f, stock.keys())
-                        w.writerow(stock)
-                        f.close()
+                    ticker_df = pd.read_csv(ticker_file)
+
+                    if not(ticker_df['Date'].str.contains(str(last_business_day)).any()):
+
+                        with open(ticker_file, 'a') as f:
+                            w = csv.DictWriter(f, stock.keys())
+                            w.writerow(stock)
+                            f.close()
 
 
 block_one()
