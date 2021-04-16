@@ -44,18 +44,19 @@ if 6 > weekno > 0:
 
                 stock['Date'] = str(last_business_day)
 
-                ticker_df = pd.read_csv(filepath)
+                if os.path.isfile(filepath):
+                    ticker_df = pd.read_csv(filepath)
+
+                if not os.path.isfile(filepath):
+                    with open(filepath, 'w+') as f:
+                        w = csv.DictWriter(f, stock.keys())
+                        w.writeheader()
+                        w.writerow(stock)
+                        f.close()
 
                 if not (ticker_df['Date'].str.contains(str(last_business_day)).any()):
 
-                    if not os.path.isfile(filepath):
-
-                        with open(filepath, 'w+') as f:
-                            w = csv.DictWriter(f, stock.keys())
-                            w.writeheader()
-                            w.writerow(stock)
-
-                    else:
-                        with open(filepath, 'a') as f:
-                            w = csv.DictWriter(f, stock.keys())
-                            w.writerow(stock)
+                    with open(filepath, 'a') as f:
+                        w = csv.DictWriter(f, stock.keys())
+                        w.writerow(stock)
+                        f.close()
