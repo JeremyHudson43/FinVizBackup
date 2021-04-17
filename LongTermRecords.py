@@ -83,6 +83,7 @@ def block_three():
                     stock = finviz.get_stock(replaced_file)
 
                     stock['Date'] = str(last_business_day)
+                    stock['Ticker'] = replaced_file
 
                     ticker_file = os.path.join(long_term_path, filename)
 

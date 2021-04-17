@@ -175,7 +175,7 @@ def potential_uptrend_from_lows():
 def short_squeeze():
     # small market cap stocks with few shares outstanding
     filters = ['f=sh_avgvol_o100','sh_instown_u50','sh_price_o2','sh_short_o15']
-    stock_list = Screener(filters=filters, table='Performance', order='price')
+    stock_list = Screener(filters=filters, table='Performance')
 
     # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, ("short squeeze\\" + str(last_business_day) + ".csv")))
@@ -240,81 +240,159 @@ def top_losers():
 def low_rsi():
     # small market cap stocks with few shares outstanding
     filters = ['f=ta_rsi_os30']
-    stock_list = Screener(filters=filters, table='Performance', order='price')
+    stock_list = Screener(filters=filters, order = 'RSI')
 
-    # Export the screener results to .csv
-    stock_list.to_csv(os.path.join(folder_path, ("low rsi\\" + str(last_business_day) + ".csv")))
+    path = os.path.join(folder_path, ("low rsi\\" + str(last_business_day) + ".csv"))
+
+    my_df = pd.DataFrame(stock_list[0:200])
+
+    my_df.to_csv(path, index=False)
+
+try:
+    low_rsi()
+    time.sleep(15)
+except:
+    print("error")
 
 
-analysts_buy()
-time.sleep(15)
+try:
+    analysts_buy()
+    time.sleep(15)
+except:
+    print("error")
 
-top_losers()
-time.sleep(15)
+try:
+    top_losers()
+    time.sleep(15)
+except:
+    print("error")
 
-top_gainers()
-time.sleep(15)
+try:
+    top_gainers()
+    time.sleep(15)
+except:
+    print("error")
 
-small_mc_rel_vol()
-time.sleep(15)
+try:
+    small_mc_rel_vol()
+    time.sleep(15)
+except:
+    print("error")
 
-bankruptcy_squeeze_candidates()
-time.sleep(15)
+try:
+    bankruptcy_squeeze_candidates()
+    time.sleep(15)
+except:
+    print("error")
 
-bounce_at_moving_average()
-time.sleep(15)
+try:
+    bounce_at_moving_average()
+    time.sleep(15)
+except:
+    print("error")
 
-breaking_out()
-time.sleep(15)
+try:
+    breaking_out()
+    time.sleep(15)
+except:
+    print("error")
 
-buy_and_hold_value()
-time.sleep(15)
+try:
+    buy_and_hold_value()
+    time.sleep(15)
+except:
+    print("error")
 
-canslim()
-time.sleep(15)
+try:
+    canslim()
+    time.sleep(15)
+except:
+    print("error")
 
-consistent_growth_bullish_trend()
-time.sleep(15)
+try:
+    consistent_growth_bullish_trend()
+    time.sleep(15)
+except:
+    print("error")
 
-earnings_gap_up()
-time.sleep(15)
+try:
+    earnings_gap_up()
+    time.sleep(15)
+except:
+    print("error")
 
-high_earnings_growth()
-time.sleep(15)
+try:
+    high_earnings_growth()
+    time.sleep(15)
+except:
+    print("error")
 
-high_relative_volume()
-time.sleep(15)
+try:
+    high_relative_volume()
+    time.sleep(15)
+except:
+    print("error")
 
-low_pe_value()
-time.sleep(15)
+try:
+    low_pe_value()
+    time.sleep(15)
+except:
+    print("error")
 
-new_highs()
-time.sleep(15)
+try:
+    new_highs()
+    time.sleep(15)
+except:
+    print("error")
 
-oversold_reversal()
-time.sleep(15)
+try:
+    oversold_reversal()
+    time.sleep(15)
+except:
+    print("error")
 
-oversold_upcoming_earnings()
-time.sleep(15)
+try:
+    oversold_upcoming_earnings()
+    time.sleep(15)
+except:
+    print("error")
 
-potential_uptrend_from_lows()
-time.sleep(15)
+try:
+    potential_uptrend_from_lows()
+    time.sleep(15)
+except:
+    print("error")
 
-short_squeeze()
-time.sleep(15)
+try:
+    short_squeeze()
+    time.sleep(15)
+except:
+    print("error")
 
-shorted_stocks()
-time.sleep(15)
+try:
+    shorted_stocks()
+    time.sleep(15)
+except:
+    print("error")
 
-sma_crossover()
-time.sleep(15)
+try:
+    sma_crossover()
+    time.sleep(15)
+except:
+    print("error")
 
-sma_crossover()
-time.sleep(15)
+try:
+    sma_crossover()
+    time.sleep(15)
+except:
+    print("error")
 
-undervalued_dividend_growth()
-time.sleep(15)
+try:
+    undervalued_dividend_growth()
+    time.sleep(15)
+except:
+    print("error")
 
-low_rsi()
+
 
 

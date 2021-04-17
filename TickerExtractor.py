@@ -22,7 +22,7 @@ if 6 > weekno > 0:
             path = os.path.join(root, name)
             r.append(path)
 
-    for x in r[24:]:
+    for x in r[25:]:
 
         path = x.replace("unique", "")
 
@@ -43,20 +43,20 @@ if 6 > weekno > 0:
                 stock = finviz.get_stock(ticker)
 
                 stock['Date'] = str(last_business_day)
+                stock['Ticker'] = ticker
 
                 if os.path.isfile(filepath):
                     ticker_df = pd.read_csv(filepath)
+
+                    if not (ticker_df['Date'].str.contains(str(last_business_day)).any()):
+                        with open(filepath, 'a') as f:
+                            w = csv.DictWriter(f, stock.keys())
+                            w.writerow(stock)
+                            f.close()
 
                 if not os.path.isfile(filepath):
                     with open(filepath, 'w+') as f:
                         w = csv.DictWriter(f, stock.keys())
                         w.writeheader()
-                        w.writerow(stock)
-                        f.close()
-
-                if not (ticker_df['Date'].str.contains(str(last_business_day)).any()):
-
-                    with open(filepath, 'a') as f:
-                        w = csv.DictWriter(f, stock.keys())
                         w.writerow(stock)
                         f.close()
