@@ -32,7 +32,7 @@ def block_one():
             file.write(ticker.strip() + '\n')
 
     file.close()
-
+    
 def block_two():
     file = open(cross_path, "r")  # append mode
 
@@ -41,12 +41,13 @@ def block_two():
 
         path = os.path.join(cross_path_folder, line.strip() + ".csv")
 
-        #if float(stock['RSI (14)']) > 32:
+    if float(stock['RSI (14)']) > 32:
         with open(path, 'a+') as f:
             w = csv.DictWriter(f, stock.keys())
             w.writeheader()
             w.writerow(stock)
             f.close()
+
 
 def block_three():
   content = open(cross_path, 'r').readlines()
