@@ -11,7 +11,6 @@ import ctypes
 
 MessageBox = ctypes.windll.user32.MessageBoxW
 
-
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
 
@@ -23,6 +22,7 @@ cross_path_folder = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross ab
 df = pd.concat(map(pd.read_csv, glob.glob(os.path.join(folder_path, "*.csv"))))
 
 df = df[df['RSI (14)'].between(24, 28)]
+
 
 def block_one():
     # add ticker to text file
@@ -37,31 +37,37 @@ def block_one():
 
     file.close()
 
+
 def block_two():
     file = open(cross_path, "r")  # append mode
 
     for line in file:
-        stock = finviz.get_stock(line.strip())
+        try:
+            stock = finviz.get_stock(line.strip())
 
-        path = os.path.join(cross_path_folder, line.strip() + ".csv")
+            path = os.path.join(cross_path_folder, line.strip() + ".csv")
 
-        argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
+            argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
 
-        if float(stock['RSI (14)']) > 32:
-            MessageBox(None, argument, 'RSI Alert', 0)
-            with open(path, 'a+') as f:
-                w = csv.DictWriter(f, stock.keys())
-                w.writeheader()
-                w.writerow(stock)
-                f.close()
+            if float(stock['RSI (14)']) > 32:
+                MessageBox(None, argument, 'RSI Alert', 0)
+                with open(path, 'a+') as f:
+                    w = csv.DictWriter(f, stock.keys())
+                    w.writeheader()
+                    w.writerow(stock)
+                    f.close()
+        except:
+            print("error")
+
 
 def block_three():
-  content = open(cross_path, 'r').readlines()
-  content_set = set(content)
-  clean_data = open(cross_path, 'w')
+    content = open(cross_path, 'r').readlines()
+    content_set = set(content)
+    clean_data = open(cross_path, 'w')
 
-  for line in content_set:
-      clean_data.write(line)
+    for line in content_set:
+        clean_data.write(line)
+
 
 block_one()
 block_two()

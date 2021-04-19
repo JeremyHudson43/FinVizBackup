@@ -16,49 +16,50 @@ list_of_tickers = r"C:\Users\Frank Einstein\Desktop\long term records\list of ti
 
 r = []
 
+
 def block_one():
 
-    if 6 > weekno > 0:
+    for root, dirs, files in os.walk(folder_path):
+        for name in dirs:
+            path = os.path.join(root, name)
+            r.append(path)
 
-        for root, dirs, files in os.walk(folder_path):
-            for name in dirs:
-                path = os.path.join(root, name)
-                r.append(path)
+    for x in r[25:]:
 
-        for x in r[24:]:
+        path = x.replace("unique", "")
+        check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-            path = x.replace("unique", "")
-            check_path = os.path.join(path, str(last_business_day) + ".csv")
+        if os.path.isfile(check_path):
 
-            if os.path.isfile(check_path):
+            df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
 
-                df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
+            for index, row in df.iterrows():
 
-                for index, row in df.iterrows():
+                ticker = row['Ticker']
 
-                    ticker = row['Ticker']
+                # add ticker to text file
+                file = open(list_of_tickers, "a+")  # append mode
+                if ticker not in file.readlines():
+                    file.write(ticker + '\n')
 
-                    # add ticker to text file
-                    file = open(list_of_tickers, "a+")  # append mode
-                    if ticker not in file.readlines():
-                        file.write(ticker + '\n')
+                file.close()
 
-                    file.close()
 
 def block_two():
 
-    if 6 > weekno > 0:
+    # add ticker to text file
+    file = open(list_of_tickers, "r")  # append mode
 
-        # add ticker to text file
-        file = open(list_of_tickers, "r")  # append mode
+    for line in file.readlines():
 
-        for line in file.readlines():
+        try:
 
             line = line.strip('\n')
 
             stock = finviz.get_stock(line)
 
             stock['Date'] = str(last_business_day)
+            stock['Ticker'] = line
 
             ticker_file = os.path.join(long_term_path, line + ".csv")
 
@@ -67,36 +68,47 @@ def block_two():
                 with open(ticker_file, 'w+') as f:
                     w = csv.DictWriter(f, stock.keys())
                     w.writeheader()
+                    w.writerow(stock)
                     f.close()
+        except:
+            print("error")
 
 
 def block_three():
 
-    if 6 > weekno > 0:
+    for root, dirs, files in os.walk(long_term_path):
+        for filename in files:
+            if filename.endswith(".csv"):
 
-        for root, dirs, files in os.walk(long_term_path):
-            for filename in files:
-                if filename.endswith(".csv"):
+                replaced_file = filename.replace(".csv", "")
 
-                    replaced_file = filename.replace(".csv", "")
+                stock = finviz.get_stock(replaced_file)
 
-                    stock = finviz.get_stock(replaced_file)
+                stock['Date'] = str(last_business_day)
+                stock['Ticker'] = replaced_file
 
-                    stock['Date'] = str(last_business_day)
-                    stock['Ticker'] = replaced_file
+                ticker_file = os.path.join(long_term_path, filename)
 
-                    ticker_file = os.path.join(long_term_path, filename)
+                ticker_df = pd.read_csv(ticker_file)
 
-                    ticker_df = pd.read_csv(ticker_file)
+                if not(ticker_df['Date'].str.contains(str(last_business_day)).any()):
 
-                    if not(ticker_df['Date'].str.contains(str(last_business_day)).any()):
+                    with open(ticker_file, 'a') as f:
+                        w = csv.DictWriter(f, stock.keys())
+                        w.writerow(stock)
+                        f.close()
 
-                        with open(ticker_file, 'a') as f:
-                            w = csv.DictWriter(f, stock.keys())
-                            w.writerow(stock)
-                            f.close()
+
+def block_four():
+    content = open(list_of_tickers, 'r').readlines()
+    content_set = set(content)
+    clean_data = open(list_of_tickers, 'w')
+
+    for line in content_set:
+        clean_data.write(line)
 
 
 block_one()
 block_two()
 block_three()
+block_four()

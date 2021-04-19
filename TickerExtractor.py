@@ -15,24 +15,25 @@ last_business_day = (today - BDay(1)).date()
 
 weekno = datetime.datetime.today().weekday()
 
-if 6 > weekno > 0:
 
-    for root, dirs, files in os.walk(folder_path):
-        for name in dirs:
-            path = os.path.join(root, name)
-            r.append(path)
+for root, dirs, files in os.walk(folder_path):
+    for name in dirs:
+        path = os.path.join(root, name)
+        r.append(path)
 
-    for x in r[25:]:
+for x in r[25:]:
 
-        path = x.replace("unique", "")
+    path = x.replace("unique", "")
 
-        check_path = os.path.join(path, str(last_business_day) + ".csv")
+    check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-        if os.path.isfile(check_path):
+    if os.path.isfile(check_path):
 
-            df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
+        df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
 
-            for index, row in df.iterrows():
+        for index, row in df.iterrows():
+
+            try:
 
                 ticker = row['Ticker']
 
@@ -60,3 +61,5 @@ if 6 > weekno > 0:
                         w.writeheader()
                         w.writerow(stock)
                         f.close()
+            except:
+                print("error")
