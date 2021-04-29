@@ -8,7 +8,6 @@ import datetime
 import finviz
 import csv
 import ctypes
-from dateutil import parser
 
 MessageBox = ctypes.windll.user32.MessageBoxW
 
@@ -52,12 +51,22 @@ def block_two():
         try:
             stock = finviz.get_stock(line.strip())
 
+            first_story = [x[0] for x in finviz.get_news(line.strip())]
+
             stock['Date'] = str(last_business_day)
             stock['Ticker'] = line.strip()
 
+            try:
+                stock['News'] = first_story[0]
+            except:
+                print("error")
+
             path = os.path.join(cross_path_folder, line.strip() + ".csv")
 
+            argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
+
             if float(stock['RSI (14)']) > 32:
+                MessageBox(None, argument, 'RSI Alert', 0)
                 del [line]
                 if os.path.isfile(path):
                     ticker_df = pd.read_csv(path)

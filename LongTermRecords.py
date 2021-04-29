@@ -8,8 +8,6 @@ import os
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
 
-weekno = datetime.datetime.today().weekday()
-
 folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
 long_term_path = r"C:\Users\Frank Einstein\Desktop\long term records"
 list_of_tickers = r"C:\Users\Frank Einstein\Desktop\long term records\list of tickers.txt"
@@ -24,7 +22,8 @@ def block_one():
             path = os.path.join(root, name)
             r.append(path)
 
-    for x in r[25:]:
+
+    for x in r[29:]:
 
         path = x.replace("unique", "")
         check_path = os.path.join(path, str(last_business_day) + ".csv")
@@ -58,8 +57,15 @@ def block_two():
 
             stock = finviz.get_stock(line)
 
+            first_story = [x[0] for x in finviz.get_news(line.strip())]
+
             stock['Date'] = str(last_business_day)
             stock['Ticker'] = line
+
+            try:
+                stock['News'] = first_story[0]
+            except:
+                print("error")
 
             ticker_file = os.path.join(long_term_path, line + ".csv")
 
@@ -84,12 +90,18 @@ def block_three():
 
                 stock = finviz.get_stock(replaced_file)
 
+                first_story = [x[0] for x in finviz.get_news(replaced_file.strip())]
                 stock['Date'] = str(last_business_day)
                 stock['Ticker'] = replaced_file
 
+                try:
+                    stock['News'] = first_story[0]
+                except:
+                    print("error")
+
                 ticker_file = os.path.join(long_term_path, filename)
 
-                ticker_df = pd.read_csv(ticker_file)
+                ticker_df = pd.read_csv(ticker_file, encoding='latin-1')
 
                 if not(ticker_df['Date'].str.contains(str(last_business_day)).any()):
 
