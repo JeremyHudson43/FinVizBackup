@@ -13,24 +13,25 @@ r = []
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
 
+weekno = datetime.datetime.today().weekday()
+
+
 for root, dirs, files in os.walk(folder_path):
     for name in dirs:
         path = os.path.join(root, name)
         r.append(path)
 
-for x in r[28:]:
+    for x in r[25:]:
 
-    path = x.replace("unique", "")
+        path = x.replace("unique", "")
 
-    check_path = os.path.join(path, str(last_business_day) + ".csv")
+        check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-    if os.path.isfile(check_path):
+        if os.path.isfile(check_path):
 
-        df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
+            df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
 
-        for index, row in df.iterrows():
-
-            try:
+            for index, row in df.iterrows():
 
                 ticker = row['Ticker']
 
@@ -40,18 +41,11 @@ for x in r[28:]:
 
                 stock = finviz.get_stock(ticker)
 
-                first_story = [x[0] for x in finviz.get_news(ticker)]
-
                 stock['Date'] = str(last_business_day)
                 stock['Ticker'] = ticker
 
-                try:
-                    stock['News'] = first_story[0]
-                except:
-                    print("error")
-
                 if os.path.isfile(filepath):
-                    ticker_df = pd.read_csv(filepath, encoding='latin-1')
+                    ticker_df = pd.read_csv(filepath)
 
                     if not (ticker_df['Date'].str.contains(str(last_business_day)).any()):
                         with open(filepath, 'a') as f:
@@ -65,5 +59,3 @@ for x in r[28:]:
                         w.writeheader()
                         w.writerow(stock)
                         f.close()
-            except:
-                print("error")

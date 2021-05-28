@@ -248,62 +248,6 @@ def low_rsi():
 
     my_df.to_csv(path, index=False)
 
-
-def forte_capital():
-    # small market cap stocks with few shares outstanding
-    filters = ['f=ipodate_prev3yrs','sh_avgvol_o500','sh_short_o5','ta_changeopen_u','ta_sma20_pa','ta_sma200_pa', 'ta_sma50_pa']
-    stock_list = Screener(filters=filters)
-
-    path = os.path.join(folder_path, ("forte capital\\" + str(last_business_day) + ".csv"))
-
-    my_df = pd.DataFrame(stock_list[0:300])
-
-    my_df.to_csv(path, index=False)
-
-
-def undervalued():
-    # small market cap stocks with few shares outstanding
-    filters = ['f=fa_curratio_o2','fa_div_o3','fa_fpe_low','fa_pc_o5','fa_pe_low','fa_pfcf_o']
-    stock_list = Screener(filters=filters)
-
-    path = os.path.join(folder_path, ("undervalued\\" + str(last_business_day) + ".csv"))
-
-    my_df = pd.DataFrame(stock_list[0:300])
-
-    my_df.to_csv(path, index=False)
-
-
-def earnings_high_eps():
-    # small market cap stocks with few shares outstanding
-    filters = ['f=earningsdate_nextdays5','fa_curratio_o2','fa_eps5years_o5','fa_epsqoq_o5','fa_epsyoy_o5','fa_epsyoy1_o5','fa_estltgrowth_o5', 'fa_quickratio_o2','fa_sales5years_o5']
-    stock_list = Screener(filters=filters)
-
-    path = os.path.join(folder_path, ("earnings high EPS\\" + str(last_business_day) + ".csv"))
-
-    my_df = pd.DataFrame(stock_list[0:300])
-
-    my_df.to_csv(path, index=False)
-
-
-try:
-    earnings_high_eps()
-    time.sleep(15)
-except:
-    print("error")
-
-try:
-    undervalued()
-    time.sleep(15)
-except:
-    print("error")
-
-try:
-    forte_capital()
-    time.sleep(15)
-except:
-    print("error")
-
-
 try:
     low_rsi()
     time.sleep(15)
