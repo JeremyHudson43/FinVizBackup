@@ -8,8 +8,6 @@ import os
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
 
-weekno = datetime.datetime.today().weekday()
-
 folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
 long_term_path = r"C:\Users\Frank Einstein\Desktop\long term records"
 list_of_tickers = r"C:\Users\Frank Einstein\Desktop\long term records\list of tickers.txt"
@@ -24,25 +22,26 @@ def block_one():
             path = os.path.join(root, name)
             r.append(path)
 
-        for x in r[24:]:
 
-            path = x.replace("unique", "")
-            check_path = os.path.join(path, str(last_business_day) + ".csv")
+    for x in r[32:]:
 
-            if os.path.isfile(check_path):
+        path = x.replace("unique", "")
+        check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-                df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
+        if os.path.isfile(check_path):
 
-                for index, row in df.iterrows():
+            df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
 
-                    ticker = row['Ticker']
+            for index, row in df.iterrows():
 
-                    # add ticker to text file
-                    file = open(list_of_tickers, "a+")  # append mode
-                    if ticker not in file.readlines():
-                        file.write(ticker + '\n')
+                ticker = row['Ticker']
 
-                    file.close()
+                # add ticker to text file
+                file = open(list_of_tickers, "a+")  # append mode
+                if ticker not in file.readlines():
+                    file.write(ticker + '\n')
+
+                file.close()
 
 
 def block_two():
@@ -52,20 +51,33 @@ def block_two():
 
     for line in file.readlines():
 
-        line = line.strip('\n')
+        try:
 
-        stock = finviz.get_stock(line)
+            line = line.strip('\n')
 
-        stock['Date'] = str(last_business_day)
+            stock = finviz.get_stock(line)
 
-        ticker_file = os.path.join(long_term_path, line + ".csv")
+            first_story = [x[0] for x in finviz.get_news(line.strip())]
 
-        if not os.path.isfile(ticker_file):
+            stock['Date'] = str(last_business_day)
+            stock['Ticker'] = line
 
-            with open(ticker_file, 'w+') as f:
-                w = csv.DictWriter(f, stock.keys())
-                w.writeheader()
-                f.close()
+            try:
+                stock['News'] = first_story[0]
+            except:
+                print("error")
+
+            ticker_file = os.path.join(long_term_path, line + ".csv")
+
+            if not os.path.isfile(ticker_file):
+
+                with open(ticker_file, 'w+') as f:
+                    w = csv.DictWriter(f, stock.keys())
+                    w.writeheader()
+                    w.writerow(stock)
+                    f.close()
+        except:
+            print("error")
 
 
 def block_three():
@@ -78,12 +90,18 @@ def block_three():
 
                 stock = finviz.get_stock(replaced_file)
 
+                first_story = [x[0] for x in finviz.get_news(replaced_file.strip())]
                 stock['Date'] = str(last_business_day)
                 stock['Ticker'] = replaced_file
 
+                try:
+                    stock['News'] = first_story[0]
+                except:
+                    print("error")
+
                 ticker_file = os.path.join(long_term_path, filename)
 
-                ticker_df = pd.read_csv(ticker_file)
+                ticker_df = pd.read_csv(ticker_file, encoding='latin-1')
 
                 if not(ticker_df['Date'].str.contains(str(last_business_day)).any()):
 
@@ -93,6 +111,16 @@ def block_three():
                         f.close()
 
 
+def block_four():
+    content = open(list_of_tickers, 'r').readlines()
+    content_set = set(content)
+    clean_data = open(list_of_tickers, 'w')
+
+    for line in content_set:
+        clean_data.write(line)
+
+
 block_one()
 block_two()
 block_three()
+block_four()

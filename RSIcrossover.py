@@ -17,11 +17,17 @@ last_business_day = (today - BDay(1)).date()
 # loop through low RSI unique folder and add all matching results for previous business day to text file list
 folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\low rsi\\unique"
 cross_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross above 30 RSI\\stocks below RSI 30.txt"
-cross_path_folder = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross above 30 RSI"
+cross_path_folder = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross above 30 RSI\\unique"
 
 df = pd.concat(map(pd.read_csv, glob.glob(os.path.join(folder_path, "*.csv"))))
 
+formattedLBD = str(last_business_day).split('-')
+proper_format = formattedLBD[1] + "/" + formattedLBD[2] + "/" + formattedLBD[0]
+
 df = df[df['RSI (14)'].between(24, 28)]
+
+df['Date'] = pd.to_datetime(df['Date'])
+df = df[df['Date'] == proper_format]
 
 
 def block_one():
@@ -42,19 +48,43 @@ def block_two():
     file = open(cross_path, "r")  # append mode
 
     for line in file:
-        stock = finviz.get_stock(line.strip())
+        try:
+            stock = finviz.get_stock(line.strip())
 
-        path = os.path.join(cross_path_folder, line.strip() + ".csv")
+            first_story = [x[0] for x in finviz.get_news(line.strip())]
 
-        argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
+            stock['Date'] = str(last_business_day)
+            stock['Ticker'] = line.strip()
 
-        if float(stock['RSI (14)']) > 32:
-            MessageBox(None, argument, 'RSI Alert', 0)
-            with open(path, 'a+') as f:
-                w = csv.DictWriter(f, stock.keys())
-                w.writeheader()
-                w.writerow(stock)
-                f.close()
+            try:
+                stock['News'] = first_story[0]
+            except:
+                print("error")
+
+            path = os.path.join(cross_path_folder, line.strip() + ".csv")
+
+            argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
+
+            if float(stock['RSI (14)']) > 32:
+                MessageBox(None, argument, 'RSI Alert', 0)
+                del [line]
+                if os.path.isfile(path):
+                    ticker_df = pd.read_csv(path)
+
+                    if not (ticker_df['Date'].str.contains(str(last_business_day)).any()):
+                        with open(path, 'a') as f:
+                            w = csv.DictWriter(f, stock.keys())
+                            w.writerow(stock)
+                            f.close()
+
+                if not os.path.isfile(path):
+                    with open(path, 'w+') as f:
+                        w = csv.DictWriter(f, stock.keys())
+                        w.writeheader()
+                        w.writerow(stock)
+                        f.close()
+        except:
+            print("error")
 
 
 def block_three():
