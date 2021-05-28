@@ -18,7 +18,14 @@ def value_to_float(x):
             return float(x.replace('M', '')) * 1000000
         return 1000000.0
     if 'B' in x:
-        return float(x.replace('B', '')) * 1000000000
+        if len(x) > 1:
+            return float(x.replace('B', '')) * 1000000000
+        return 1000000000.0
+    if 'T' in x:
+        if len(x) > 1:
+            return float(x.replace('T', '')) * 1000000000000
+        return 1000000000000000.0
+
     return 0.0
 
 
