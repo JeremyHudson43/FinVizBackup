@@ -16,7 +16,7 @@ for root, dirs, files in os.walk(folder_path):
         path = os.path.join(root, name)
         r.append(path)
 
-for x in r[32:]:
+for x in r[33:]:
     compare = set(os.path.relpath(os.path.join(root, file), x) for root, _, files in os.walk(x) for file in files)
 
     print("Number of common stocks between " + str(x).split("\\")[5]

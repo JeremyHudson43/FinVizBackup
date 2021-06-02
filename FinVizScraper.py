@@ -320,11 +320,21 @@ def support_level():
 
     my_df.to_csv(path, index=False)
 
-#try:
-   # support_level()
-   # time.sleep(15)
-#except:
-    #print("error")
+
+def all_stocks():
+    # small market cap stocks with few shares outstanding
+    filters = ['s=ta_topgainers']
+    stock_list = Screener(filters=filters, table='Performance', order='Change')
+
+    # Export the screener results to .csv
+    stock_list.to_csv(os.path.join(folder_path, ("all stocks\\" + str(last_business_day) + ".csv")))
+
+
+try:
+    all_stocks()
+    time.sleep(15)
+except:
+    print("error")
 
 try:
     undervalued_two()

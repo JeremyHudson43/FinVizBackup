@@ -18,7 +18,7 @@ for root, dirs, files in os.walk(folder_path):
         path = os.path.join(root, name)
         r.append(path)
 
-for x in r[32:]:
+for x in r[33:]:
 
     path = x.replace("unique", "")
 
