@@ -36,7 +36,7 @@ for x in r[length:]:
 
                 ticker = row['Ticker']
 
-                print("Writing Ticker " + ticker)
+                print("Writing Ticker " + ticker +  " to " + x )
 
                 only_ticker = df[df['Ticker'] == ticker]
 
