@@ -353,199 +353,194 @@ try:
     support_level()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("support level: " + str(e))
+
 
 try:
     rel_vol_pattern()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("rel vol pattern: " + str(e))
 
 try:
     five_times_rel_vol()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("five times rel vol: " + str(e))
 
 try:
     all_stocks()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("all stocks: " + str(e))
 
 try:
     undervalued_two()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("undervalued two: " + str(e))
 
 try:
     top_gainers_averages()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("top gainers averages: " + str(e))
 
 try:
     earnings_high_eps()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("earnings high eps: " + str(e))
 
 try:
     undervalued()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("undervalued: " + str(e))
 
 try:
     forte_capital()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("forte capital: " + str(e))
 
 
 try:
     low_rsi()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("low rsi: " + str(e))
 
 
 try:
     analysts_buy()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("analysts buy: " + str(e))
 
 try:
     top_losers()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("top losers: " + str(e))
 
 try:
     top_gainers()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("rel vol pattern: " + str(e))
 
 try:
     small_mc_rel_vol()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("small mc rel vol: " + str(e))
 
 try:
     bankruptcy_squeeze_candidates()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("bankruptcy squeeze candidates" + str(e))
 
 try:
     bounce_at_moving_average()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("bounce at moving average: " + str(e))
 
 try:
     breaking_out()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("breaking out: " + str(e))
 
 try:
     buy_and_hold_value()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("buy and hold value: " + str(e))
 
 try:
     canslim()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("canslim: " + str(e))
 
 try:
     consistent_growth_bullish_trend()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("consistent growth bullish trend: " + str(e))
 
 try:
     earnings_gap_up()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("earnings gap up: " + str(e))
 
 try:
     high_earnings_growth()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("high earnings growth: " + str(e))
 
 try:
     high_relative_volume()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("high relative volume: " + str(e))
 
 try:
     low_pe_value()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("low pe value: " + str(e))
 
 try:
     new_highs()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("new highs: " + str(e))
 
 try:
     oversold_reversal()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("oversold reversal: " + str(e))
 
 try:
     oversold_upcoming_earnings()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("oversold upcoming earnings: " + str(e))
 
 try:
     potential_uptrend_from_lows()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("potential uptrend from lows: " + str(e))
 
 try:
     short_squeeze()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("short squeeze: " + str(e))
 
 try:
     shorted_stocks()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("shorted stocks: " + str(e))
 
 try:
     sma_crossover()
     time.sleep(15)
 except Exception as e:
-    print(e)
-
-try:
-    sma_crossover()
-    time.sleep(15)
-except Exception as e:
-    print(e)
+    print("sma crossover: " + str(e))
 
 try:
     undervalued_dividend_growth()
     time.sleep(15)
 except Exception as e:
-    print(e)
+    print("undervalued dividend growth: " + str(e))
 
