@@ -287,14 +287,14 @@ def earnings_high_eps():
 
 def top_gainers_averages():
     # small market cap stocks with few shares outstanding
-    filters = ['fa_epsyoy_neg','sh_price_u50','sh_relvol_o2','ta_perf2_52w300']
+    filters = ['fa_epsyoy_neg', 'sh_price_u50', 'sh_relvol_o2', 'ta_perf_52w300o']
     stock_list = Screener(filters=filters)
 
     path = os.path.join(folder_path, ("top gainers averages\\" + str(last_business_day) + ".csv"))
 
-    my_df = pd.DataFrame(stock_list[0:300])
+    stock_list.to_csv(path)
 
-    my_df.to_csv(path, index=False)
+    # my_df.to_csv(path, index=False)
 
 
 def undervalued_two():
@@ -348,6 +348,12 @@ def rel_vol_pattern():
 
     my_df.to_csv(os.path.join(folder_path, ("rel vol pattern\\" + str(last_business_day) + ".csv")), index=False)
 
+try:
+    top_gainers_averages()
+    time.sleep(15)
+except Exception as e:
+    print("top gainers averages: " + str(e))
+
 
 try:
     support_level()
@@ -379,12 +385,6 @@ try:
     time.sleep(15)
 except Exception as e:
     print("undervalued two: " + str(e))
-
-try:
-    top_gainers_averages()
-    time.sleep(15)
-except Exception as e:
-    print("top gainers averages: " + str(e))
 
 try:
     earnings_high_eps()
@@ -543,4 +543,7 @@ try:
     time.sleep(15)
 except Exception as e:
     print("undervalued dividend growth: " + str(e))
+
+
+
 
