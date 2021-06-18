@@ -287,7 +287,7 @@ def earnings_high_eps():
 
 def top_gainers_averages():
     # small market cap stocks with few shares outstanding
-    filters = ['fa_epsyoy_neg','sh_price_u50','sh_relvol_o2','ta_perf2_52w500o&ft=4']
+    filters = ['fa_epsyoy_neg','sh_price_u50','sh_relvol_o2','ta_perf2_52w500']
     stock_list = Screener(filters=filters)
 
     path = os.path.join(folder_path, ("top gainers averages\\" + str(last_business_day) + ".csv"))
