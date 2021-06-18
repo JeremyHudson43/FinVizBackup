@@ -213,7 +213,7 @@ def top_gainers():
 
     path = os.path.join(folder_path, ("top gainers\\" + str(last_business_day) + ".csv"))
 
-    my_df = pd.DataFrame(stock_list[-200:])
+    my_df = pd.DataFrame(stock_list[-20:])
 
     my_df.to_csv(path, index=False, mode='w', header=['No.','Ticker', 'Perf Week', 'Perf Month', 'Perf Quart', 'Perf Half',
                               'Perf Year', 'Perf YTD', 'Volatility W', 'Volatility M',
@@ -228,7 +228,7 @@ def top_losers():
 
     path = os.path.join(folder_path, ("top losers\\" + str(last_business_day) + ".csv"))
 
-    my_df = pd.DataFrame(stock_list[0:200])
+    my_df = pd.DataFrame(stock_list[0:20])
 
 
     my_df.to_csv(path, index=False, mode='w', header=['No.','Ticker', 'Perf Week', 'Perf Month', 'Perf Quart', 'Perf Half',
@@ -348,12 +348,24 @@ def rel_vol_pattern():
 
     my_df.to_csv(os.path.join(folder_path, ("rel vol pattern\\" + str(last_business_day) + ".csv")), index=False)
 
+
+try:
+    top_losers()
+    time.sleep(15)
+except Exception as e:
+    print("top losers: " + str(e))
+
+try:
+    top_gainers()
+    time.sleep(15)
+except Exception as e:
+    print("rel vol pattern: " + str(e))
+    
 try:
     top_gainers_averages()
     time.sleep(15)
 except Exception as e:
     print("top gainers averages: " + str(e))
-
 
 try:
     support_level()
@@ -418,17 +430,6 @@ try:
 except Exception as e:
     print("analysts buy: " + str(e))
 
-try:
-    top_losers()
-    time.sleep(15)
-except Exception as e:
-    print("top losers: " + str(e))
-
-try:
-    top_gainers()
-    time.sleep(15)
-except Exception as e:
-    print("rel vol pattern: " + str(e))
 
 try:
     small_mc_rel_vol()
@@ -543,7 +544,4 @@ try:
     time.sleep(15)
 except Exception as e:
     print("undervalued dividend growth: " + str(e))
-
-
-
 
