@@ -36,6 +36,8 @@ for x in r[length:]:
 
                 ticker = row['Ticker']
 
+                print("Writing Ticker " + ticker)
+
                 only_ticker = df[df['Ticker'] == ticker]
 
                 filepath = os.path.join(x, (ticker + ".csv"))
@@ -67,5 +69,6 @@ for x in r[length:]:
                         w.writeheader()
                         w.writerow(stock)
                         f.close()
+
             except Exception as e:
                 print(e)
