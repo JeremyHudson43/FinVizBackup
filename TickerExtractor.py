@@ -18,7 +18,9 @@ for root, dirs, files in os.walk(folder_path):
         path = os.path.join(root, name)
         r.append(path)
 
-for x in r[33:]:
+length = (len(next(os.walk(folder_path))[1]))
+
+for x in r[length:]:
 
     path = x.replace("unique", "")
 
@@ -47,8 +49,8 @@ for x in r[33:]:
 
                 try:
                     stock['News'] = first_story[0]
-                except:
-                    print("error")
+                except Exception as e:
+                    print(e)
 
                 if os.path.isfile(filepath):
                     ticker_df = pd.read_csv(filepath, encoding='latin-1')
@@ -65,5 +67,5 @@ for x in r[33:]:
                         w.writeheader()
                         w.writerow(stock)
                         f.close()
-            except:
-                print("error")
+            except Exception as e:
+                print(e)
