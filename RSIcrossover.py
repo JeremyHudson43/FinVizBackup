@@ -73,7 +73,8 @@ def block_two():
                 file.remove(line)
 
                 with open(cross_path, 'w') as f:
-                    csv.writer(f, delimiter=' ').writerows(file)
+                    f.writelines(file)
+                    f.close()
 
                 if os.path.isfile(path):
                     ticker_df = pd.read_csv(path)
