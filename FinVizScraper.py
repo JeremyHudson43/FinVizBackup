@@ -244,7 +244,7 @@ def low_rsi():
 
     path = os.path.join(folder_path, ("low rsi\\" + str(last_business_day) + ".csv"))
 
-    my_df = pd.DataFrame(stock_list[0:200])
+    my_df = pd.DataFrame(stock_list[0:450])
 
     my_df.to_csv(path, index=False)
 
@@ -287,14 +287,12 @@ def earnings_high_eps():
 
 def top_gainers_averages():
     # small market cap stocks with few shares outstanding
-    filters = ['fa_epsyoy_neg', 'sh_price_u50', 'sh_relvol_o2', 'ta_perf_52w300o']
+    filters = ['fa_epsyoy_neg', 'sh_price_u50', 'ta_perf_52w300o']
     stock_list = Screener(filters=filters)
 
     path = os.path.join(folder_path, ("top gainers averages\\" + str(last_business_day) + ".csv"))
 
     stock_list.to_csv(path)
-
-    # my_df.to_csv(path, index=False)
 
 
 def undervalued_two():
@@ -350,6 +348,18 @@ def rel_vol_pattern():
 
 
 try:
+    low_rsi()
+    time.sleep(15)
+except Exception as e:
+    print("low rsi: " + str(e))
+
+try:
+    top_gainers_averages()
+    time.sleep(15)
+except Exception as e:
+    print("top gainers averages: " + str(e))
+
+try:
     top_losers()
     time.sleep(15)
 except Exception as e:
@@ -360,19 +370,6 @@ try:
     time.sleep(15)
 except Exception as e:
     print("rel vol pattern: " + str(e))
-    
-try:
-    top_gainers_averages()
-    time.sleep(15)
-except Exception as e:
-    print("top gainers averages: " + str(e))
-
-try:
-    support_level()
-    time.sleep(15)
-except Exception as e:
-    print("support level: " + str(e))
-
 
 try:
     rel_vol_pattern()
@@ -415,13 +412,6 @@ try:
     time.sleep(15)
 except Exception as e:
     print("forte capital: " + str(e))
-
-
-try:
-    low_rsi()
-    time.sleep(15)
-except Exception as e:
-    print("low rsi: " + str(e))
 
 
 try:
