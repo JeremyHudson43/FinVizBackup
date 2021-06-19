@@ -8,6 +8,8 @@ import datetime
 import finviz
 import csv
 import ctypes
+import functools
+
 
 MessageBox = ctypes.windll.user32.MessageBoxW
 
@@ -19,7 +21,8 @@ folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\low rsi\\uniqu
 cross_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross above 30 RSI\\stocks below RSI 30.txt"
 cross_path_folder = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross above 30 RSI\\unique"
 
-df = pd.concat(map(pd.read_csv, glob.glob(os.path.join(folder_path, "*.csv"))))
+df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None,  error_bad_lines=False),
+                    glob.glob(folder_path + "/*.csv")))
 
 formattedLBD = str(last_business_day).split('-')
 proper_format = formattedLBD[1] + "/" + formattedLBD[2] + "/" + formattedLBD[0]
@@ -45,7 +48,7 @@ def block_one():
 
 
 def block_two():
-    file = open(cross_path, "r")  # append mode
+    file = open(cross_path, "r").readlines()  # append mode
 
     for line in file:
         try:
@@ -66,8 +69,8 @@ def block_two():
             argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
 
             if float(stock['RSI (14)']) > 32:
-                MessageBox(None, argument, 'RSI Alert', 0)
-                del [line]
+                # MessageBox(None, argument, 'RSI Alert', 0)
+                file.remove(line)
                 if os.path.isfile(path):
                     ticker_df = pd.read_csv(path)
 
