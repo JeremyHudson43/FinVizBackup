@@ -68,9 +68,13 @@ def block_two():
 
             argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
 
-            if float(stock['RSI (14)']) > 32:
-                # MessageBox(None, argument, 'RSI Alert', 0)
+            if float(stock['RSI (14)']) > 30:
+                MessageBox(None, argument, 'RSI Alert', 0)
                 file.remove(line)
+
+                with open(cross_path, 'w') as f:
+                    csv.writer(f, delimiter=' ').writerows(file)
+
                 if os.path.isfile(path):
                     ticker_df = pd.read_csv(path)
 
