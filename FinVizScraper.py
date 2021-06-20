@@ -21,7 +21,7 @@ def small_mc_rel_vol():
 
 
 def analysts_buy():
-    filters = ['an_recom_strongbuy','sh_price_u5','targetprice_a50']
+    filters = ['an_recom_strongbuy', 'targetprice_a50']
     stock_list = Screener(filters=filters, table='Performance', order='Recom')
 
     csv_path = f"analysts buy/{last_business_day}.csv"
@@ -232,7 +232,7 @@ def low_rsi():
 
     my_df = pd.DataFrame(stock_list[0:450])
 
-    csv_path = f"low_rsi/{last_business_day}.csv"
+    csv_path = f"low rsi/{last_business_day}.csv"
     path = os.path.join(folder_path, csv_path)
 
     my_df.to_csv(path, index=False)
@@ -263,7 +263,6 @@ def undervalued():
 
 
 def earnings_high_eps():
-    # small market cap stocks with few shares outstanding
     filters = ['earningsdate_nextdays5','fa_curratio_o2','fa_eps5years_o5','fa_epsqoq_o5','fa_epsyoy_o5','fa_epsyoy1_o5','fa_estltgrowth_o5', 'fa_quickratio_o2','fa_sales5years_o5']
     stock_list = Screener(filters=filters)
 
@@ -287,6 +286,7 @@ def top_gainers_averages():
 
 
 def undervalued_two():
+    # small market cap stocks with few shares outstanding
     filters = ['fa_div_pos','fa_pb_low','fa_pe_low','fa_peg_low']
     stock_list = Screener(filters=filters)
 
