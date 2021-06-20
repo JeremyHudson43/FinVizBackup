@@ -1,105 +1,70 @@
-# Find stocks that have between 24 and 28 RSI for last business day, add to text file
 import pandas as pd
-import glob
 import os
-# BDay is business day, not birthday...
-from pandas.tseries.offsets import BDay
-import datetime
 import finviz
-import ctypes
-import functools
+import datetime
+from pandas.tseries.offsets import BDay
 
+# scan through all folders
+folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
 
-MessageBox = ctypes.windll.user32.MessageBoxW
+r = []
 
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
 
-# loop through low RSI unique folder and add all matching results for previous business day to text file list
-folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\low rsi\\unique"
-cross_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross above 30 RSI\\stocks below RSI 30.txt"
-cross_path_folder = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross above 30 RSI\\unique"
+for root, dirs, files in os.walk(folder_path):
+    for name in dirs:
+        path = os.path.join(root, name)
+        r.append(path)
 
-df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None,  error_bad_lines=False),
-                    glob.glob(folder_path + "/*.csv")))
+length = (len(next(os.walk(folder_path))[1]))
 
-formattedLBD = str(last_business_day).split('-')
-proper_format = formattedLBD[1] + "/" + formattedLBD[2] + "/" + formattedLBD[0]
+for x in r[length:]:
 
-df = df[df['RSI (14)'].between(24, 28)]
-
-df['Date'] = pd.to_datetime(df['Date'])
-df = df[df['Date'] == proper_format]
+    path = x.replace("unique", "")
 
 
-def block_one():
-    # add ticker to text file
-    file = open(cross_path, "a+")  # append mode
+    check_path = os.path.join(path, str(last_business_day) + ".csv")
 
-    for index, row in df.iterrows():
+    if os.path.isfile(check_path):
 
-        ticker = row['Ticker']
+        df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
 
-        if ticker.strip() not in file.readlines():
-            file.write(ticker.strip() + '\n')
-
-    file.close()
-
-
-def block_two():
-    file = open(cross_path, "r").readlines()  # append mode
-
-    for line in file:
-        try:
-            stock = finviz.get_stock(line.strip())
-
-            first_story = [x[0] for x in finviz.get_news(line.strip())]
-
-            stock['Date'] = str(last_business_day)
-            stock['Ticker'] = line.strip()
+        for index, row in df.iterrows():
 
             try:
-                stock['News'] = first_story[0]
-            except Exception as err:
-                print(err)
 
-            filepath = os.path.join(cross_path_folder, line.strip() + ".csv")
+                ticker = row['Ticker']
 
-            argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
+                print("Writing Ticker " + ticker +  " to " + x )
 
-            if float(stock['RSI (14)']) > 30:
-                MessageBox(None, argument, 'RSI Alert', 0)
-                file.remove(line)
+                only_ticker = df[df['Ticker'] == ticker]
 
-                with open(cross_path, 'w') as f:
-                    f.writelines(file)
-                    f.close()
+                filepath = os.path.join(x, (ticker + ".csv"))
+
+                stock = finviz.get_stock(ticker)
+
+                first_story = [x[0] for x in finviz.get_news(ticker)]
+
+                stock['Date'] = str(last_business_day)
+                stock['Ticker'] = ticker
+
+                try:
+                    stock['News'] = first_story[0]
+                except Exception as e:
+                    print(e)
 
                 with open(filepath, 'a+') as f:
 
                     if os.stat(filepath).st_size != 0:
                         ticker_df = pd.read_csv(filepath, encoding='latin-1')
-                        ticker_df = ticker_df.append(stock, ignore_index=True)
+                        ticker_df = ticker_df.append(stock, ignore_index = True)
                     else:
-                        ticker_df = pd.DataFrame(stock, index=[0])
+                        ticker_df = pd.DataFrame(stock, index = [0])
 
                     ticker_df = ticker_df.drop_duplicates(keep=False)
 
-                    ticker_df.to_csv(f, mode='a', header=f.tell() == 0, index=False)
+                    ticker_df.to_csv(f, mode='a', header=f.tell() == 0, index = False)
 
-        except Exception as err:
-            print(err)
-
-
-def block_three():
-    content = open(cross_path, 'r').readlines()
-    content_set = set(content)
-    clean_data = open(cross_path, 'w')
-
-    for line in content_set:
-        clean_data.write(line)
-
-
-block_one()
-block_two()
-block_three()
+            except Exception as e:
+                print(e)
