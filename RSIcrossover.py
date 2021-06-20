@@ -72,7 +72,7 @@ def check_for_breakout():
                     f.close()
 
                 # appends new stock data to CSV if it exists, else create CSV
-                if os.stat(filepath).st_size != 0:
+                if os.path.isfile(filepath):
                     ticker_df = pd.read_csv(filepath, encoding='latin-1', error_bad_lines=False)
                     ticker_df = ticker_df.append(stock, ignore_index=True)
                 else:
