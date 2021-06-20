@@ -7,7 +7,7 @@ from pandas.tseries.offsets import BDay
 # scan through all folders
 folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
 
-r = []
+file_list = []
 
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
@@ -15,20 +15,19 @@ last_business_day = (today - BDay(1)).date()
 for root, dirs, files in os.walk(folder_path):
     for name in dirs:
         path = os.path.join(root, name)
-        r.append(path)
+        file_list.append(path)
 
 length = (len(next(os.walk(folder_path))[1]))
 
-for x in r[length:]:
+for unique_path in file_list[length:]:
 
-    path = x.replace("unique", "")
+    path = unique_path.replace("unique", "")
 
+    csv_path = os.path.join(path, f"{last_business_day}.csv")
 
-    check_path = os.path.join(path, str(last_business_day) + ".csv")
+    if os.path.isfile(csv_path):
 
-    if os.path.isfile(check_path):
-
-        df = pd.read_csv(os.path.join(path, str(last_business_day) + ".csv"))
+        df = pd.read_csv(csv_path)
 
         for index, row in df.iterrows():
 
@@ -36,11 +35,11 @@ for x in r[length:]:
 
                 ticker = row['Ticker']
 
-                print("Writing Ticker " + ticker +  " to " + x )
+                print(f"Writing Ticker {ticker} to {unique_path}")
 
                 only_ticker = df[df['Ticker'] == ticker]
 
-                filepath = os.path.join(x, (ticker + ".csv"))
+                filepath = os.path.join(unique_path, f"{ticker}.csv")
 
                 stock = finviz.get_stock(ticker)
 

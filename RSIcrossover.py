@@ -57,11 +57,13 @@ def check_for_breakout():
             except Exception as err:
                 print(err)
 
-            filepath = os.path.join(cross_path_folder, line.strip() + ".csv")
+            stock_rsi = stock['RSI (14)']
 
-            argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
+            filepath = os.path.join(cross_path_folder, f'{line.strip()}.csv')
 
-            if float(stock['RSI (14)']) > 30:
+            argument = f'{line.strip()} is breaking out with an RSI of {stock_rsi}'
+
+            if float(stock_rsi) > 30:
                 MessageBox(None, argument, 'RSI Alert', 0)
                 file.remove(line)
 

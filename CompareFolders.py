@@ -1,45 +1,51 @@
 import os
 
-top_gainers = r"C:\Users\Frank Einstein\Desktop\stock records\top gainers averages\unique"
+individual_folder = 'top gainers'
+
+full_filepath = f"C:\\Users\\Frank Einstein\\Desktop\\stock records\\{individual_folder}\\unique"
+
 folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
 
-# top_gainers = r"C:\Users\Frank Einstein\Desktop\stock records old\stock records\top gainers\unique"
-# folder_path = r"C:\Users\Frank Einstein\Desktop\stock records old\stock records"
+full_filepath = set(os.path.relpath(os.path.join(root, file), full_filepath) for root, _, files in os.walk(full_filepath) for file in files)
 
-
-top_gainers = set(os.path.relpath(os.path.join(root, file), top_gainers) for root, _, files in os.walk(top_gainers) for file in files)
-
-r = []
+file_list = []
 
 for root, dirs, files in os.walk(folder_path):
     for name in dirs:
         path = os.path.join(root, name)
-        r.append(path)
+        file_list.append(path)
 
 length = (len(next(os.walk(folder_path))[1]))
 
-for x in r[length:]:
+for x in file_list[length:]:
     compare = set(os.path.relpath(os.path.join(root, file), x) for root, _, files in os.walk(x) for file in files)
 
-    print("Number of common stocks between " + str(x).split("\\")[5]
-    + " and the top gainers is " + str(len(compare & top_gainers)))
+    being_compared = str(x).split("\\")[5]
+    being_compared_length = str(len(compare))
 
-    print("\n")
+    common_stocks_length = str(len(compare & full_filepath))
+    base_comparison_length = (len(full_filepath))
 
-    print("Current length of top gainers is " + str(len(top_gainers)))
-    print("Current length of " + str(x).split("\\")[5] + " is " + str(len(compare)))
+    percentage_similarity = len(compare & full_filepath) / (len(full_filepath)) * 100
+    percentage_similarity = "{:.2f}".format(percentage_similarity)
 
-    print("\n")
-    print("The common stocks in " + str(x).split("\\")[5] + " and the top gainers are")
+    print(f"Current length of {individual_folder} is {base_comparison_length}")
 
-    print("\n")
-    print(compare & top_gainers)
-    print("\n")
+    print(f"Current length of {being_compared} is {being_compared_length}\n")
+
+    print(f"Number of common stocks between {being_compared} and {individual_folder} is {common_stocks_length}\n")
+
+    print(f"The common stocks in {individual_folder} and {being_compared} are\n{compare & full_filepath}")
 
     try:
-        print(str(x).split("\\")[5] + " contains " + str(len(compare & top_gainers) / (len(top_gainers)) * 100) + "%" + " of the stocks in top gainers")
-    except:
-        print("error")
+        print(f"\n{being_compared} contains {percentage_similarity}% of the stocks in {individual_folder}")
+    except Exception as err:
+        print(err)
 
     print("\n")
+
+
+
+
+
 

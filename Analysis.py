@@ -1,10 +1,18 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
+import glob
+import functools
+import os
 
-# scan through all folders
-folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\top gainers\\unique"
+individual_folder = 'potential uptrend from lows'
 
-df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\combined CSVs\\all_combined.csv")
+folder_path = f"C:\\Users\\Frank Einstein\\Desktop\\stock records\\{individual_folder}\\unique"
+
+storage_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\combined CSVs\\"
+
+df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None,  error_bad_lines=False),
+                    glob.glob(folder_path + "/*.csv")))
+
 
 def value_to_float(x):
     if type(x) == float or type(x) == int:
@@ -54,10 +62,10 @@ df = df.drop(['Company', 'Sector', 'Industry', 'Country', 'Volatility', 'Optiona
 df[cols_to_check] = df[cols_to_check].replace({'%':''}, regex=True)
 df = df.replace("-", np.nan)
 
-
 df[cols_to_check] = df[cols_to_check].fillna(0).astype('float')
 df[cols_to_check] = df[cols_to_check].fillna(0).astype('int')
 
 df[cols_to_check].apply(np.floor)
 
-df.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\combined CSVs\\all_combined_processed.csv", index=False)
+df.to_csv(os.path.join(storage_path, f"{individual_folder}.csv", index=False))
+
