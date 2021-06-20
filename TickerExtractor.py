@@ -56,14 +56,16 @@ for unique_path in file_list[length:]:
                 with open(filepath, 'a+') as f:
 
                     if os.stat(filepath).st_size != 0:
-                        ticker_df = pd.read_csv(filepath, encoding='latin-1')
-                        ticker_df = ticker_df.append(stock, ignore_index = True)
+                        ticker_df = pd.read_csv(filepath, encoding='latin-1', error_bad_lines=False)
+                        ticker_df = ticker_df.append(stock, ignore_index=True)
                     else:
-                        ticker_df = pd.DataFrame(stock, index = [0])
+                        ticker_df = pd.DataFrame(stock, index=[0])
 
                     ticker_df = ticker_df.drop_duplicates(keep=False)
 
-                    ticker_df.to_csv(f, mode='a', header=f.tell() == 0, index = False)
+                    ticker_df.to_csv(f, mode='a', header=f.tell() == 0, index=False)
+
+                f.close()
 
             except Exception as e:
                 print(e)
