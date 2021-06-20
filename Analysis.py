@@ -37,6 +37,7 @@ def value_to_float(x):
     return 0.0
 
 
+# convert all numbers formatted with letters to float value
 df['Market Cap'] = df['Market Cap'].apply(value_to_float)
 
 df['Shs Outstand'] = df['Shs Outstand'].apply(value_to_float)
@@ -59,6 +60,7 @@ cols_to_check = ['Insider Own','Perf Week', 'EPS (ttm)', 'EPS next Y', 'EPS next
 df = df.drop(['Company', 'Sector', 'Industry', 'Country', 'Volatility', 'Optionable', 'Shortable', 'Earnings', 'Date',
               'Date', 'Ticker', 'News', '52W Range'], axis=1)
 
+# remove % from all specified columns to get the raw value
 df[cols_to_check] = df[cols_to_check].replace({'%':''}, regex=True)
 df = df.replace("-", np.nan)
 

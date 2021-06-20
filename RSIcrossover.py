@@ -22,7 +22,6 @@ df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compressio
 
 last_business_day = last_business_day.strftime("%m/%d/%Y")
 
-
 df = df[df['RSI (14)'].between(24, 28)]
 
 df['Date'] = pd.to_datetime(df['Date'])
@@ -63,6 +62,7 @@ def check_for_breakout():
 
             argument = f'{line.strip()} is breaking out with an RSI of {stock_rsi}'
 
+            # if RSI above 30, send notification and remove from text file
             if float(stock_rsi) > 30:
                 MessageBox(None, argument, 'RSI Alert', 0)
                 file.remove(line)
@@ -71,6 +71,7 @@ def check_for_breakout():
                     f.writelines(file)
                     f.close()
 
+                # add stock with RSI now above 30 to unique folder
                 with open(filepath, 'a+') as f:
 
                     if os.stat(filepath).st_size != 0:

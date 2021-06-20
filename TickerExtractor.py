@@ -19,6 +19,7 @@ for root, dirs, files in os.walk(folder_path):
 
 length = (len(next(os.walk(folder_path))[1]))
 
+# extract tickers from scraped mass CSVs to generate individual stock CSVs
 for unique_path in file_list[length:]:
 
     path = unique_path.replace("unique", "")
@@ -35,10 +36,6 @@ for unique_path in file_list[length:]:
 
                 ticker = row['Ticker']
 
-                print(f"Writing Ticker {ticker} to {unique_path}")
-
-                only_ticker = df[df['Ticker'] == ticker]
-
                 filepath = os.path.join(unique_path, f"{ticker}.csv")
 
                 stock = finviz.get_stock(ticker)
@@ -53,6 +50,9 @@ for unique_path in file_list[length:]:
                 except Exception as e:
                     print(e)
 
+                print(f"Writing Ticker {ticker} to {unique_path}")
+
+                # appends new stock data to CSV if it exists, else create CSV
                 with open(filepath, 'a+') as f:
 
                     if os.stat(filepath).st_size != 0:

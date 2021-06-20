@@ -38,9 +38,6 @@ for x in file_list[length:]:
     print(f"The common stocks in {individual_folder} and {being_compared} are\n{compare & full_filepath}")
 
     try:
-        print(f"\n{being_compared} contains {percentage_similarity}% of the stocks in {individual_folder}")
+        print(f"\n{being_compared} contains {percentage_similarity}% of the stocks in {individual_folder}\n")
     except Exception as err:
         print(err)
-
-    print("\n")
-
