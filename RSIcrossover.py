@@ -6,6 +6,7 @@ import datetime
 import finviz
 import ctypes
 import functools
+import os.path
 
 MessageBox = ctypes.windll.user32.MessageBoxW
 
