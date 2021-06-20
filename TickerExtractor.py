@@ -52,8 +52,6 @@ for unique_path in file_list[length:]:
 
                 print(f"Writing Ticker {ticker} to {unique_path}")
 
-                ticker_df = pd.DataFrame()
-
                 # appends new stock data to CSV if it exists, else create CSV
                 if os.stat(filepath).st_size != 0:
                     ticker_df = pd.read_csv(filepath, encoding='latin-1', error_bad_lines=False)
