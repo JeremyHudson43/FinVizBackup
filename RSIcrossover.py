@@ -71,18 +71,15 @@ def check_for_breakout():
                     f.writelines(file)
                     f.close()
 
-                # add stock with RSI now above 30 to unique folder
-                with open(filepath, 'a+') as f:
+                # appends new stock data to CSV if it exists, else create CSV
+                if os.stat(filepath).st_size != 0:
+                    ticker_df = pd.read_csv(filepath, encoding='latin-1', error_bad_lines=False)
+                    ticker_df = ticker_df.append(stock, ignore_index=True)
+                else:
+                    ticker_df = pd.DataFrame(stock, index=[0])
 
-                    if os.stat(filepath).st_size != 0:
-                        ticker_df = pd.read_csv(filepath, encoding='latin-1')
-                        ticker_df = ticker_df.append(stock, ignore_index=True)
-                    else:
-                        ticker_df = pd.DataFrame(stock, index=[0])
-
-                    ticker_df = ticker_df.drop_duplicates(keep=False)
-
-                    ticker_df.to_csv(f, mode='a', header=f.tell() == 0, index=False)
+                ticker_df = ticker_df.drop_duplicates(subset=['Date'])
+                ticker_df.to_csv(filepath, index=False, mode='w+')
 
         except Exception as err:
             print(err)
