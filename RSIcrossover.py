@@ -1,15 +1,11 @@
-# Find stocks that have between 24 and 28 RSI for last business day, add to text file
 import pandas as pd
 import glob
 import os
-# BDay is business day, not birthday...
 from pandas.tseries.offsets import BDay
 import datetime
 import finviz
-import csv
 import ctypes
 import functools
-
 
 MessageBox = ctypes.windll.user32.MessageBoxW
 
@@ -24,31 +20,28 @@ cross_path_folder = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross ab
 df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None,  error_bad_lines=False),
                     glob.glob(folder_path + "/*.csv")))
 
-formattedLBD = str(last_business_day).split('-')
-proper_format = formattedLBD[1] + "/" + formattedLBD[2] + "/" + formattedLBD[0]
+last_business_day = last_business_day.strftime("%m/%d/%Y")
+
 
 df = df[df['RSI (14)'].between(24, 28)]
 
 df['Date'] = pd.to_datetime(df['Date'])
-df = df[df['Date'] == proper_format]
+df = df[df['Date'] == last_business_day]
 
 
-def block_one():
+def add_low_rsi_to_txt_file():
     # add ticker to text file
-    file = open(cross_path, "a+")  # append mode
+    file = open(cross_path, "a+")
 
     for index, row in df.iterrows():
-
         ticker = row['Ticker']
-
-        if ticker.strip() not in file.readlines():
-            file.write(ticker.strip() + '\n')
+        file.write(ticker.strip() + '\n')
 
     file.close()
 
 
-def block_two():
-    file = open(cross_path, "r").readlines()  # append mode
+def check_for_breakout():
+    file = open(cross_path, "r").readlines()
 
     for line in file:
         try:
@@ -61,10 +54,10 @@ def block_two():
 
             try:
                 stock['News'] = first_story[0]
-            except:
-                print("error")
+            except Exception as err:
+                print(err)
 
-            path = os.path.join(cross_path_folder, line.strip() + ".csv")
+            filepath = os.path.join(cross_path_folder, line.strip() + ".csv")
 
             argument = str(line.strip() + " is breaking out with an RSI of " + stock['RSI (14)'])
 
@@ -76,26 +69,23 @@ def block_two():
                     f.writelines(file)
                     f.close()
 
-                if os.path.isfile(path):
-                    ticker_df = pd.read_csv(path)
+                with open(filepath, 'a+') as f:
 
-                    if not (ticker_df['Date'].str.contains(str(last_business_day)).any()):
-                        with open(path, 'a') as f:
-                            w = csv.DictWriter(f, stock.keys())
-                            w.writerow(stock)
-                            f.close()
+                    if os.stat(filepath).st_size != 0:
+                        ticker_df = pd.read_csv(filepath, encoding='latin-1')
+                        ticker_df = ticker_df.append(stock, ignore_index=True)
+                    else:
+                        ticker_df = pd.DataFrame(stock, index=[0])
 
-                if not os.path.isfile(path):
-                    with open(path, 'w+') as f:
-                        w = csv.DictWriter(f, stock.keys())
-                        w.writeheader()
-                        w.writerow(stock)
-                        f.close()
-        except:
-            print("error")
+                    ticker_df = ticker_df.drop_duplicates(keep=False)
+
+                    ticker_df.to_csv(f, mode='a', header=f.tell() == 0, index=False)
+
+        except Exception as err:
+            print(err)
 
 
-def block_three():
+def remove_duplicates():
     content = open(cross_path, 'r').readlines()
     content_set = set(content)
     clean_data = open(cross_path, 'w')
@@ -104,6 +94,6 @@ def block_three():
         clean_data.write(line)
 
 
-block_one()
-block_two()
-block_three()
+add_low_rsi_to_txt_file()
+check_for_breakout()
+remove_duplicates()
