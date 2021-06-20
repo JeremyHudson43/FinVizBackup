@@ -17,7 +17,6 @@ def small_mc_rel_vol():
 
     csv_path = f"small cap rel vol/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -36,7 +35,6 @@ def bankruptcy_squeeze_candidates():
 
     csv_path = f"bankruptcy squeeze candidates/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -46,7 +44,6 @@ def bounce_at_moving_average():
 
     csv_path = f"bounce at moving average/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -56,7 +53,6 @@ def breaking_out():
 
     csv_path = f"breaking out/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -66,7 +62,6 @@ def buy_and_hold_value():
 
     csv_path = f"buy and hold value/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -76,7 +71,6 @@ def canslim():
 
     csv_path = f"canslim/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -88,7 +82,6 @@ def consistent_growth_bullish_trend():
 
     csv_path = f"consistent growth bullish trend/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -98,7 +91,6 @@ def earnings_gap_up():
 
     csv_path = f"earnings gap up/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -108,7 +100,6 @@ def high_earnings_growth():
 
     csv_path = f"high earnings growth/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -119,7 +110,6 @@ def high_relative_volume():
 
     csv_path = f"high relative volume/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -129,7 +119,6 @@ def high_sales_growth():
 
     csv_path = f"high sales growth/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -139,7 +128,6 @@ def low_pe_value():
 
     csv_path = f"low pe value/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -149,7 +137,6 @@ def new_highs():
 
     csv_path = f"new highs/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -159,7 +146,6 @@ def oversold_reversal():
 
     csv_path = f"oversold reversal/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -169,7 +155,6 @@ def oversold_upcoming_earnings():
 
     csv_path = f"oversold upcoming earnings/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -179,7 +164,6 @@ def potential_uptrend_from_lows():
 
     csv_path = f"potential uptrend from lows/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -189,7 +173,6 @@ def short_squeeze():
 
     csv_path = f"short squeeze/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -199,7 +182,6 @@ def shorted_stocks():
 
     csv_path = f"shorted stocks/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 def sma_crossover():
@@ -208,7 +190,6 @@ def sma_crossover():
 
     csv_path = f"sma crossover/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -218,7 +199,6 @@ def undervalued_dividend_growth():
 
     csv_path = f"undervalued dividend growth/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -326,7 +306,6 @@ def all_stocks():
 
     csv_path = f"all stocks/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -336,7 +315,6 @@ def five_times_rel_vol():
 
     csv_path = f"5x rel vol/{last_business_day}.csv"
 
-    # Export the screener results to .csv
     stock_list.to_csv(os.path.join(folder_path, csv_path))
 
 
@@ -539,4 +517,3 @@ try:
     time.sleep(15)
 except Exception as e:
     print("undervalued dividend growth: " + str(e))
-
