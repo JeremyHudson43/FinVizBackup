@@ -276,7 +276,6 @@ def earnings_high_eps():
 
 
 def top_gainers_averages():
-    # small market cap stocks with few shares outstanding
     filters = ['fa_epsyoy_neg', 'sh_price_u50', 'ta_perf_52w300o']
     stock_list = Screener(filters=filters)
 
@@ -288,7 +287,6 @@ def top_gainers_averages():
 
 
 def undervalued_two():
-    # small market cap stocks with few shares outstanding
     filters = ['fa_div_pos','fa_pb_low','fa_pe_low','fa_peg_low']
     stock_list = Screener(filters=filters)
 
