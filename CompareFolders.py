@@ -44,8 +44,3 @@ for x in file_list[length:]:
 
     print("\n")
 
-
-
-
-
-
