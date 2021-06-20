@@ -1,59 +1,78 @@
 import pandas as pd
+import glob
 import os
-import finviz
-import datetime
 from pandas.tseries.offsets import BDay
+import datetime
+import finviz
+import ctypes
+import functools
 
-# scan through all folders
-folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
-
-file_list = []
+MessageBox = ctypes.windll.user32.MessageBoxW
 
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
 
-for root, dirs, files in os.walk(folder_path):
-    for name in dirs:
-        path = os.path.join(root, name)
-        file_list.append(path)
+# loop through low RSI unique folder and add all matching results for previous business day to text file list
+folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\low rsi\\unique"
+cross_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross above 30 RSI\\stocks below RSI 30.txt"
+cross_path_folder = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\cross above 30 RSI\\unique"
 
-length = (len(next(os.walk(folder_path))[1]))
+df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None,  error_bad_lines=False),
+                    glob.glob(folder_path + "/*.csv")))
 
-# extract tickers from scraped mass CSVs to generate individual stock CSVs
-for unique_path in file_list[length:]:
+last_business_day = last_business_day.strftime("%m/%d/%Y")
 
-    path = unique_path.replace("unique", "")
+df = df[df['RSI (14)'].between(24, 28)]
 
-    csv_path = os.path.join(path, f"{last_business_day}.csv")
+df['Date'] = pd.to_datetime(df['Date'])
+df = df[df['Date'] == last_business_day]
 
-    if os.path.isfile(csv_path):
 
-        df = pd.read_csv(csv_path)
+def add_low_rsi_to_txt_file():
+    # add ticker to text file
+    file = open(cross_path, "a+")
 
-        for index, row in df.iterrows():
+    for index, row in df.iterrows():
+        ticker = row['Ticker']
+        file.write(ticker.strip() + '\n')
+
+    file.close()
+
+
+def check_for_breakout():
+    file = open(cross_path, "r").readlines()
+
+    for line in file:
+        try:
+            stock = finviz.get_stock(line.strip())
+
+            first_story = [x[0] for x in finviz.get_news(line.strip())]
+
+            stock['Date'] = str(last_business_day)
+            stock['Ticker'] = line.strip()
 
             try:
+                stock['News'] = first_story[0]
+            except Exception as err:
+                print(err)
 
-                ticker = row['Ticker']
+            stock_rsi = stock['RSI (14)']
 
-                filepath = os.path.join(unique_path, f"{ticker}.csv")
+            filepath = os.path.join(cross_path_folder, f'{line.strip()}.csv')
 
-                stock = finviz.get_stock(ticker)
+            argument = f'{line.strip()} is breaking out with an RSI of {stock_rsi}'
 
-                first_story = [x[0] for x in finviz.get_news(ticker)]
+            # if RSI above 30, send notification and remove from text file
+            if float(stock_rsi) > 30:
+                MessageBox(None, argument, 'RSI Alert', 0)
+                file.remove(line)
 
-                stock['Date'] = str(last_business_day)
-                stock['Ticker'] = ticker
-
-                try:
-                    stock['News'] = first_story[0]
-                except Exception as e:
-                    print(e)
-
-                print(f"Writing Ticker {ticker} to {unique_path}")
+                with open(cross_path, 'w') as f:
+                    f.writelines(file)
+                    f.close()
 
                 # appends new stock data to CSV if it exists, else create CSV
-                if os.stat(filepath).st_size != 0:
+                if os.path.isfile(filepath):
                     ticker_df = pd.read_csv(filepath, encoding='latin-1', error_bad_lines=False)
                     ticker_df = ticker_df.append(stock, ignore_index=True)
                 else:
@@ -62,5 +81,19 @@ for unique_path in file_list[length:]:
                 ticker_df = ticker_df.drop_duplicates(subset=['Date'])
                 ticker_df.to_csv(filepath, index=False, mode='w+')
 
-            except Exception as e:
-                print(e)
+        except Exception as err:
+            print(err)
+
+
+def remove_duplicates():
+    content = open(cross_path, 'r').readlines()
+    content_set = set(content)
+    clean_data = open(cross_path, 'w')
+
+    for line in content_set:
+        clean_data.write(line)
+
+
+add_low_rsi_to_txt_file()
+check_for_breakout()
+remove_duplicates()
