@@ -61,17 +61,35 @@ for (dirpath, dirnames, filenames) in os.walk(folder_path):
 
 
 def number_of_occurences(stock):
-    count = 0
-    for dirpath, dirnames, filenames in os.walk(folder_path):
-        for filename in [f for f in filenames if f.startswith(stock)]:
-            count +=1
+    try:
+        count = 0
+        stock_list = []
+        for dirpath, dirnames, filenames in os.walk(folder_path):
+            for filename in [f for f in filenames if f.startswith(stock)]:
+                count +=1
+
+                if len(str(stock)) < 9 and count > 8:
+                    stock_list.append(count)
+        if len(str(stock)) < 9 and count > 8:
             file = open("multiple.txt", "a")
-            if len(str(stock)) < 9:
-               file.write(str(stock) + " ")
-               file.write(" " + str(count))
-               file.write("\n")
-               print(stock, count)
+            file.write(str(stock) + " ")
+            file.write(" " + str(max(stock_list)))
+            file.write("\n")
+            print(stock, count)
+            file.close()
+
+    except Exception as err:
+        print()
+
+def multiple():
+    for x in listOfFiles:
+        number_of_occurences(x.split("\\")[-1])
 
 
-for x in listOfFiles:
-    number_of_occurences(x.split("\\")[-1])
+multiple()
+content = open("multiple.txt", 'r').readlines()
+content_set = set(content)
+clean_data = open("multiple.txt", 'w')
+
+for line in content_set:
+    clean_data.write(line)
