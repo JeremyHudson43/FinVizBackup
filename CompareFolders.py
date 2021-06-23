@@ -61,14 +61,16 @@ for (dirpath, dirnames, filenames) in os.walk(folder_path):
 
 
 def number_of_occurences(stock):
-    print(stock)
     count = 0
     for dirpath, dirnames, filenames in os.walk(folder_path):
         for filename in [f for f in filenames if f.startswith(stock)]:
             count +=1
-            if count > 10:
-               break
-            print(os.path.join(dirpath, filename), count)
+            file = open("multiple.txt", "a")
+            if len(str(stock)) < 9:
+               file.write(str(stock) + " ")
+               file.write(" " + str(count))
+               file.write("\n")
+               print(stock, count)
 
 
 for x in listOfFiles:
