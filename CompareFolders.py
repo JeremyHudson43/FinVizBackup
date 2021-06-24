@@ -69,12 +69,13 @@ def number_of_occurences(stock):
             for filename in [f for f in filenames if f.startswith(stock)]:
 
                 pattern = str(os.path.join(dirpath,filename)).split("\\")[6]
-                trends.append(pattern)
-                count +=1
+                if pattern not in "all stocks":
+                    trends.append(pattern)
+                    count +=1
 
-                if len(str(stock)) < 9 and count > 8:
+                if len(str(stock)) < 9 and count > 2:
                     stock_list.append(count)
-        if len(str(stock)) < 9 and count > 8:
+        if len(str(stock)) < 9 and count > 2:
             trend_str = ""
             file = open("multiple.txt", "a")
             file.write(str(stock).replace(".csv", "") + " ")
@@ -95,4 +96,18 @@ def multiple():
     for x in listOfFiles:
         number_of_occurences(x.split("\\")[-1])
 
+
+def cleanup():
+    content = open('multiple.txt', 'r')
+    sorted_content = set(content.readlines())
+    content.close()
+
+    fp = open('multiple.txt', 'w+')
+
+    for line in sorted(sorted_content, key=lambda line: int(line.split()[1])):
+        fp.write(line)
+
+    fp.close()
+
 multiple()
+cleanup()
