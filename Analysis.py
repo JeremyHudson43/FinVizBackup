@@ -154,7 +154,7 @@ def compare_prices():
                     data = {'Ticker': tickers[y],
                             'Start Date': starting_data["Adj Close"][starting_price],
                             '1 Week': weekly_data["Adj Close"][weekly],
-                            '2 weeks': biweekly_data["Adj Close"][biweekly],
+                            '2 Weeks': biweekly_data["Adj Close"][biweekly],
                             '1 Month': monthly_data["Adj Close"][monthly],
                             "2 Months": two_month_data["Adj Close"][two_months]
                            }
@@ -166,7 +166,7 @@ def compare_prices():
                     print(err)
 
             final_df['W_Change'] = percent(final_df['Start Date'].mean(), final_df["1 Week"].mean())
-            final_df['2W_Change'] = percent(final_df['Start Date'].mean(), final_df["2 Weeeks"].mean())
+            final_df['2W_Change'] = percent(final_df['Start Date'].mean(), final_df["2 Weeks"].mean())
             final_df['M_Change'] = percent(final_df['Start Date'].mean(), final_df["1 Month"].mean())
             final_df['2M_Change'] = percent(final_df['Start Date'].mean(), final_df["2 Months"].mean())
 
