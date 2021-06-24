@@ -165,10 +165,10 @@ def compare_prices():
                 except Exception as err:
                     print(err)
 
-            final_df['W_Change'] = percent(final_df['Starting'].mean(), final_df["Weekly"].mean())
-            final_df['2W_Change'] = percent(final_df['Starting'].mean(), final_df["Biweekly"].mean())
-            final_df['M_Change'] = percent(final_df['Starting'].mean(), final_df["Monthly"].mean())
-            final_df['2M_Change'] = percent(final_df['Starting'].mean(), final_df["2 Months"].mean())
+            final_df['W_Change'] = percent(final_df['Start Date'].mean(), final_df["1 Week"].mean())
+            final_df['2W_Change'] = percent(final_df['Start Date'].mean(), final_df["2 Weeeks"].mean())
+            final_df['M_Change'] = percent(final_df['Start Date'].mean(), final_df["1 Month"].mean())
+            final_df['2M_Change'] = percent(final_df['Start Date'].mean(), final_df["2 Months"].mean())
 
             folder_name = x.split("\\")[6]
 
