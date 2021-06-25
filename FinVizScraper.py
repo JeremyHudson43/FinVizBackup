@@ -351,7 +351,7 @@ def cheap_penny_stocks():
 
 
 def forte_penny_stocks():
-    filters = ['sh_avgvol_o500', 'sh_price_u4','ta_changeopen_u','ta_sma20_pa','ta_sma200_pa,ta_sma50', 'sh_short_o5']
+    filters = ['sh_avgvol_o500', 'sh_price_u4','ta_changeopen_u','ta_sma20_pa','ta_sma200_pa','ta_sma50_pa', 'sh_short_o5']
     stock_list = Screener(filters=filters)
 
     csv_path = f"forte penny stocks/{last_business_day}.csv"
