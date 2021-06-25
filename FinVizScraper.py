@@ -274,16 +274,6 @@ def earnings_high_eps():
     my_df.to_csv(path, index=False)
 
 
-def top_gainers_averages():
-    filters = ['fa_epsyoy_neg', 'sh_price_u50', 'ta_perf_52w300o']
-    stock_list = Screener(filters=filters)
-
-    csv_path = f"top gainers averages/{last_business_day}.csv"
-
-    path = os.path.join(folder_path, csv_path)
-
-    stock_list.to_csv(path)
-
 
 def undervalued_two():
     # small market cap stocks with few shares outstanding
@@ -327,12 +317,81 @@ def rel_vol_pattern():
     my_df.to_csv(os.path.join(folder_path, csv_path), index=False)
 
 
+def top_gainers_averages():
+    filters = ['fa_epsyoy_neg', 'sh_avgvol_o500', 'ta_perf_52w200o']
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"top gainers averages/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def top_gainers_averages_two():
+    filters = ['ta_perf_52w200o']
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"top gainers averages two/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def cheap_penny_stocks():
+    filters = ['sh_price_u1']
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"cheap penny stocks/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def forte_penny_stocks():
+    filters = ['sh_avgvol_o500', 'sh_price_u4','ta_changeopen_u','ta_sma20_pa','ta_sma200_pa,ta_sma50', 'sh_short_o5']
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"forte penny stocks/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+try:
+    forte_penny_stocks()
+    time.sleep(15)
+except Exception as e:
+    print("forte penny stocks: " + str(e))
+
+
+try:
+    cheap_penny_stocks()
+    time.sleep(15)
+except Exception as e:
+    print("cheap penny stocks: " + str(e))
+
+
+try:
+    top_gainers_averages_two()
+    time.sleep(15)
+except Exception as e:
+    print("top gainers averages two: " + str(e))
+
+try:
+    analysts_buy()
+    time.sleep(15)
+except Exception as e:
+    print("analysts buy: " + str(e))
+
 try:
     bounce_at_moving_average()
     time.sleep(15)
 except Exception as e:
     print("bounce at moving average: " + str(e))
-
 
 try:
     low_rsi()
@@ -399,13 +458,6 @@ try:
     time.sleep(15)
 except Exception as e:
     print("forte capital: " + str(e))
-
-
-try:
-    analysts_buy()
-    time.sleep(15)
-except Exception as e:
-    print("analysts buy: " + str(e))
 
 
 try:
