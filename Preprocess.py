@@ -71,3 +71,6 @@ def clean_data(df, folder):
     df = df.mean(axis=0)
 
     df.to_csv(os.path.join(storage_path, f"{folder}.csv"))
+
+
+clean_data(df, "all stocks")
