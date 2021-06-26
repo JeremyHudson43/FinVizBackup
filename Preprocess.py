@@ -68,8 +68,6 @@ def clean_data(df, folder):
 
     df[cols_to_check].apply(np.floor)
 
-    df = df.mean(axis=0)
-
     df.to_csv(os.path.join(storage_path, f"{folder}.csv"))
 
 
