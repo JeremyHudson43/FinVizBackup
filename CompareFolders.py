@@ -94,7 +94,7 @@ def number_of_occurences(stock):
             stock_final['Ticker'] = str(stock).replace(".csv", "")
 
             try:
-                stock['News'] = [x[0] for x in finviz.get_news(str(stock).replace(".csv", ""))]
+                stock_final['News'] = [x[0] for x in finviz.get_news(str(stock).replace(".csv", ""))][0]
             except Exception as e:
                 print(e)
 
