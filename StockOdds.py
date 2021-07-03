@@ -55,17 +55,21 @@ for stock_num in range(len(stocks)):
 
             percent_change.append(change)
 
+        change_var = float(percent_change[-1])
+
         percent_change.insert(0, 0)
 
         df['Percent Change'] = percent_change
 
-        change_var = percent_change[-1]
-
         # check dataframe next day after change % and see if lower or higher, increment counter
         # every time you see the specified %, then add up winners and losers to find percent
 
-        winners = 0
-        losers = 0
+        winners_one = 0
+        losers_one = 0
+        losers_five = 0
+        winners_five = 0
+
+        is_winner = False
 
         df_mask = pd.to_numeric(df['Percent Change']) == change_var
 
@@ -74,45 +78,74 @@ for stock_num in range(len(stocks)):
 
         index_list = filtered_df.index.tolist()
         index_list_next_day = [x + 1 for x in index_list]
+        index_list_five_days = [x + 5 for x in index_list]
 
         df_mask_prev_day = df.index.isin(index_list)
         df_mask_next_day = df.index.isin(index_list_next_day)
+        df_mask_five_days = df.index.isin(index_list_five_days)
 
         filtered_df_prev_day = df[df_mask_prev_day]
         filtered_df_next_day = df[df_mask_next_day]
+        filtered_df_five_days = df[df_mask_five_days]
 
         only_close_prev_day = filtered_df_prev_day['Close'].tolist()
         only_close_next_day = filtered_df_next_day['Close'].tolist()
+        only_close_five_days = filtered_df_five_days['Close'].tolist()
 
         for price_num in range(len(only_close_next_day)):
-            if only_close_prev_day[price_num] > only_close_next_day[price_num]:
-                losers+=1
+            if only_close_prev_day[price_num] > only_close_next_day[[price_num]]:
+                losers_one+=1
             else:
-                winners+=1
+                winners_one+=1
 
-        if winners != 0 and losers != 0:
-           if winners > losers:
-              percent = losers / winners
+        if winners_one != 0 and losers_one != 0:
+           if winners_one > losers_one:
+              is_winner = True
+              percent = losers_one / winners_one
            else:
-              percent = winners / losers
+              percent = winners_one / losers_one
+        else:
+            percent = 1
 
         percent = percent * 100
+
         num_of_times = len(filtered_df['Percent Change'])
 
-        if float(change_var) > 0:
-            file = open("results.txt", "a+")
+        file = open("results.txt", "a+")
 
-            output = f"Out of the {num_of_times} of other times {stock} was up " \
-                     f"{change_var}% during a trading day, {percent}% of the time it traded higher " \
-                     f"by the next day's market close."
-         else:
-            output = f"Out of the {num_of_times} of other times {stock} was down " \
-                  f"{change_var}% during a trading day, {percent}% of the time it traded lower " \
-                  f"by the next day's market close."
+        if num_of_times > 0:
 
-        file.write(output + "\n")
+            if float(change_var) > 0 and is_winner:
 
-        # filtered_df.to_csv("C:\\Users\\Frank Einstein\\Desktop\\"  + stock + ".csv")
+                output = f"Out of the {num_of_times} other times {stock} was up " \
+                         f"{change_var}% during a trading day, {percent}% of the time it traded higher " \
+                         f" the next day  after market close."
+
+                file.write(output + "\n")
+
+            elif float(change_var) > 0 and not(is_winner):
+
+                output = f"Out of the {num_of_times} other times {stock} was up " \
+                         f"{change_var}% during a trading day, {percent}% of the time it traded lower " \
+                         f"the next day after market close."
+
+                file.write(output + "\n")
+
+            elif float(change_var) < 0 and not (is_winner):
+                output = f"Out of the {num_of_times} other times {stock} was down " \
+                         f"{change_var}% during a trading day, {percent}% of the time it traded lower " \
+                         f"the next day after market close."
+
+                file.write(output + "\n")
+
+            elif float(change_var) < 0 and (is_winner):
+                output = f"Out of the {num_of_times} other times {stock} was down " \
+                      f"{change_var}% during a trading day, {percent}% of the time it traded higher " \
+                      f"the next day after market close."
+
+                file.write(output + "\n")
+
+        filtered_df.to_csv("C:\\Users\\Frank Einstein\\Desktop\\records\\"  + stock + ".csv")
 
     except Exception as err:
         print(err)
