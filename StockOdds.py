@@ -93,7 +93,7 @@ for stock_num in range(len(stocks)):
         only_close_five_days = filtered_df_five_days['Close'].tolist()
 
         for price_num in range(len(only_close_next_day)):
-            if only_close_prev_day[price_num] > only_close_next_day[[price_num]]:
+            if only_close_prev_day[price_num] > only_close_next_day[price_num]:
                 losers_one+=1
             else:
                 winners_one+=1
