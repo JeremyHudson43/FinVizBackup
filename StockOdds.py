@@ -1,7 +1,4 @@
 # Out of the [NUMBER] of other times [STOCK] was down / up [PERCENT] during a trading day,
-# [PERCENT] of the time it traded higher / lower by the next day's market close.
-
-# Out of the [NUMBER] of other times [STOCK] was down / up [PERCENT] during a trading day,
 # [PERCENT] of the time it traded higher / lower by the market close 5 days later.
 
 import yfinance as yf
@@ -21,7 +18,7 @@ file_list = []
 
 stocks = open("stocks.txt", "r").readlines()
 
-def percent(a, b):
+def percent_func(a, b):
     result = float(b - a) / a * 100.0
 
     return result
@@ -30,13 +27,9 @@ def percent(a, b):
 for stock_num in range(len(stocks)):
 
     percent_change = []
+    percent = 0
 
     try:
-        # in final results dataframe, count how many times that change percentage occurred
-        # From each of these percentages, find if the following day traded higher or lower
-        # Find the percentage of the following day trading higher or lower
-        # Find the percentage of the following 5 days trading higher or lower
-
         stock = stocks[stock_num].strip("\n").replace(".csv", "")
 
         df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\" + str(stock) + ".csv")
@@ -53,16 +46,20 @@ for stock_num in range(len(stocks)):
 
         close_list = df['Close'].tolist()
 
+        for item in close_list:
+            item = "{:.2f}".format(item)
+
         for x in range(len(close_list) - 1):
-            change = percent(close_list[x], close_list[x + 1])
+            change = percent_func(close_list[x], close_list[x + 1])
             change = "{:.1f}".format(change)
+
 
             percent_change.append(change)
 
         percent_change.insert(0, 0)
         df['Percent Change'] = percent_change
 
-        change_var = 19.0
+        change_var = -2.7
 
         # check dataframe next day after change % and see if lower or higher, increment counter
         # every time you see the specified %, then add up winners and losers to find percent
@@ -70,10 +67,12 @@ for stock_num in range(len(stocks)):
         winners = 0
         losers = 0
 
-        df_mask = pd.to_numeric(df['Percent Change']) == 4.0
+        df_mask = pd.to_numeric(df['Percent Change']) == change_var
 
         ### NEXT DAY
         filtered_df = df[df_mask]
+
+        filtered_df.to_csv("BMBL.csv")
 
         index_list = filtered_df.index.tolist()
         index_list_next_day = [x + 1 for x in index_list]
@@ -84,9 +83,6 @@ for stock_num in range(len(stocks)):
         filtered_df_prev_day = df[df_mask_prev_day]
         filtered_df_next_day = df[df_mask_next_day]
 
-        print(filtered_df_next_day.head())
-        print(filtered_df_prev_day.head())
-
         only_close_prev_day = filtered_df_prev_day['Close'].tolist()
         only_close_next_day = filtered_df_next_day['Close'].tolist()
 
@@ -96,11 +92,27 @@ for stock_num in range(len(stocks)):
             else:
                 winners+=1
 
-       #  print(percent(winners, losers))
+        if winners != 0 and losers != 0:
+           if winners > losers:
+              percent = losers / winners
+           else:
+              percent = winners / losers
 
-        # print(len(filtered_df['Percent Change']))
+        percent = percent * 100
+        num_of_times = len(filtered_df['Percent Change'])
 
-        filtered_df.to_csv("C:\\Users\\Frank Einstein\\Desktop\\AAPL.csv")
+        print(num_of_times)
+
+        if change_var > 0:
+            print(f"Out of the {num_of_times} of other times {stock} was up "
+                  f"{change_var}% during a trading day, {percent}% of the time it traded higher "
+                  f"by the next day's market close.")
+        else:
+            print(f"Out of the {num_of_times} of other times {stock} was down "
+                  f"{change_var}% during a trading day, {percent}% of the time it traded lower "
+                  f"by the next day's market close.")
+
+        filtered_df.to_csv("C:\\Users\\Frank Einstein\\Desktop\\"  + stock + ".csv")
 
     except Exception as err:
         print(err)
