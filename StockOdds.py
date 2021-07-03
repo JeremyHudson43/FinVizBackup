@@ -21,24 +21,28 @@ file_list = []
 
 stocks = open("stocks.txt", "r").readlines()
 
-for stock in stocks:
+def percent(a, b):
+    result = float(b - a) / a * 100.0
+
+    return result
+
+
+for stock_num in range(len(stocks)):
+
+    percent_change = []
 
     try:
-        # append latest day to each stock
-        # calculate and append stock change percentage to a new column
         # input a change percentage
         # in final results dataframe, count how many times that change percentage occurred
         # From each of these percentages, find if the following day traded higher or lower
         # Find the percentage of the following day trading higher or lower
         # Find the percentage of the following 5 days trading higher or lower
 
-        stock = stock.strip("\n").replace(".csv", "")
+        stock = stocks[stock_num].strip("\n").replace(".csv", "")
 
-        # df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\" + str(stock) + ".csv")
+        df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\" + str(stock) + ".csv")
 
-        df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\AAPL.csv")
-
-        stock_to_save = yf.Ticker("AAPL")
+        stock_to_save = yf.Ticker(stock)
 
         # get historical market data
         hist = stock_to_save.history(period="1d")
@@ -48,17 +52,18 @@ for stock in stocks:
 
         df = df.append(hist, ignore_index=True)
 
-        df.to_csv("C:\\Users\\Frank Einstein\\Desktop\\AAPL.csv")
+        close_list = df['Close'].tolist()
+
+        for x in range(len(close_list) - 1):
+            percent_change.append(percent(close_list[x], close_list[x + 1]))
+
+        percent_change.insert(0, 0)
+        df['Percent Change'] = percent_change
+
+        df.to_csv("C:\\Users\\Frank Einstein\\Desktop\\" + str(stock) + ".csv")
 
     except Exception as err:
         print(err)
-
-
-def percent(a, b):
-    result = float(((b - a) * 100) / a)
-
-    return result
-
 
 
 
