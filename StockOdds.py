@@ -23,12 +23,6 @@ def percent_func(a, b):
 
     return result
 
-def ratio(a, b):
-    a = float(a)
-    b = float(b)
-    if b == 0:
-        return a
-    return ratio(b, a % b)
 
 for stock_num in range(len(stocks)):
 
@@ -40,15 +34,17 @@ for stock_num in range(len(stocks)):
 
         df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\" + str(stock) + ".csv")
 
-        stock_to_save = yf.Ticker(stock)
+        # stock_to_save = yf.Ticker(stock)
 
         # get historical market data
-        hist = stock_to_save.history(period="1d")
+        # hist = stock_to_save.history(period="1d")
 
-        hist = hist.iloc[0].to_dict()
-        hist['Date'] = last_business_day
+        # hist = hist.iloc[0].to_dict()
+        # hist['Date'] = last_business_day
 
         # df = df.append(hist, ignore_index=True)
+        # df = df.drop_duplicates(subset=['Date'])
+        # df.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\" + str(stock) + ".csv")
 
         close_list = df['Close'].tolist()
 
@@ -74,6 +70,8 @@ for stock_num in range(len(stocks)):
         losers_one = 0
         losers_five = 0
         winners_five = 0
+
+        difference = []
 
         is_winner = False
 
@@ -101,10 +99,18 @@ for stock_num in range(len(stocks)):
         only_close_five_days = filtered_df_five_days['Close'].tolist()
 
         for price_num in range(len(only_close_prev_day)):
+            difference.append(percent_func(only_close_prev_day[price_num], only_close_five_days[price_num]))
             if only_close_prev_day[price_num] > only_close_five_days[price_num]:
                 losers_one+=1
             else:
                 winners_one+=1
+
+        filtered_df_prev_day['Difference'] = difference
+
+        if sum(difference) / len(difference) > 0:
+            filtered_df_prev_day['Mean Gain'] = filtered_df_prev_day['Difference'].mean()
+        else:
+            filtered_df_prev_day['Mean Loss'] = filtered_df_prev_day['Difference'].mean()
 
         if winners_one != 0 and losers_one != 0:
            if winners_one > losers_one:
@@ -122,13 +128,16 @@ for stock_num in range(len(stocks)):
 
         file = open("results.txt", "a+")
 
-        if num_of_times > 0:
+        average = "{:.1f}".format(sum(difference) / len(difference))
+
+        if num_of_times > 10 and is_winner and (winners_one > losers_one * 3) and float(average) > 2:
 
             if float(change_var) > 0:
 
                 output = f"Out of the {num_of_times} other times {stock} was up " \
                          f"{change_var}% during a trading day, there were {winners_one} winner(s) and " \
-                         f"{losers_one} loser(s) by the end of the next 5 trading days"
+                         f"{losers_one} loser(s) by the end of \nthe next 5 trading days for a mean gain of " \
+                         f"{average}%\n"
 
                 file.write(output.replace("-", "") + "\n")
 
@@ -136,12 +145,15 @@ for stock_num in range(len(stocks)):
 
                 output = f"Out of the {num_of_times} other times {stock} was down " \
                          f"{change_var}% during a trading day, there were {winners_one} winner(s) and " \
-                         f"{losers_one} loser(s) by the end of the next 5 trading days"
+                         f"{losers_one} loser(s) by the end of \nthe next 5 trading days for a mean gain of " \
+                         f"{average}%\n"
 
-                file.write(output.replace("-", "")  + "\n")
+                file.write(output.replace("-", "") + "\n")
 
-            filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\records\\" + stock + ".csv")
-            filtered_df_five_days.to_csv("C:\\Users\\Frank Einstein\\Desktop\\records\\" + stock + ".csv", mode="a")
+            filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability\\"
+                                        + stock + ".csv")
+            filtered_df_five_days.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability\\" +
+                                         stock + ".csv", mode="a")
 
     except Exception as err:
         print(err)
