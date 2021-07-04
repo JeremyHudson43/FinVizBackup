@@ -194,7 +194,7 @@ for stock_num in range(len(stocks)):
 
                 filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\"
                                             + stock + ".csv")
-                filtered_df_next_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" +
+                filtered_df_five_days.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" +
                                             stock + ".csv", mode="a")
                 file.close()
 
