@@ -23,6 +23,12 @@ def percent_func(a, b):
 
     return result
 
+def ratio(a, b):
+    a = float(a)
+    b = float(b)
+    if b == 0:
+        return a
+    return ratio(b, a % b)
 
 for stock_num in range(len(stocks)):
 
@@ -88,17 +94,13 @@ for stock_num in range(len(stocks)):
         filtered_df_next_day = df[df_mask_next_day]
         filtered_df_five_days = df[df_mask_five_days]
 
-        # print(filtered_df_prev_day['Close'])
-        print(filtered_df_prev_day['Date'])
-
-       #  print(filtered_df_prev_day['Close'])
-        print(filtered_df_five_days['Date'])
+        filtered_df_prev_day = filtered_df_prev_day[:-1]
 
         only_close_prev_day = filtered_df_prev_day['Close'].tolist()
         only_close_next_day = filtered_df_next_day['Close'].tolist()
         only_close_five_days = filtered_df_five_days['Close'].tolist()
 
-        for price_num in range(len(only_close_five_days)):
+        for price_num in range(len(only_close_prev_day)):
             if only_close_prev_day[price_num] > only_close_five_days[price_num]:
                 losers_one+=1
             else:
@@ -111,6 +113,8 @@ for stock_num in range(len(stocks)):
            else:
               percent = winners_one / losers_one
 
+        print(stock, winners_one, losers_one)
+
         percent = percent * 100
         percent = "{:.1f}".format(percent)
 
@@ -120,35 +124,21 @@ for stock_num in range(len(stocks)):
 
         if num_of_times > 0:
 
-            if float(change_var) > 0 and is_winner:
+            if float(change_var) > 0:
 
                 output = f"Out of the {num_of_times} other times {stock} was up " \
-                         f"{change_var}% during a trading day, {percent}% of the time it traded higher " \
-                         f"within 5 trading days after market close."
+                         f"{change_var}% during a trading day, there was {winners_one} winner(s) and" \
+                         f"{losers_one} loser(s)"
 
                 file.write(output.replace("-", "") + "\n")
 
-            elif float(change_var) > 0 and not(is_winner):
+            elif float(change_var) < 0:
 
                 output = f"Out of the {num_of_times} other times {stock} was up " \
-                         f"{change_var}% during a trading day, {percent}% of the time it traded lower " \
-                         f"within 5 trading days after market close."
+                         f"{change_var}% during a trading day, there was {winners_one} winner(s) and" \
+                         f"{losers_one} loser(s)"
 
                 file.write(output.replace("-", "")  + "\n")
-
-            elif float(change_var) < 0 and not (is_winner):
-                output = f"Out of the {num_of_times} other times {stock} was down " \
-                         f"{change_var}% during a trading day, {percent}% of the time it traded lower " \
-                         f"within 5 trading days after market close."
-
-                file.write(output.replace("-", "") + "\n")
-
-            elif float(change_var) < 0 and (is_winner):
-                output = f"Out of the {num_of_times} other times {stock} was down " \
-                      f"{change_var}% during a trading day, {percent}% of the time it traded higher " \
-                      f"within 5 trading after market close."
-
-                file.write(output.replace("-", "") + "\n")
 
             filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\records\\" + stock + ".csv")
             filtered_df_five_days.to_csv("C:\\Users\\Frank Einstein\\Desktop\\records\\" + stock + ".csv", mode="a")
