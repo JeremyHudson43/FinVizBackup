@@ -127,16 +127,16 @@ for stock_num in range(len(stocks)):
             if float(change_var) > 0:
 
                 output = f"Out of the {num_of_times} other times {stock} was up " \
-                         f"{change_var}% during a trading day, there was {winners_one} winner(s) and" \
-                         f"{losers_one} loser(s)"
+                         f"{change_var}% during a trading day, there were {winners_one} winner(s) and " \
+                         f"{losers_one} loser(s) by the end of the next 5 trading days"
 
                 file.write(output.replace("-", "") + "\n")
 
             elif float(change_var) < 0:
 
-                output = f"Out of the {num_of_times} other times {stock} was up " \
-                         f"{change_var}% during a trading day, there was {winners_one} winner(s) and" \
-                         f"{losers_one} loser(s)"
+                output = f"Out of the {num_of_times} other times {stock} was down " \
+                         f"{change_var}% during a trading day, there were {winners_one} winner(s) and " \
+                         f"{losers_one} loser(s) by the end of the next 5 trading days"
 
                 file.write(output.replace("-", "")  + "\n")
 
