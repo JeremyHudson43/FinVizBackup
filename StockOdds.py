@@ -6,7 +6,7 @@ import os
 import pandas as pd
 import datetime
 from pandas.tseries.offsets import BDay
-
+import traceback
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
 
@@ -72,6 +72,7 @@ for stock_num in range(len(stocks)):
         winners_five = 0
 
         difference = []
+        difference_five = []
 
         is_winner = False
 
@@ -99,8 +100,8 @@ for stock_num in range(len(stocks)):
         only_close_five_days = filtered_df_five_days['Close'].tolist()
 
         for price_num in range(len(only_close_prev_day)):
-            difference.append(percent_func(only_close_prev_day[price_num], only_close_five_days[price_num]))
-            if only_close_prev_day[price_num] > only_close_five_days[price_num]:
+            difference.append(percent_func(only_close_prev_day[price_num], only_close_next_day[price_num]))
+            if only_close_prev_day[price_num] > only_close_next_day[price_num]:
                 losers_one+=1
             else:
                 winners_one+=1
@@ -112,17 +113,16 @@ for stock_num in range(len(stocks)):
         else:
             filtered_df_prev_day['Mean Loss'] = filtered_df_prev_day['Difference'].mean()
 
-
         if winners_one > losers_one:
             is_winner = True
 
         num_of_times = len(filtered_df['Percent Change'])
 
-        file = open("results.txt", "a+")
+        file = open("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\results_one_day.txt", "a+")
 
         average = "{:.1f}".format(sum(difference) / len(difference))
 
-        if num_of_times > 10 and is_winner and (winners_one > losers_one * 3) and float(average) > 2:
+        if num_of_times > 5 and is_winner and (winners_one > losers_one * 3) and float(average) > 2:
 
             if float(change_var) > 0:
 
@@ -142,10 +142,61 @@ for stock_num in range(len(stocks)):
 
                 file.write(output.replace("-", "") + "\n")
 
-            filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability\\"
+            filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\"
                                         + stock + ".csv")
-            filtered_df_five_days.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability\\" +
+            filtered_df_next_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\" +
                                          stock + ".csv", mode="a")
 
+            file.close()
+
+            for price_num in range(len(only_close_prev_day)):
+                difference_five.append(percent_func(only_close_prev_day[price_num], only_close_five_days[price_num]))
+                if only_close_prev_day[price_num] > only_close_five_days[price_num]:
+                    losers_five += 1
+                else:
+                    winners_five += 1
+
+            filtered_df_prev_day['Difference'] = difference_five
+
+            if sum(difference) / len(difference) > 0:
+                filtered_df_prev_day['Mean Gain'] = filtered_df_prev_day['Difference'].mean()
+            else:
+                filtered_df_prev_day['Mean Loss'] = filtered_df_prev_day['Difference'].mean()
+
+            if winners_five > losers_five:
+                is_winner = True
+
+            num_of_times = len(filtered_df['Percent Change'])
+
+            file = open("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\results_five_days.txt", "a+")
+
+            average = "{:.1f}".format(sum(difference) / len(difference))
+
+            if num_of_times > 5 and is_winner and (winners_five > losers_five * 3) and float(average) > 2:
+
+                if float(change_var) > 0:
+
+                    output = f"Out of the {num_of_times} other times {stock} was up " \
+                             f"{change_var}% during a trading day, there were {winners_five} winner(s) and " \
+                             f"{losers_five} loser(s) by the end of \nthe next 5 trading days for a mean gain of " \
+                             f"{average}%\n"
+
+                    file.write(output.replace("-", "") + "\n")
+
+                elif float(change_var) < 0:
+
+                    output = f"Out of the {num_of_times} other times {stock} was down " \
+                             f"{change_var}% during a trading day, there were {winners_five} winner(s) and " \
+                             f"{losers_five} loser(s) by the end of \nthe next 5 trading days for a mean gain of " \
+                             f"{average}%\n"
+
+                    file.write(output.replace("-", "") + "\n")
+
+                filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\"
+                                            + stock + ".csv")
+                filtered_df_next_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" +
+                                            stock + ".csv", mode="a")
+                file.close()
+
     except Exception as err:
-        print(err)
+        print(traceback.format_exc())
