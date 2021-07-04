@@ -14,6 +14,9 @@ folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records archive\\stock 
 
 storage_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records archive\\stock records\\combined CSVs\\"
 
+os.mkdir("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\" + str(last_business_day))
+os.mkdir("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" + str(last_business_day))
+
 file_list = []
 
 stocks = open("stocks.txt", "r").readlines()
@@ -118,7 +121,7 @@ for stock_num in range(len(stocks)):
 
         num_of_times = len(filtered_df['Percent Change'])
 
-        file = open("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\results_one_day.txt", "a+")
+        file = open("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\" + str(last_business_day) + "\\results_one_day.txt", "a+")
 
         average = "{:.1f}".format(sum(difference) / len(difference))
 
@@ -142,9 +145,9 @@ for stock_num in range(len(stocks)):
 
                 file.write(output.replace("-", "") + "\n")
 
-            filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\"
+            filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\" + str(last_business_day) + "\\"
                                         + stock + ".csv")
-            filtered_df_next_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\" +
+            filtered_df_next_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\" + str(last_business_day) + "\\" +
                                          stock + ".csv", mode="a")
 
             file.close()
@@ -168,7 +171,7 @@ for stock_num in range(len(stocks)):
 
         num_of_times = len(filtered_df['Percent Change'])
 
-        file = open("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\results_five_days.txt", "a+")
+        file = open("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" + str(last_business_day) + "\\results_five_days.txt", "a+")
 
         average = "{:.1f}".format(sum(difference_five) / len(difference_five))
 
@@ -192,9 +195,9 @@ for stock_num in range(len(stocks)):
 
                 file.write(output.replace("-", "") + "\n")
 
-            filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\"
+            filtered_df_prev_day.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" + str(last_business_day) + "\\"
                                         + stock + ".csv")
-            filtered_df_five_days.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" +
+            filtered_df_five_days.to_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" + str(last_business_day) + "\\" +
                                         stock + ".csv", mode="a")
             file.close()
 
