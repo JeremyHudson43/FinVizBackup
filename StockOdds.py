@@ -112,17 +112,9 @@ for stock_num in range(len(stocks)):
         else:
             filtered_df_prev_day['Mean Loss'] = filtered_df_prev_day['Difference'].mean()
 
-        if winners_one != 0 and losers_one != 0:
-           if winners_one > losers_one:
-              is_winner = True
-              percent = losers_one / winners_one
-           else:
-              percent = winners_one / losers_one
 
-        print(stock, winners_one, losers_one)
-
-        percent = percent * 100
-        percent = "{:.1f}".format(percent)
+        if winners_one > losers_one:
+            is_winner = True
 
         num_of_times = len(filtered_df['Percent Change'])
 
