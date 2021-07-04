@@ -128,7 +128,7 @@ for stock_num in range(len(stocks)):
 
                 output = f"Out of the {num_of_times} other times {stock} was up " \
                          f"{change_var}% during a trading day, there were {winners_one} winner(s) and " \
-                         f"{losers_one} loser(s) by the end of \nthe next 5 trading days for a mean gain of " \
+                         f"{losers_one} loser(s) by the end of \nthe next trading day for a mean gain of " \
                          f"{average}%\n"
 
                 file.write(output.replace("-", "") + "\n")
@@ -137,7 +137,7 @@ for stock_num in range(len(stocks)):
 
                 output = f"Out of the {num_of_times} other times {stock} was down " \
                          f"{change_var}% during a trading day, there were {winners_one} winner(s) and " \
-                         f"{losers_one} loser(s) by the end of \nthe next 5 trading days for a mean gain of " \
+                         f"{losers_one} loser(s) by the end of \nthe next trading day for a mean gain of " \
                          f"{average}%\n"
 
                 file.write(output.replace("-", "") + "\n")
