@@ -9,6 +9,7 @@ from datetime import timedelta
 from tqdm import tqdm
 import csv
 import numpy as np
+import datetime
 sns.set()
 tf.compat.v1.random.set_random_seed(1234)
 import traceback
@@ -28,10 +29,11 @@ with open('stocks.csv', newline='') as csvfile:
     for row in spamreader:
         tickerSymbol.append((' '.join(row)))
 
+def days_between(d1, d2):
+    d1 = datetime.datetime.strptime(d1, "%Y-%m-%d")
+    d2 = datetime.datetime.strptime(d2, "%Y-%m-%d")
+    return abs((d2 - d1).days)
 
-# set start and end dates
-startDate = '2011-3-24'
-endDate = '2020-8-23'
 
 for k in range (0, len(tickerSymbol)):
 	try:
@@ -42,7 +44,16 @@ for k in range (0, len(tickerSymbol)):
 		start_date = df['Date'].tolist()[1]
 		end_date = df['Date'].tolist()[-200]
 
-		print(start_date, end_date)
+		if days_between(start_date, end_date) < 3650:
+			test_size = 60
+		elif days_between(start_date, end_date) < 3650 * 2:
+			test_size = 120
+		elif days_between(start_date, end_date) < 3650 * 3:
+			test_size = 180
+		elif days_between(start_date, end_date) < 3650 * 4:
+			test_size = 240
+
+		print(start_date, end_date, test_size)
 
 		print(df.iloc[:, 4:5])
 
@@ -58,7 +69,6 @@ for k in range (0, len(tickerSymbol)):
 		timestamp = 5
 		epoch = 300
 		dropout_rate = 0.8
-		test_size = 90
 		learning_rate = 0.01
 
 		df_train = df_log
