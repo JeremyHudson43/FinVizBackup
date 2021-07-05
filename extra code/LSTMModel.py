@@ -39,10 +39,10 @@ for k in range (0, len(tickerSymbol)):
 
 		df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\" + str(tickerSymbol[k]).strip("\n") + ".csv")
 
-		date_one = df['Date'].tolist()[1]
-		date_two = df['Date'].tolist()[-200]
+		start_date = df['Date'].tolist()[1]
+		end_date = df['Date'].tolist()[-200]
 
-		print(date_one, date_two)
+		print(start_date, end_date)
 
 		print(df.iloc[:, 4:5])
 
@@ -233,7 +233,7 @@ for k in range (0, len(tickerSymbol)):
 
 		plt.xticks([], [])
 
-		plt.xlabel("Trained from " + startDate + " to " + endDate + " predicting " + str(test_size) + " days ahead")
+		plt.xlabel("Trained from " + start_date + " to " + end_date + " predicting " + str(test_size) + " days ahead")
 
 		plt.savefig("C:\\Users\\Frank Einstein\\Desktop\\LSTM July Predictions\\" + tickerSymbol[k])
 	except Exception as err:
