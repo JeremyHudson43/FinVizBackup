@@ -14,8 +14,11 @@ folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records archive\\stock 
 
 storage_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records archive\\stock records\\combined CSVs\\"
 
-os.mkdir("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\" + str(last_business_day))
-os.mkdir("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" + str(last_business_day))
+try:
+    os.mkdir("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability one day\\" + str(last_business_day))
+    os.mkdir("C:\\Users\\Frank Einstein\\Desktop\\stock records\\prior probability five days\\" + str(last_business_day))
+except Exception as err:
+    print(err)
 
 file_list = []
 
@@ -125,7 +128,7 @@ for stock_num in range(len(stocks)):
 
         average = "{:.1f}".format(sum(difference) / len(difference))
 
-        if num_of_times > 5 and is_winner and (winners_one > losers_one * 3) and float(average) > 2:
+        if num_of_times > 10 and is_winner and (winners_one > losers_one * 3) and float(average) > 2:
 
             if float(change_var) > 0:
 
@@ -175,7 +178,7 @@ for stock_num in range(len(stocks)):
 
         average = "{:.1f}".format(sum(difference_five) / len(difference_five))
 
-        if num_of_times > 5 and is_winner and (winners_five > losers_five * 3) and float(average) > 2:
+        if num_of_times > 10 and is_winner and (winners_five > losers_five * 3) and float(average) > 2:
 
             if float(change_var) > 0:
 
