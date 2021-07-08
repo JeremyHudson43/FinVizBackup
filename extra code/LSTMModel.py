@@ -43,7 +43,7 @@ for k in range (0, len(tickerSymbol)):
 
 		df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\" + str(tickerSymbol[k]).strip("\n") + ".csv")
 
-		start_date = df['Date'].tolist()[1200]
+		start_date = df['Date'].tolist()[1500]
 		end_date = df['Date'].tolist()[-200]
 
 		if days_between(start_date, end_date) < 3650:
@@ -59,7 +59,6 @@ for k in range (0, len(tickerSymbol)):
 
 		df = df.loc[mask]
 
-		df.drop(['Unnamed: 0', 'Unnamed: 0.1'], axis=1)
 		df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
 
 		print(df)
