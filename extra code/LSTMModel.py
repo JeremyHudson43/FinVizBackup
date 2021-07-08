@@ -59,12 +59,17 @@ for k in range (0, len(tickerSymbol)):
 
 		df = df.loc[mask]
 
-		print(df.iloc[:, 7:8])
+		df.drop(['Unnamed: 0', 'Unnamed: 0.1'], axis=1)
+		df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+
+		print(df)
+
+		print(df.iloc[:, 4:5])
 
 		print(start_date, end_date, test_size)
 
-		minmax = MinMaxScaler().fit(df.iloc[:, 7:8].astype('float32')) # Close index
-		df_log = minmax.transform(df.iloc[:, 7:8].astype('float32')) # Close index
+		minmax = MinMaxScaler().fit(df.iloc[:, 4:5].astype('float32')) # Close index
+		df_log = minmax.transform(df.iloc[:, 4:5].astype('float32')) # Close index
 		df_log = pd.DataFrame(df_log)
 		df_log.head()
 
