@@ -13,6 +13,8 @@ import datetime
 sns.set()
 tf.compat.v1.random.set_random_seed(1234)
 import traceback
+import numpy as np
+import pandas as pd
 
 import sys
 import warnings
@@ -41,7 +43,7 @@ for k in range (0, len(tickerSymbol)):
 
 		df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\" + str(tickerSymbol[k]).strip("\n") + ".csv")
 
-		start_date = df['Date'].tolist()[1]
+		start_date = df['Date'].tolist()[1200]
 		end_date = df['Date'].tolist()[-200]
 
 		if days_between(start_date, end_date) < 3650:
@@ -53,12 +55,16 @@ for k in range (0, len(tickerSymbol)):
 		elif days_between(start_date, end_date) < 3650 * 4:
 			test_size = 240
 
+		mask = (df['Date'] >= start_date) & (df['Date'] <= end_date)
+
+		df = df.loc[mask]
+
+		print(df.iloc[:, 7:8])
+
 		print(start_date, end_date, test_size)
 
-		print(df.iloc[:, 4:5])
-
-		minmax = MinMaxScaler().fit(df.iloc[:, 4:5].astype('float32')) # Close index
-		df_log = minmax.transform(df.iloc[:, 4:5].astype('float32')) # Close index
+		minmax = MinMaxScaler().fit(df.iloc[:, 7:8].astype('float32')) # Close index
+		df_log = minmax.transform(df.iloc[:, 7:8].astype('float32')) # Close index
 		df_log = pd.DataFrame(df_log)
 		df_log.head()
 
