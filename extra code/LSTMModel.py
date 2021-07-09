@@ -44,8 +44,8 @@ for k in range (0, len(tickerSymbol)):
 		import yfinance as yf
 
 		# set start and end dates
-		start_date = '2020-4-26'
-		end_date = '2020-10-20'
+		start_date = '1998-4-26'
+		end_date = '2020-1-20'
 
 		df = yf.download(tickerSymbol[k], start_date, end_date)
 
@@ -77,7 +77,6 @@ for k in range (0, len(tickerSymbol)):
 		timestamp = 5
 		epoch = 300
 		dropout_rate = 0.8
-		test_size = 60
 		learning_rate = 0.01
 
 		df_train = df_log
