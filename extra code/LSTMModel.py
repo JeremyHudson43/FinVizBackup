@@ -18,6 +18,7 @@ import pandas as pd
 
 import sys
 import warnings
+import os
 
 if not sys.warnoptions:
     warnings.simplefilter('ignore')
@@ -46,10 +47,12 @@ for k in range (0, len(tickerSymbol)):
 		df.to_csv(tickerSymbol[k] + ".csv")
 
 		df = pd.read_csv(tickerSymbol[k] + ".csv")
+		
+		os.remove(tickerSymbol[k] + ".csv")
 
 		print(df)
 
-		start_date = df['Date'].tolist()[1400]
+		start_date = df['Date'].tolist()[-100]
 		end_date = df['Date'].tolist()[-200]
 
 		if days_between(start_date, end_date) < 3650:
