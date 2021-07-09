@@ -41,9 +41,15 @@ for k in range (0, len(tickerSymbol)):
 	try:
 		import yfinance as yf
 
-		df = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock history\\" + str(tickerSymbol[k]).strip("\n") + ".csv")
+		df = yf.download(tickerSymbol[k])
 
-		start_date = df['Date'].tolist()[1500]
+		df.to_csv(tickerSymbol[k] + ".csv")
+
+		df = pd.read_csv(tickerSymbol[k] + ".csv")
+
+		print(df)
+
+		start_date = df['Date'].tolist()[1400]
 		end_date = df['Date'].tolist()[-200]
 
 		if days_between(start_date, end_date) < 3650:
@@ -67,11 +73,10 @@ for k in range (0, len(tickerSymbol)):
 
 		print(start_date, end_date, test_size)
 
-		minmax = MinMaxScaler().fit(df.iloc[:, 4:5].astype('float32')) # Close index
-		df_log = minmax.transform(df.iloc[:, 4:5].astype('float32')) # Close index
+		minmax = MinMaxScaler().fit(df.iloc[:, 4:5].astype('float32'))  # Close index
+		df_log = minmax.transform(df.iloc[:, 4:5].astype('float32'))  # Close index
 		df_log = pd.DataFrame(df_log)
 		df_log.head()
-
 
 		simulation_size = 1
 		num_layers = 1
@@ -79,6 +84,7 @@ for k in range (0, len(tickerSymbol)):
 		timestamp = 5
 		epoch = 300
 		dropout_rate = 0.8
+		test_size = 60
 		learning_rate = 0.01
 
 		df_train = df_log
@@ -221,22 +227,22 @@ for k in range (0, len(tickerSymbol)):
 
 			return deep_future
 
+
 		results = []
 		for i in range(simulation_size):
-			print('simulation %d'%(i + 1))
+			print('simulation %d' % (i + 1))
 			results.append(forecast())
 
 		date_ori = pd.to_datetime(df.iloc[:, 0]).tolist()
 		for i in range(test_size):
-			date_ori.append(date_ori[-1] + timedelta(days = 1))
-
-		date_ori = pd.Series(date_ori).dt.strftime(date_format = '%Y-%m-%d').tolist()
+			date_ori.append(date_ori[-1] + timedelta(days=1))
+		date_ori = pd.Series(date_ori).dt.strftime(date_format='%Y-%m-%d').tolist()
 		date_ori[-5:]
 
 		accepted_results = []
 		for r in results:
 			if (np.array(r[-test_size:]) < np.min(df['Close'])).sum() == 0 and \
-			(np.array(r[-test_size:]) > np.max(df['Close']) * 2).sum() == 0:
+					(np.array(r[-test_size:]) > np.max(df['Close']) * 2).sum() == 0:
 				accepted_results.append(r)
 		len(accepted_results)
 
@@ -249,11 +255,9 @@ for k in range (0, len(tickerSymbol)):
 		plt.legend()
 		plt.title(tickerSymbol[k] + ' prediction, average accuracy: %.4f' % (np.mean(accuracies)))
 
-		x_range_future = np.arange(len(results[0]))
-
-		plt.xticks([], [])
-
 		plt.xlabel("Trained from " + start_date + " to " + end_date + " predicting " + str(test_size) + " days ahead")
+
+		plt.show()
 
 		plt.savefig("C:\\Users\\Frank Einstein\\Desktop\\LSTM July Predictions\\" + tickerSymbol[k])
 	except Exception as err:
