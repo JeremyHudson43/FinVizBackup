@@ -43,16 +43,17 @@ for k in range (0, len(tickerSymbol)):
 	try:
 		import yfinance as yf
 
-		df = yf.download(tickerSymbol[k])
+		# set start and end dates
+		start_date = '2020-4-26'
+		end_date = '2020-10-20'
+
+		df = yf.download(tickerSymbol[k], start_date, end_date)
 
 		df.to_csv(tickerSymbol[k] + ".csv")
 
 		df = pd.read_csv(tickerSymbol[k] + ".csv")
 
 		os.remove(tickerSymbol[k] + ".csv")
-
-		start_date = df['Date'].tolist()[3000]
-		end_date = df['Date'].tolist()[-200]
 
 		if days_between(start_date, end_date) < 3650:
 			test_size = 60
@@ -62,10 +63,6 @@ for k in range (0, len(tickerSymbol)):
 			test_size = 180
 		elif days_between(start_date, end_date) < 3650 * 4:
 			test_size = 240
-
-		mask = (df['Date'] >= start_date) & (df['Date'] <= end_date)
-
-		df = df.loc[mask]
 
 		print(start_date, end_date, test_size)
 
