@@ -47,8 +47,6 @@ for k in range (0, len(tickerSymbol)):
 		df.to_csv(tickerSymbol[k] + ".csv")
 
 		df = pd.read_csv(tickerSymbol[k] + ".csv")
-		
-		os.remove(tickerSymbol[k] + ".csv")
 
 		print(df)
 
@@ -263,5 +261,8 @@ for k in range (0, len(tickerSymbol)):
 		plt.show()
 
 		plt.savefig("C:\\Users\\Frank Einstein\\Desktop\\LSTM July Predictions\\" + tickerSymbol[k])
+		
+		os.remove(tickerSymbol[k] + ".csv")
+		
 	except Exception as err:
 		print(traceback.format_exc())
