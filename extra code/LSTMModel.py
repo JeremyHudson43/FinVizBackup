@@ -15,10 +15,11 @@ tf.compat.v1.random.set_random_seed(1234)
 import traceback
 import numpy as np
 import pandas as pd
+import os
 
 import sys
 import warnings
-import os
+
 
 if not sys.warnoptions:
     warnings.simplefilter('ignore')
@@ -48,9 +49,9 @@ for k in range (0, len(tickerSymbol)):
 
 		df = pd.read_csv(tickerSymbol[k] + ".csv")
 
-		print(df)
+		os.remove(tickerSymbol[k] + ".csv")
 
-		start_date = df['Date'].tolist()[-100]
+		start_date = df['Date'].tolist()[3000]
 		end_date = df['Date'].tolist()[-200]
 
 		if days_between(start_date, end_date) < 3650:
@@ -65,12 +66,6 @@ for k in range (0, len(tickerSymbol)):
 		mask = (df['Date'] >= start_date) & (df['Date'] <= end_date)
 
 		df = df.loc[mask]
-
-		df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
-
-		print(df)
-
-		print(df.iloc[:, 4:5])
 
 		print(start_date, end_date, test_size)
 
@@ -261,8 +256,5 @@ for k in range (0, len(tickerSymbol)):
 		plt.show()
 
 		plt.savefig("C:\\Users\\Frank Einstein\\Desktop\\LSTM July Predictions\\" + tickerSymbol[k])
-		
-		os.remove(tickerSymbol[k] + ".csv")
-		
 	except Exception as err:
 		print(traceback.format_exc())
