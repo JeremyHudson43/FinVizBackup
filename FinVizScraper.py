@@ -239,7 +239,8 @@ def low_rsi():
 
 
 def forte_capital():
-    filters = ['ipodate_prev3yrs','sh_avgvol_o500','sh_short_o5','ta_changeopen_u','ta_sma20_pa','ta_sma200_pa', 'ta_sma50_pa']
+    filters = ['ipodate_prev3yrs','sh_avgvol_o500','sh_short_o5',
+               'ta_changeopen_u','ta_sma20_pa','ta_sma200_pa', 'ta_sma50_pa']
     stock_list = Screener(filters=filters)
 
     my_df = pd.DataFrame(stock_list[0:300])
@@ -263,7 +264,8 @@ def undervalued():
 
 
 def earnings_high_eps():
-    filters = ['earningsdate_nextdays5','fa_curratio_o2','fa_eps5years_o5','fa_epsqoq_o5','fa_epsyoy_o5','fa_epsyoy1_o5','fa_estltgrowth_o5', 'fa_quickratio_o2','fa_sales5years_o5']
+    filters = ['earningsdate_nextdays5','fa_curratio_o2','fa_eps5years_o5','fa_epsqoq_o5','fa_epsyoy_o5',
+               'fa_epsyoy1_o5','fa_estltgrowth_o5', 'fa_quickratio_o2','fa_sales5years_o5']
     stock_list = Screener(filters=filters)
 
     my_df = pd.DataFrame(stock_list[0:300])
@@ -374,6 +376,148 @@ def forte_penny_stocks():
     stock_list.to_csv(path)
 
 
+def rel_vol_pattern_two():
+    filters = ['fa_peg_low','ta_change_u','ta_perf_1wup','ta_sma20_pa']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"rel vol pattern two/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def high_atr_support():
+    filters = ['ta_averagetruerange_o5','ta_perf_1wdown','ta_rsi_os40']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"high ATR support/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def forte_capital_two():
+    filters = ['fa_salesqoq_o30','geo_usa','ind_stocksonly','ipodate_prev3yrs','sh_avgvol_o500','sh_short_o5',
+               'ta_changeopen_u','ta_sma20_pa','ta_sma200_pa','ta_sma50_pa']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"forte capital two/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def bouncy_ball():
+    filters = ['sh_curvol_o1000','ta_beta_o1','ta_highlow20d_b5h',
+               'ta_highlow52w_a70h','ta_sma20_sa50','ta_sma200_sb50','ta_sma50_pa']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"bouncy ball/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def bouncy_ball():
+    filters = ['sh_curvol_o1000','ta_beta_o1','ta_highlow20d_b5h',
+               'ta_highlow52w_a70h','ta_sma20_sa50','ta_sma200_sb50','ta_sma50_pa']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"bouncy ball/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def price_crossed_SMA50():
+    filters = ['cap_smallunder','ind_stocksonly','sh_relvol_o1','ta_change_u','ta_sma20_pa','ta_sma200_pa','ta_sma50_pc']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"price crossed SMA50/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def price_crossed_SMA20():
+    filters = ['cap_smallunder','ind_stocksonly','sh_relvol_o1','ta_change_u','ta_sma20_pc','ta_sma200_pa','ta_sma50_pa']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"price crossed SMA20/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def price_crossed_SMA20_and_SMA50():
+    filters = ['cap_smallunder','ind_stocksonly','sh_relvol_o1','ta_change_u','ta_sma20_pc','ta_sma200_pa','ta_sma50_pc']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"price crossed SMA20 and SMA50/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+try:
+    price_crossed_SMA50()
+    time.sleep(15)
+except Exception as e:
+    print("price crossed SMA50: ", e)
+
+
+try:
+    price_crossed_SMA20()
+    time.sleep(15)
+except Exception as e:
+    print("price crossed SMA20: ", e)
+
+
+try:
+    price_crossed_SMA20_and_SMA50()
+    time.sleep(15)
+except Exception as e:
+    print("price crossed SMA20 and SMA50: ", e)
+
+try:
+    bouncy_ball()
+    time.sleep(15)
+except Exception as e:
+    print("bouncy ball: ", e)
+
+try:
+    forte_capital_two()
+    time.sleep(15)
+except Exception as e:
+    print("forte capital two: ", e)
+
+try:
+    high_atr_support()
+    time.sleep(15)
+except Exception as e:
+    print("high atr support: ", e)
+
+try:
+    rel_vol_pattern_two()
+    time.sleep(15)
+except Exception as e:
+    print("rel vol pattern two: ", e)
 
 try:
     forte_penny_stocks()
