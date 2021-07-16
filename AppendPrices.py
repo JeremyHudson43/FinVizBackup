@@ -2,72 +2,70 @@ import pandas as pd
 import yfinance as yf
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from os import listdir
+from os.path import isfile, join
 
-stock = "GPL"
+mypath = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\all stocks\\unique"
 
-sma_200_list = []
-sma_20_list = []
-sma_50_list = []
+onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
+for stock in onlyfiles:
 
-stock_to_save = yf.Ticker(stock)
+    stock = stock[:-4]
 
-df_one = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\all stocks\\unique\\" + stock + ".csv")
+    sma_200_list_final = []
+    sma_20_list_final = []
+    sma_50_list_final = []
 
-dates = df_one['Date'].tolist()
+    stock_to_save = yf.Ticker(stock)
 
-start_date_one = datetime.strptime(dates[0], "%Y-%m-%d").date()
-start_date_two = datetime.strptime(dates[-1], "%Y-%m-%d").date()
+    df_one = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\all stocks\\unique\\" + stock + ".csv")
 
-# get historical market data
-hist_one = stock_to_save.history(start=dates[0], end=start_date_two + relativedelta(days=+2))
+    dates = df_one['Date'].tolist()
 
-# get historical market data
-hist_two = stock_to_save.history(start=start_date_two - relativedelta(months=+12), end=dates[-1])
+    start_date_one = datetime.strptime(dates[0], "%Y-%m-%d").date()
+    start_date_two = datetime.strptime(dates[-1], "%Y-%m-%d").date()
 
+    # get historical market data
+    hist = stock_to_save.history(start=dates[0], end=start_date_two + relativedelta(days=+4))
 
-for date_index in range(len(hist_one)):
-    sma_200 = hist_two['Close'].tolist()[-200 - date_index:]
-    sma_200 = sum(sma_200) / len(sma_200)
-    sma_200_list.append(sma_200)
+    close_prices = df_one['Price'].tolist()
+    sma_20_list = df_one['SMA20'].tolist()
+    sma_50_list = df_one['SMA50'].tolist()
+    sma_200_list = df_one['SMA200'].tolist()
 
-    sma_20 = hist_two['Close'].tolist()[-20 - date_index:]
-    sma_20 = sum(sma_20) / len(sma_20)
-    sma_20_list.append(sma_20)
+    for date_index in range(len(hist)):
+        print(close_prices[date_index], float(sma_200_list[date_index].replace("%", "")), stock)
 
-    sma_50 = hist_two['Close'].tolist()[-50- date_index :]
-    sma_50 = sum(sma_50) / len(sma_50)
-    sma_50_list.append(sma_50)
+        sma_200 = (close_prices[date_index] / (100 + float(sma_200_list[date_index].replace("%", "")))) * 100
+        sma_200_list_final.append(sma_200)
 
-    print(sma_200, sma_50, sma_20)
+        sma_20 = (close_prices[date_index] / (100 + float(sma_20_list[date_index].replace("%", "")))) * 100
+        sma_20_list_final.append(sma_20)
 
-sma_20_list.reverse()
-sma_50_list.reverse()
-sma_200_list.reverse()
+        sma_50 = (close_prices[date_index] / (100 + float(sma_50_list[date_index].replace("%", "")))) * 100
+        sma_50_list_final.append(sma_50)
 
+    df_one['SMA20'] = pd.Series(sma_20_list_final)
+    df_one['SMA50'] = pd.Series(sma_50_list_final)
+    df_one['SMA200'] = pd.Series(sma_200_list_final)
 
-df_one['SMA20'] = pd.Series(sma_20_list)
-df_one['SMA50'] = pd.Series(sma_50_list)
-df_one['SMA200'] = pd.Series(sma_200_list)
+    dates = df_one['Date'].tolist()
 
-dates = df_one['Date'].tolist()
+    hist_close = [x for x in hist['Close']]
+    hist_open = [x for x in hist['Open']]
 
+    hist_low = [x for x in hist['Low']]
+    hist_high = [x for x in hist['High']]
 
-hist_close = [x for x in hist_one['Close']]
-hist_open = [x for x in hist_one['Open']]
+    df_one['Close'] = pd.Series(hist_close)
+    df_one['Open'] = pd.Series(hist_open)
+    df_one['Low'] = pd.Series(hist_low)
+    df_one['High'] = pd.Series(hist_high)
 
-hist_low = [x for x in hist_one['Low']]
-hist_high = [x for x in hist_one['High']]
+    df_one = df_one.drop_duplicates(subset=['Date'])
 
+    df_one.to_csv("C:\\Users\\Frank Einstein\\Desktop\\merged CSVs\\" + stock + ".csv")
 
-df_one['Close'] = pd.Series(hist_close)
-df_one['Open'] = pd.Series(hist_open)
-df_one['Low'] = pd.Series(hist_low)
-df_one['High'] = pd.Series(hist_high)
-
-
-df_one = df_one.drop_duplicates(subset=['Date'])
-
-
-
-df_one.to_csv("test.csv")
+    # filter to June 1st
+    # follow backtesting algo text file
