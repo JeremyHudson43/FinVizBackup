@@ -3,7 +3,9 @@ import functools
 import glob
 import numpy as np
 import os
-
+from dateutil.relativedelta import relativedelta
+from pandas.tseries.offsets import BDay
+from datetime import datetime
 
 final_path = "C:\\Users\\Frank Einstein\\Desktop\\all_combined.csv"
 
@@ -44,12 +46,12 @@ def value_to_float(x):
 
     return 0.0
 
-def small_cap_rel_vol():
+def small_cap_rel_vol(date):
     df = pd.read_csv(final_path)
-    df = df[df['Date'] == '2021-06-09']
+    df = df[df['Date'] == date]
     df = df.replace("-", np.nan)
 
-    # df = df[df['Rel Volume'].astype(float) > 1]
+    df = df[df['Rel Volume'].astype(float) > 2]
     df = df[df['SMA200'] < df['Close']]
     df = df[df['SMA50'] < df['Close']]
     df = df[df['Open'] < df['Close']]
@@ -94,10 +96,10 @@ def small_cap_rel_vol():
     return tickers
 
 
-def get_next_day(tickers):
+def get_next_day(tickers, date):
     df = pd.read_csv(final_path)
 
-    df = df[df['Date'] == '2021-06-16']
+    df = df[df['Date'] == date]
 
     boolean_series = df['Ticker'].isin(tickers)
     df = df[boolean_series]
@@ -141,14 +143,27 @@ def get_next_day(tickers):
     df.to_csv("Results_two.csv", encoding='utf-8')
 
 
-tickers = small_cap_rel_vol()
-get_next_day(tickers)
+first_date = datetime.strptime('2021-06-02', "%Y-%m-%d").date()
+second_date = datetime.strptime('2021-06-08', "%Y-%m-%d").date()
 
-df = pd.read_csv("Results.csv")
-df_two = pd.read_csv("Results_two.csv")
+for i in range(40):
+    try:
+        date_one = str((first_date + relativedelta(days=+1) - BDay(1)).date())
+        date_two = str((second_date + relativedelta(days=+1) - BDay(1)).date())
 
-close_one = df['Open'].tolist()
-close_two = df_two['Close'].tolist()
+        tickers = small_cap_rel_vol(date_one)
+        get_next_day(tickers, date_two)
 
-print(sum(close_one), sum(close_two))
+        df = pd.read_csv("Results.csv")
+        df_two = pd.read_csv("Results_two.csv")
+
+        close_one = df['Close'].tolist()
+        close_two = df_two['Close'].tolist()
+
+        winners = open("winners.txt", "a")
+
+        winners.write("\n" + str(sum(close_one)) + ", ")
+        winners.write(str(sum(close_two)) + "\n")
+    except Exception as err:
+        print(err)
 
