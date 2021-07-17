@@ -1,26 +1,10 @@
-import pandas as pd
-import functools
-import glob
 import numpy as np
-import os
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
 from datetime import datetime
+import pandas as pd
 
-final_path = "C:\\Users\\Frank Einstein\\Desktop\\all_combined.csv"
-
-def forte_capital():
-    df = pd.read_csv(final_path)
-
-    df = df[df['Change'] > 0]
-    df = df[df['SMA20'] > 0]
-    df = df[df['SMA50'] > 0]
-    df = df[df['SMA200'] > 0]
-    df = df[df['Avg Volume'] > 500000]
-    df = df[df['Short Float'] >= 5]
-    df = df[df['Date'] == '2021-04-23']
-
-    df.to_csv("Forte.csv")
+final_path = "filtered_df.csv"
 
 def value_to_float(x):
     if type(x) == float or type(x) == int:
@@ -45,51 +29,34 @@ def value_to_float(x):
     return 0.0
 
 def small_cap_rel_vol(date):
-    df = pd.read_csv(final_path)
+    columns = ['SMA200', 'SMA50', 'SMA20', 'Open', 'Close', 'Market Cap', 'Change', 'Date', 'Ticker', 'Rel Volume']
+
+    df = pd.read_csv(final_path, usecols=columns)
+
+    df['Market Cap'] = df['Market Cap'].apply(value_to_float)
+
     df = df[df['Date'] == date]
     df = df.replace("-", np.nan)
 
     # df = df[df['Rel Volume'].astype(float) > 2]
-    df = df[df['SMA200'] < df['Close']]
-    df = df[df['SMA50'] < df['Close']]
-    df = df[df['Open'] < df['Close']]
+    df = df[df['SMA200'].astype(float) < df['Close']]
+    df = df[df['SMA50'].astype(float) < df['Close']]
+    df = df[df['Open'].astype(float) < df['Close']]
 
     # df = df[df['SMA50'].between(df['Open'], df['Close'])]
     df = df[df['SMA20'].between(df['Open'], df['Close'])]
 
-    # convert all numbers formatted with letters to float value
-    df['Market Cap'] = df['Market Cap'].apply(value_to_float)
-
-    df['Shs Outstand'] = df['Shs Outstand'].apply(value_to_float)
-
-    df['Shs Float'] = df['Shs Float'].apply(value_to_float)
-
-    df['Sales'] = df['Sales'].apply(value_to_float)
-
-    df['Avg Volume'] = df['Avg Volume'].apply(value_to_float)
-
-    df['Income'] = df['Income'].apply(value_to_float)
-
-    cols_to_check = ['Insider Own','Perf Week', 'EPS (ttm)', 'EPS next Y', 'EPS next Q', 'Insider Trans', 'Perf Month', 'Inst Own',
-                     'Short Float', 'Perf Quarter', 'EPS this Y', 'Inst Trans', 'Perf Half Y', 'ROA', 'Perf Year',
-                     'EPS next 5Y', 'ROE', 'Perf YTD', 'EPS past 5Y', 'ROI', '52W High', 'Dividend %', 'Sales past 5Y',
-                     'Gross Margin', '52W Low', 'Sales Q/Q', 'Oper. Margin', 'EPS Q/Q', 'Profit Margin', 'SMA20', 'SMA50',
-                     'SMA200', 'Change', 'Target Price', 'P/S', 'Short Ratio', 'Book/sh', 'Cash/sh', 'P/C', 'Dividend',
-                     'P/FCF', 'Beta', 'Quick Ratio', 'ATR', 'Current Ratio', 'Price', 'Recom', 'P/E', 'RSI (14)', 'Forward P/E']
-
-    df = df.drop(['Company', 'Sector', 'Industry', 'Country', 'Volatility', 'Optionable', 'Shortable',  'Earnings', 'News', '52W Range', 'Index'], axis=1)
-
     # remove % from all specified columns to get the raw value
-    df[cols_to_check] = df[cols_to_check].replace({'%':''}, regex=True)
+    df['Change'] = df['Change'].replace({'%':''}, regex=True)
 
-    df = df[df['Market Cap'] < 2000000000]
+    df = df[df['Market Cap'].astype(float) < 2000000000]
     df = df[df['Change'].astype(float) > 5]
 
     tickers = df['Ticker'].to_list()
 
-    df[cols_to_check] = df[cols_to_check].fillna(0).astype('float')
+    df['Change'] = df['Change'].fillna(0).astype('float')
 
-    df[cols_to_check].apply(np.floor)
+    df['Change'].apply(np.floor)
 
     df.to_csv("Results.csv", encoding='utf-8')
 
@@ -97,48 +64,16 @@ def small_cap_rel_vol(date):
 
 
 def get_next_day(tickers, date):
-    df = pd.read_csv(final_path)
+    columns = ['SMA200', 'SMA50', 'SMA20', 'Open', 'Close', 'Market Cap', 'Change', 'Date', 'Ticker', 'Rel Volume']
+
+    df = pd.read_csv(final_path, usecols=columns)
+
+    df['Market Cap'] = df['Market Cap'].apply(value_to_float)
 
     df = df[df['Date'] == date]
 
     boolean_series = df['Ticker'].isin(tickers)
     df = df[boolean_series]
-
-    df = df.replace("-", np.nan)
-
-    # convert all numbers formatted with letters to float value
-    df['Market Cap'] = df['Market Cap'].apply(value_to_float)
-
-    df['Shs Outstand'] = df['Shs Outstand'].apply(value_to_float)
-
-    df['Shs Float'] = df['Shs Float'].apply(value_to_float)
-
-    df['Sales'] = df['Sales'].apply(value_to_float)
-
-    df['Avg Volume'] = df['Avg Volume'].apply(value_to_float)
-
-    df['Income'] = df['Income'].apply(value_to_float)
-
-    cols_to_check = ['Insider Own', 'Perf Week', 'EPS (ttm)', 'EPS next Y', 'EPS next Q', 'Insider Trans', 'Perf Month',
-                     'Inst Own',
-                     'Short Float', 'Perf Quarter', 'EPS this Y', 'Inst Trans', 'Perf Half Y', 'ROA', 'Perf Year',
-                     'EPS next 5Y', 'ROE', 'Perf YTD', 'EPS past 5Y', 'ROI', '52W High', 'Dividend %', 'Sales past 5Y',
-                     'Gross Margin', '52W Low', 'Sales Q/Q', 'Oper. Margin', 'EPS Q/Q', 'Profit Margin', 'SMA20',
-                     'SMA50',
-                     'SMA200', 'Change', 'Target Price', 'P/S', 'Short Ratio', 'Book/sh', 'Cash/sh', 'P/C', 'Dividend',
-                     'P/FCF', 'Beta', 'Quick Ratio', 'ATR', 'Current Ratio', 'Price', 'Recom', 'P/E', 'RSI (14)',
-                     'Forward P/E']
-
-    df = df.drop(
-        ['Company', 'Sector', 'Industry', 'Country', 'Volatility', 'Optionable', 'Shortable', 'Earnings', 'News',
-         '52W Range', 'Index'], axis=1)
-
-    # remove % from all specified columns to get the raw value
-    df[cols_to_check] = df[cols_to_check].replace({'%': ''}, regex=True)
-
-    df[cols_to_check] = df[cols_to_check].fillna(0).astype('float')
-
-    df[cols_to_check].apply(np.floor)
 
     df.to_csv("Results_two.csv", encoding='utf-8')
 
@@ -148,7 +83,7 @@ first_date = datetime.strptime('2021-06-04', "%Y-%m-%d").date()
 for i in range(40):
     try:
         date_one = str((first_date + relativedelta(days=+i) - BDay(1)).date())
-        date_two = str((first_date + relativedelta(days=+i+1) - BDay(1)).date())
+        date_two = str((first_date + relativedelta(days=+i+7) - BDay(1)).date())
 
         if date_one not in date_two:
 
@@ -172,4 +107,3 @@ for i in range(40):
 
     except Exception as err:
         print(err)
-
