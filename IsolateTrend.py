@@ -9,8 +9,6 @@ from datetime import datetime
 
 final_path = "C:\\Users\\Frank Einstein\\Desktop\\all_combined.csv"
 
-
-
 def forte_capital():
     df = pd.read_csv(final_path)
 
@@ -51,10 +49,11 @@ def small_cap_rel_vol(date):
     df = df[df['Date'] == date]
     df = df.replace("-", np.nan)
 
-    df = df[df['Rel Volume'].astype(float) > 2]
+    # df = df[df['Rel Volume'].astype(float) > 2]
     df = df[df['SMA200'] < df['Close']]
     df = df[df['SMA50'] < df['Close']]
     df = df[df['Open'] < df['Close']]
+
     # df = df[df['SMA50'].between(df['Open'], df['Close'])]
     df = df[df['SMA20'].between(df['Open'], df['Close'])]
 
@@ -80,12 +79,13 @@ def small_cap_rel_vol(date):
 
     df = df.drop(['Company', 'Sector', 'Industry', 'Country', 'Volatility', 'Optionable', 'Shortable',  'Earnings', 'News', '52W Range', 'Index'], axis=1)
 
-    df = df[df['Market Cap'] < 2000000000]
-
-    tickers = df['Ticker'].to_list()
-
     # remove % from all specified columns to get the raw value
     df[cols_to_check] = df[cols_to_check].replace({'%':''}, regex=True)
+
+    df = df[df['Market Cap'] < 2000000000]
+    df = df[df['Change'].astype(float) > 5]
+
+    tickers = df['Ticker'].to_list()
 
     df[cols_to_check] = df[cols_to_check].fillna(0).astype('float')
 
@@ -143,27 +143,33 @@ def get_next_day(tickers, date):
     df.to_csv("Results_two.csv", encoding='utf-8')
 
 
-first_date = datetime.strptime('2021-06-02', "%Y-%m-%d").date()
-second_date = datetime.strptime('2021-06-08', "%Y-%m-%d").date()
+first_date = datetime.strptime('2021-06-04', "%Y-%m-%d").date()
 
 for i in range(40):
     try:
-        date_one = str((first_date + relativedelta(days=+1) - BDay(1)).date())
-        date_two = str((second_date + relativedelta(days=+1) - BDay(1)).date())
+        date_one = str((first_date + relativedelta(days=+i) - BDay(1)).date())
+        date_two = str((first_date + relativedelta(days=+i+1) - BDay(1)).date())
 
-        tickers = small_cap_rel_vol(date_one)
-        get_next_day(tickers, date_two)
+        if date_one not in date_two:
 
-        df = pd.read_csv("Results.csv")
-        df_two = pd.read_csv("Results_two.csv")
+           tickers = small_cap_rel_vol(date_one)
+           get_next_day(tickers, date_two)
 
-        close_one = df['Close'].tolist()
-        close_two = df_two['Close'].tolist()
+           df = pd.read_csv("Results.csv")
+           df_two = pd.read_csv("Results_two.csv")
 
-        winners = open("winners.txt", "a")
+           close_one = df['Close'].tolist()
+           close_two = df_two['Close'].tolist()
 
-        winners.write("\n" + str(sum(close_one)) + ", ")
-        winners.write(str(sum(close_two)) + "\n")
+           winners = open("winners2.txt", "a")
+
+           winners.write(str(sum(close_one)) + ", ")
+           winners.write(str(sum(close_two)) + "\n")
+
+           winners.close()
+
+           print(str(sum(close_one)), str(sum(close_two)))
+
     except Exception as err:
         print(err)
 
