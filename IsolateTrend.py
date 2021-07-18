@@ -36,15 +36,16 @@ def small_cap_rel_vol(date):
 
     df = pd.read_csv(final_path, usecols=columns)
 
-    # df['Market Cap'] = df['Market Cap'].apply(value_to_float)
+    df['Market Cap'] = df['Market Cap'].apply(value_to_float)
 
-    df = df[df.Industry != 'Exchange Traded Fund']
+    df = df[df['Market Cap'].astype(float) > 100000000000]
+
+    # df = df[df.Industry == 'Exchange Traded Fund']
+
     df = df[df.Industry != 'Shell Companies']
 
     df = df[df['Date'] == date]
     df = df.replace("-", np.nan)
-
-    df = df[df['Change'].astype(float) > 3]
 
     df = df[df['SMA200'].astype(float) < df['Close']]
     df = df[df['SMA50'].astype(float) < df['Close']]
@@ -53,10 +54,14 @@ def small_cap_rel_vol(date):
 
     df = df[df['Open'].astype(float) < df['Close']]
 
+    df = df[df['Change'].astype(float) < 4]
+
+    df = df[df['Close'] < 4000]
+
     # remove % from all specified columns to get the raw value
     df['Change'] = df['Change'].replace({'%':''}, regex=True)
 
-    # df = df[df['Market Cap'].astype(float) < 300000000]
+    df = df[df['Rel Volume'].astype(float) > 1]
 
     df['Change'] = df['Change'].fillna(0).astype('float')
 
@@ -84,7 +89,7 @@ def get_next_day(tickers, date):
     return df['Ticker'].to_list()
 
 
-first_date = datetime.strptime('2021-06-03', "%Y-%m-%d").date()
+first_date = datetime.strptime('2021-06-08', "%Y-%m-%d").date()
 
 winner = 0
 loser = 0
