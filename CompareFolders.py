@@ -5,18 +5,23 @@ import pandas as pd
 from pandas.tseries.offsets import BDay
 import datetime
 
-individual_folder = 'analysts buy'
+individual_folder = '5x rel vol'
 
-# full_filepath = f"C:\\Users\\Frank Einstein\\Desktop\\stock records archive\\stock records\\{individual_folder}\\unique"
+full_filepath = f"E:\\stock records\\{individual_folder}\\unique"
+
+# full_filepath_two = f"E:\\stock records\\price crossed SMA20\\unique"
 
 # folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records archive\\stock records"
 
-full_filepath = f"C:\\Users\\Frank Einstein\\Desktop\\stock records\\{individual_folder}\\unique"
-
-folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
-
+folder_path = "E:\\stock records"
 
 full_filepath = set(os.path.relpath(os.path.join(root, file), full_filepath) for root, _, files in os.walk(full_filepath) for file in files)
+
+# full_filepath_two = set(os.path.relpath(os.path.join(root, file), full_filepath_two) for root, _, files in os.walk(full_filepath_two) for file in files)
+
+# full_filepath = full_filepath & full_filepath_two
+
+full_filepath = full_filepath
 
 file_list = []
 
@@ -34,7 +39,7 @@ def compare():
 
         # being_compared = str(x).split("\\")[6]
 
-        being_compared = str(x).split("\\")[5]
+        being_compared = str(x).split("\\")[2]
         being_compared_length = str(len(compare))
 
         common_stocks_length = str(len(compare & full_filepath))
@@ -73,7 +78,7 @@ def number_of_occurences(stock):
         for dirpath, dirnames, filenames in os.walk(folder_path):
             for filename in [f for f in filenames if f.startswith(stock)]:
 
-                pattern = str(os.path.join(dirpath,filename)).split("\\")[5]
+                pattern = str(os.path.join(dirpath,filename)).split("\\")[2]
                 if pattern not in "all stocks":
                     trends.append(pattern)
                     count +=1
@@ -85,7 +90,7 @@ def number_of_occurences(stock):
             stock_final = finviz.get_stock(str(stock).replace(".csv", ""))
 
             # appends new stock data to CSV if it exists, else create CSV
-            filepath = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\multiple trends\\" + stock
+            filepath = "E:\\stock records\\multiple trends\\" + stock
 
             today = datetime.datetime.today()
             last_business_day = (today - BDay(1)).date()
@@ -140,5 +145,6 @@ def cleanup():
 
     fp.close()
 
-multiple()
-cleanup()
+compare()
+# multiple()
+# cleanup()

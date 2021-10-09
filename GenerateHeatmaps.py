@@ -17,29 +17,31 @@ for unique_path in file_list[length:]:
 
     print(unique_path)
 
-    df = pd.read_csv(os.path.join(folder_path, unique_path))
-    df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+    if "all_filtered" in unique_path:
 
-    corr = df.corr()
+        df = pd.read_csv(os.path.join(folder_path, unique_path))
+        df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
 
-    plt.subplots(figsize=(80, 60))
+        corr = df.corr()
 
-    ax = sns.heatmap(
-        corr,
-        vmin=-1, vmax=1, center=0,
-        cmap=sns.diverging_palette(20, 220, n=200),
-        square=True,
-        annot=True
-    )
+        plt.subplots(figsize=(80, 60))
 
-    ax.set_xticklabels(
-        ax.get_xticklabels(),
-        rotation=45,
-        horizontalalignment='right'
-    );
+        ax = sns.heatmap(
+            corr,
+            vmin=-1, vmax=1, center=0,
+            cmap=sns.diverging_palette(20, 220, n=200),
+            square=True,
+            annot=True
+        )
 
-    to_save = unique_path.split("\\")[-1][:-4]
+        ax.set_xticklabels(
+            ax.get_xticklabels(),
+            rotation=45,
+            horizontalalignment='right'
+        );
 
-    print(to_save)
+        to_save = unique_path.split("\\")[-1][:-4]
 
-    plt.savefig(f"C:\\Users\\Frank Einstein\\Desktop\\heatmaps\\{to_save}")
+        print(to_save)
+
+        plt.savefig(f"C:\\Users\\Frank Einstein\\Desktop\\heatmaps\\{to_save}")

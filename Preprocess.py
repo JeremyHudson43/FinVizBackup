@@ -5,9 +5,9 @@ import functools
 import pandas as pd
 import glob
 
-folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
+folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\combined csvs\\old\\"
 
-storage_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\combined CSVs"
+storage_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\combined csvs\\old\\"
 
 def value_to_float(x):
     if type(x) == float or type(x) == int:
@@ -33,6 +33,9 @@ def value_to_float(x):
 
 
 def clean_data(df, folder):
+
+    print(folder)
+
     # convert all numbers formatted with letters to float value
     df['Market Cap'] = df['Market Cap'].apply(value_to_float)
 
@@ -53,16 +56,22 @@ def clean_data(df, folder):
                      'SMA200', 'Change', 'Target Price', 'P/S', 'Short Ratio', 'Book/sh', 'Cash/sh', 'P/C', 'Dividend',
                      'P/FCF', 'Beta', 'Quick Ratio', 'ATR', 'Current Ratio', 'Price', 'Recom', 'P/E', 'RSI (14)', 'Forward P/E']
 
-    df = df.drop(['Company', 'Sector', 'Industry', 'Country', 'Volatility', 'Optionable', 'Shortable', 'Date', 'Earnings', 'News', '52W Range', 'Index'], axis=1)
+   #  df = df.drop(['Company', 'Volatility', 'Optionable', 'Shortable', 'Earnings',  '52W Range', 'Index', 'News'], axis=1)
 
     # remove % from all specified columns to get the raw value
     df[cols_to_check] = df[cols_to_check].replace({'%':''}, regex=True)
     df = df.replace("-", np.nan)
 
     df[cols_to_check] = df[cols_to_check].fillna(0).astype('float')
-    df[cols_to_check] = df[cols_to_check].fillna(0).astype('int')
+    # df[cols_to_check] = df[cols_to_check].fillna(0).astype('int')
 
-    df[cols_to_check].apply(np.floor)
+    # df[cols_to_check].apply(np.floor)
+
+    with open('E:\\top gainers.txt') as f:
+         lines = f.read().splitlines()
+         #lines = list(set(lines))
+
+    df['top_gainer'] = np.where(df['Ticker'].isin(lines), 1, 0)
 
     df.to_csv(os.path.join(storage_path, f"{folder}.csv"))
 
@@ -72,21 +81,29 @@ file_list = []
 for root, dirs, files in os.walk(folder_path):
     for name in dirs:
         path = os.path.join(root, name)
-        file_list.append(path)
+        print(path)
+        if 'merged' in path:
+            print(path)
+            file_list.append(path)
 
 length = (len(next(os.walk(folder_path))[1]))
 
 # extract tickers from scraped mass CSVs to generate individual stock CSVs
-for unique_path in file_list[length:]:
+# for unique_path in file_list[length:]:
 
-    print(unique_path)
+try:
+    # df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
+                       # glob.glob(unique_path  + "/*.csv")))
 
-    try:
-        df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
-                           glob.glob(unique_path  + "/*.csv")))
-    except Exception as err:
-        print(err)
+    df = pd.read_csv('C:\\Users\\Frank Einstein\\Desktop\\stock records\\combined csvs\\old\\merged CSVs.csv')
 
-    if "unique" in unique_path:
-        to_save = unique_path.split("\\")[-2]
-        clean_data(df, to_save)
+    # if "unique" in unique_path:
+    # to_save = unique_path.split("\\")[-2]
+
+    to_save = 'merged CSVs'
+
+    print(to_save)
+    clean_data(df, to_save)
+
+except Exception as err:
+    print(err)

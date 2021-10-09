@@ -5,46 +5,57 @@ from datetime import datetime
 from os import listdir
 from os.path import isfile, join
 
-mypath = "C:\\Users\\Frank Einstein\\Desktop\\stock records\\all stocks\\unique"
+mypath = "E:\\stock stuff\\long term records"
 
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
 for stock in onlyfiles:
 
-    stock = stock[:-4]
+    try:
 
-    sma_200_list_final = []
-    sma_20_list_final = []
-    sma_50_list_final = []
+        stock = stock[:-4]
 
-    stock_to_save = yf.Ticker(stock)
+        sma_200_list_final = []
+        sma_20_list_final = []
+        sma_50_list_final = []
 
-    df_one = pd.read_csv("C:\\Users\\Frank Einstein\\Desktop\\stock records\\all stocks\\unique\\" + stock + ".csv")
+        stock_to_save = yf.Ticker(stock)
 
-    dates = df_one['Date'].tolist()
+        df_one = pd.read_csv("E:\\stock stuff\\long term records\\" + stock + ".csv")
 
-    start_date_one = datetime.strptime(dates[0], "%Y-%m-%d").date()
-    start_date_two = datetime.strptime(dates[-1], "%Y-%m-%d").date()
+        dates = df_one['Date'].tolist()
 
-    # get historical market data
-    hist = stock_to_save.history(start=dates[0], end=start_date_two + relativedelta(days=+4))
+        start_date_one = datetime.strptime(dates[0], "%Y-%m-%d").date()
+        start_date_two = datetime.strptime(dates[-1], "%Y-%m-%d").date()
 
-    close_prices = df_one['Price'].tolist()
-    sma_20_list = df_one['SMA20'].tolist()
-    sma_50_list = df_one['SMA50'].tolist()
-    sma_200_list = df_one['SMA200'].tolist()
+        # get historical market data
+        hist = stock_to_save.history(start=dates[0], end=start_date_two + relativedelta(days=+2))
 
-    for date_index in range(len(hist)):
-        print(close_prices[date_index], float(sma_200_list[date_index].replace("%", "")), stock)
+        close_prices = df_one['Price'].tolist()
+        sma_20_list = df_one['SMA20'].tolist()
+        sma_50_list = df_one['SMA50'].tolist()
+        sma_200_list = df_one['SMA200'].tolist()
 
-        sma_200 = (close_prices[date_index] / (100 + float(sma_200_list[date_index].replace("%", "")))) * 100
-        sma_200_list_final.append(sma_200)
+    except Exception as err:
+        print(err)
 
-        sma_20 = (close_prices[date_index] / (100 + float(sma_20_list[date_index].replace("%", "")))) * 100
-        sma_20_list_final.append(sma_20)
+    for date_index in range(len(sma_20_list)):
 
-        sma_50 = (close_prices[date_index] / (100 + float(sma_50_list[date_index].replace("%", "")))) * 100
-        sma_50_list_final.append(sma_50)
+        try:
+
+            print(sma_200_list[date_index], stock)
+
+            sma_200 = (close_prices[date_index] / (100 + float(sma_200_list[date_index].replace("%", "")))) * 100
+            sma_200_list_final.append(sma_200)
+
+            sma_20 = (close_prices[date_index] / (100 + float(sma_20_list[date_index].replace("%", "")))) * 100
+            sma_20_list_final.append(sma_20)
+
+            sma_50 = (close_prices[date_index] / (100 + float(sma_50_list[date_index].replace("%", "")))) * 100
+            sma_50_list_final.append(sma_50)
+
+        except Exception as err:
+            print(err)
 
     df_one['SMA20'] = pd.Series(sma_20_list_final)
     df_one['SMA50'] = pd.Series(sma_50_list_final)
@@ -65,7 +76,7 @@ for stock in onlyfiles:
 
     df_one = df_one.drop_duplicates(subset=['Date'])
 
-    df_one.to_csv("C:\\Users\\Frank Einstein\\Desktop\\merged CSVs\\" + stock + ".csv")
+    df_one.to_csv("E:\\stock stuff\\filtered long term\\" + stock + ".csv")
 
     # filter to June 1st
     # follow backtesting algo text file

@@ -34,34 +34,37 @@ def value_to_float(x):
 def small_cap_rel_vol(date):
     columns = ['SMA200', 'SMA50', 'SMA20', 'Open', 'Close', 'Market Cap', 'Change', 'Date', 'Ticker', 'Rel Volume', 'RSI (14)', 'Industry']
 
-    df = pd.read_csv(final_path, usecols=columns)
+    df = pd.read_csv(path)
 
     df['Market Cap'] = df['Market Cap'].apply(value_to_float)
 
-    df = df[df['Market Cap'].astype(float) > 100000000000]
+    # df = df[df['Market Cap'].astype(float) > 100000000000]
 
     # df = df[df.Industry == 'Exchange Traded Fund']
 
-    df = df[df.Industry != 'Shell Companies']
+    # df = df[df.Industry != 'Shell Companies']
 
-    df = df[df['Date'] == date]
+    # df = df[df['Date'] == date]
     df = df.replace("-", np.nan)
 
-    df = df[df['SMA200'].astype(float) < df['Close']]
-    df = df[df['SMA50'].astype(float) < df['Close']]
+    # df = df[df['SMA200'].astype(float) < df['Close']]
+    # df = df[df['SMA50'].astype(float) < df['Close']]
 
-    df = df[df['SMA20'].between(df['Open'], df['Close'])]
+    # df = df[df['SMA20'].between(df['Open'], df['Close'])]
 
-    df = df[df['Open'].astype(float) < df['Close']]
+    # df = df[df['Open'].astype(float) < df['Close']]
 
-    df = df[df['Change'].astype(float) < 4]
+    # df = df[df['Change'].astype(float) < 4]
 
-    df = df[df['Close'] < 4000]
+    df = df[df['Insider Own'] > 30]
+    df = df[df['PEG'] < 1]
+    df = df[df['Short Ratio'] < 5]
+
 
     # remove % from all specified columns to get the raw value
     df['Change'] = df['Change'].replace({'%':''}, regex=True)
 
-    df = df[df['Rel Volume'].astype(float) > 1]
+    # df = df[df['Rel Volume'].astype(float) > 1]
 
     df['Change'] = df['Change'].fillna(0).astype('float')
 
@@ -137,3 +140,4 @@ for i in range(40):
 
     except Exception as err:
         print(err)
+

@@ -8,7 +8,8 @@ import time
 today = datetime.datetime.today()
 last_business_day = (today - BDay(1)).date()
 
-folder_path = "C:\\Users\\Frank Einstein\\Desktop\\stock records"
+
+folder_path = "E:\\stock records"
 
 
 def small_mc_rel_vol():
@@ -426,18 +427,6 @@ def bouncy_ball():
     stock_list.to_csv(path)
 
 
-def bouncy_ball():
-    filters = ['sh_curvol_o1000','ta_beta_o1','ta_highlow20d_b5h',
-               'ta_highlow52w_a70h','ta_sma20_sa50','ta_sma200_sb50','ta_sma50_pa']
-
-    stock_list = Screener(filters=filters)
-
-    csv_path = f"bouncy ball/{last_business_day}.csv"
-
-    path = os.path.join(folder_path, csv_path)
-
-    stock_list.to_csv(path)
-
 
 def price_crossed_SMA50():
     filters = ['cap_smallunder','ind_stocksonly','sh_relvol_o1','ta_change_u','ta_sma20_pa','ta_sma200_pa','ta_sma50_pc']
@@ -473,6 +462,44 @@ def price_crossed_SMA20_and_SMA50():
     path = os.path.join(folder_path, csv_path)
 
     stock_list.to_csv(path)
+
+
+def nano_cap():
+    filters = ['cap_nano','sh_float_u20','sh_outstanding_u20','sh_short_o5']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"nano cap/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+def top_gainers_averages_three():
+    filters = ['fa_peg_low','sh_insiderown_high']
+
+    stock_list = Screener(filters=filters)
+
+    csv_path = f"top gainers averages three/{last_business_day}.csv"
+
+    path = os.path.join(folder_path, csv_path)
+
+    stock_list.to_csv(path)
+
+
+try:
+    all_stocks()
+    time.sleep(15)
+except Exception as e:
+    print("all stocks: ", e)
+
+
+try:
+    top_gainers_averages_three()
+    time.sleep(15)
+except Exception as e:
+    print("top gainers averages three: ", e)
 
 
 try:
@@ -593,12 +620,6 @@ try:
     time.sleep(15)
 except Exception as e:
     print("five times rel vol: ", e)
-
-try:
-    all_stocks()
-    time.sleep(15)
-except Exception as e:
-    print("all stocks: ", e)
 
 try:
     undervalued_two()
