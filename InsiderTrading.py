@@ -1,14 +1,7 @@
 import pandas as pd
 import finviz
-import datetime
-from pandas.tseries.offsets import BDay
 import os.path
 from finviz.screener import Screener
-
-file_list = []
-
-today = datetime.datetime.today()
-last_business_day = (today - BDay(1)).date()
 
 unique_path = 'E:\\stock records\\insider'
 
