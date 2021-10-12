@@ -38,7 +38,7 @@ for stock in stock_list:
         else:
            ticker_df = pd.DataFrame(insider, index=[0])
 
-        ticker_df = ticker_df.drop_duplicates(subset=['Date'])
+        ticker_df = ticker_df.drop_duplicates()
         ticker_df.to_csv(filepath, index=False, mode='w+')
 
     except Exception as e:
