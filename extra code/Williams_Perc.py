@@ -8,7 +8,7 @@ ib = IB()
 
 ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
 
-stock_list = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500'], table='Performance', order='price')
+stock_list = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1'], table='Performance', order='price')
 
 def get_wr(high, low, close, lookback):
     highh = high.rolling(lookback).max()
@@ -49,7 +49,7 @@ for x in stock_list:
     except Exception as err:
         print(err)
 
-stock_list = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500'], table='Performance', order='price')
+stock_list = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1'], table='Performance', order='price')
 
 # get 2 day data from IB API
 for x in stock_list:
