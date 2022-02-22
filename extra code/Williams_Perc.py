@@ -50,10 +50,10 @@ def get_option_data(ticker):
 def iterate(stock_list, path, williams_val, rsi_val):
 
     # get 2 day data from IB API
-    for x in stock_list:
+    for stock in stock_list:
         try:
 
-            stock = x['Ticker']
+            stock = stock['Ticker']
 
             security = Stock(stock, 'SMART', 'USD')
 
@@ -111,8 +111,9 @@ def iterate(stock_list, path, williams_val, rsi_val):
                             df.to_csv(f'{path}\\{stock}.csv', index=False)
                         else:
                             market_data.to_csv(f'{path}\\{stock}.csv', index=False)
-                            
+
                 elif williams_val == -10:
+
                     if williams_perc > williams_val and talib_rsi > rsi_val:
                         # append to dataframe if it exists, else create new dataframe
                         if os.path.isfile(f'{path}\\{stock}.csv'):
