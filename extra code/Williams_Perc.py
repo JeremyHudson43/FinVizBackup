@@ -101,15 +101,26 @@ def iterate(stock_list, path, williams_val, rsi_val):
                     # Create a new directory because it does not exist
                     os.makedirs(path)
 
-                if williams_perc < williams_val and talib_rsi < rsi_val:
-                    # append to dataframe if it exists, else create new dataframe
-                    if os.path.isfile(f'{path}\\{stock}.csv'):
-                        df = pd.read_csv(f'{path}\\{stock}.csv')
-                        df = df.append(market_data)
-                        df.to_csv(f'{path}\\{stock}.csv', index=False)
-                    else:
-                        market_data.to_csv(f'{path}\\{stock}.csv', index=False)
+                if williams_val == -90:
 
+                    if williams_perc < williams_val and talib_rsi < rsi_val:
+                        # append to dataframe if it exists, else create new dataframe
+                        if os.path.isfile(f'{path}\\{stock}.csv'):
+                            df = pd.read_csv(f'{path}\\{stock}.csv')
+                            df = df.append(market_data)
+                            df.to_csv(f'{path}\\{stock}.csv', index=False)
+                        else:
+                            market_data.to_csv(f'{path}\\{stock}.csv', index=False)
+                            
+                elif williams_val == -10:
+                    if williams_perc > williams_val and talib_rsi > rsi_val:
+                        # append to dataframe if it exists, else create new dataframe
+                        if os.path.isfile(f'{path}\\{stock}.csv'):
+                            df = pd.read_csv(f'{path}\\{stock}.csv')
+                            df = df.append(market_data)
+                            df.to_csv(f'{path}\\{stock}.csv', index=False)
+                        else:
+                            market_data.to_csv(f'{path}\\{stock}.csv', index=False)
 
         except Exception as err:
             print(traceback.format_exc())
