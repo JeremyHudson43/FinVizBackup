@@ -54,15 +54,13 @@ def get_option_data(ticker, price):
                  for strike in strikes]
 
     contracts = ib.qualifyContracts(*contracts)
-
     options = ib.reqTickers(*contracts)
 
     for option in options:
         volume = option.volume
 
-        if volume > 10:
+        if volume > 100:
             option_list.append(option)
-            print(option)
 
     return option_list
 
@@ -91,57 +89,59 @@ def iterate(stock_list, path, williams_val, rsi_val):
             price = float(finviz.get_stock(stock)['Price'])
 
             options = get_option_data(security, price)
+            
+            if len(options) > 0:
 
-            for option in options:
-
-                date = option.contract.lastTradeDateOrContractMonth
-                right = option.contract.right
-                strike = option.contract.strike
-
-                # Fetching historical data when market is closed for testing purposes
-                market_data = pd.DataFrame(
-                    ib.reqHistoricalData(
-                        security,
-                        endDateTime='',
-                        durationStr='7 D',
-                        barSizeSetting='1 day',
-                        whatToShow="TRADES",
-                        useRTH=True,
-                        formatDate=1,
-                        timeout=0
-                    ))
-
-                williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
-                talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
-
-                market_data['RSI (2)'] = talib_rsi
-                market_data['Williams % (2)'] = williams_perc
-                market_data['Option Volume'] = option.volume
-                market_data['Option Type'] = right
-                market_data['Option Expiration'] = date
-                market_data['Option Strike'] = strike
-
-                if williams_val == -90:
-
-                    if williams_perc < williams_val and talib_rsi < rsi_val:
-                        # append to dataframe if it exists, else create new dataframe
-                        if os.path.isfile(f'{path}\\{stock}.csv'):
-                            df = pd.read_csv(f'{path}\\{stock}.csv')
-                            df = df.append(market_data)
-                            df.to_csv(f'{path}\\{stock}.csv', index=False)
-                        else:
-                            market_data.to_csv(f'{path}\\{stock}.csv', index=False)
-
-                elif williams_val == -10:
-
-                    if williams_perc > williams_val and talib_rsi > rsi_val:
-                        # append to dataframe if it exists, else create new dataframe
-                        if os.path.isfile(f'{path}\\{stock}.csv'):
-                            df = pd.read_csv(f'{path}\\{stock}.csv')
-                            df = df.append(market_data)
-                            df.to_csv(f'{path}\\{stock}.csv', index=False)
-                        else:
-                            market_data.to_csv(f'{path}\\{stock}.csv', index=False)
+                for option in options:
+    
+                    date = option.contract.lastTradeDateOrContractMonth
+                    right = option.contract.right
+                    strike = option.contract.strike
+    
+                    # Fetching historical data when market is closed for testing purposes
+                    market_data = pd.DataFrame(
+                        ib.reqHistoricalData(
+                            security,
+                            endDateTime='',
+                            durationStr='7 D',
+                            barSizeSetting='1 day',
+                            whatToShow="TRADES",
+                            useRTH=True,
+                            formatDate=1,
+                            timeout=0
+                        ))
+    
+                    williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
+                    talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
+    
+                    market_data['RSI (2)'] = talib_rsi
+                    market_data['Williams % (2)'] = williams_perc
+                    market_data['Option Volume'] = option.volume
+                    market_data['Option Type'] = right
+                    market_data['Option Expiration'] = date
+                    market_data['Option Strike'] = strike
+    
+                    if williams_val == -90:
+    
+                        if williams_perc < williams_val or talib_rsi < rsi_val:
+                            # append to dataframe if it exists, else create new dataframe
+                            if os.path.isfile(f'{path}\\{stock}.csv'):
+                                df = pd.read_csv(f'{path}\\{stock}.csv')
+                                df = df.append(market_data)
+                                df.to_csv(f'{path}\\{stock}.csv', index=False)
+                            else:
+                                market_data.to_csv(f'{path}\\{stock}.csv', index=False)
+    
+                    elif williams_val == -10:
+    
+                        if williams_perc > williams_val or talib_rsi > rsi_val:
+                            # append to dataframe if it exists, else create new dataframe
+                            if os.path.isfile(f'{path}\\{stock}.csv'):
+                                df = pd.read_csv(f'{path}\\{stock}.csv')
+                                df = df.append(market_data)
+                                df.to_csv(f'{path}\\{stock}.csv', index=False)
+                            else:
+                                market_data.to_csv(f'{path}\\{stock}.csv', index=False)
 
         except Exception as err:
             print(traceback.format_exc())
