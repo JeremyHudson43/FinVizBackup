@@ -7,10 +7,13 @@ import traceback
 import pandas_ta as pta
 import os
 from datetime import datetime
+import finviz
+import time
 
 ib = IB()
 
 ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
+
 
 def get_wr(high, low, close, lookback):
     highh = high.rolling(lookback).max()
@@ -18,7 +21,8 @@ def get_wr(high, low, close, lookback):
     wr = 100 * ((close - highh) / (highh - lowl))
     return wr
 
-def get_option_data(ticker):
+
+def get_option_data(ticker, price):
 
     option_list = []
 
@@ -26,7 +30,10 @@ def get_option_data(ticker):
 
     chain = next(c for c in chains)
 
-    strikes = [strike for strike in chain.strikes]
+    strikes = [strike for strike in chain.strikes if abs(price - strike) < 2]
+
+    print(strikes)
+
     expirations = sorted(exp for exp in chain.expirations)[:3]
     rights = ['P', 'C']
 
@@ -43,6 +50,8 @@ def get_option_data(ticker):
         volume = option.volume
         if volume > 10:
             option_list.append(option)
+            
+    time.sleep(1)
 
     return option_list
 
@@ -52,14 +61,15 @@ def iterate(stock_list, path, williams_val, rsi_val):
     # get 2 day data from IB API
     for stock in stock_list:
         try:
-
             stock = stock['Ticker']
 
             security = Stock(stock, 'SMART', 'USD')
 
             ib.qualifyContracts(security)
 
-            options = get_option_data(security)
+            price = float(finviz.get_stock(stock)['Price'])
+
+            options = get_option_data(security, price)
 
             for option in options:
 
@@ -81,18 +91,18 @@ def iterate(stock_list, path, williams_val, rsi_val):
                     ))
 
                 williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
+                talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
 
-                market_data['Williams %'] = williams_perc
+                market_data['RSI (2)'] = talib_rsi
+                market_data['Williams % (2)'] = williams_perc
                 market_data['Option Volume'] = option.volume
                 market_data['Option Type'] = right
                 market_data['Option Expiration'] = date
                 market_data['Option Strike'] = strike
 
-                talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
-
                 today = datetime.today().strftime('%Y-%m-%d')
 
-                path = f'{path}\\{today}'
+                path = f'{path}{today}'
 
                 # Check whether the specified path exists or not
                 isExist = os.path.exists(path)
@@ -127,15 +137,11 @@ def iterate(stock_list, path, williams_val, rsi_val):
             print(traceback.format_exc())
 
 
-stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'], table='Performance', order='price')
-stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'], table='Performance', order='price')
-stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
-stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
 
-path_one = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF'
-path_two = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF'
-path_three = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma'
-path_four = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma'
+path_one = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF\\'
+path_two = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF\\'
+path_three = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma\\'
+path_four = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma\\'
 
 williams_one = -90
 williams_two = -10
@@ -143,7 +149,14 @@ williams_two = -10
 rsi_one = 10
 rsi_two = 90
 
+stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'], table='Performance', order='price')
 iterate(stock_list_one, path_one, williams_one, rsi_one)
+
+stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'], table='Performance', order='price')
 iterate(stock_list_two, path_two, williams_two, rsi_two)
+
+stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
 iterate(stock_list_three, path_three, williams_one, rsi_one)
+
+stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
 iterate(stock_list_four, path_four, williams_two, rsi_two)
