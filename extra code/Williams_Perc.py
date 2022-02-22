@@ -140,10 +140,10 @@ path_four = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_
 williams_one = -90
 williams_two = -10
 
-talib_rsi_one = 10
-talib_rsi_two = 90
+rsi_one = 10
+rsi_two = 90
 
-iterate(stock_list_one, path_one, williams_one, talib_rsi_one)
-iterate(stock_list_two, path_two, williams_two, talib_rsi_two)
-iterate(stock_list_three, path_three, williams_one, talib_rsi_one)
-iterate(stock_list_four, path_four, williams_two, talib_rsi_two)
+iterate(stock_list_one, path_one, williams_one, rsi_one)
+iterate(stock_list_two, path_two, williams_two, rsi_two)
+iterate(stock_list_three, path_three, williams_one, rsi_one)
+iterate(stock_list_four, path_four, williams_two, rsi_two)
