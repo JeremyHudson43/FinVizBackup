@@ -1,5 +1,5 @@
 from ib_insync.contract import Stock
-from ib_insync.ib import IB
+from ib_insync import OptionChain, Option, IB
 import pandas as pd
 import random
 from finviz.screener import Screener
@@ -18,6 +18,26 @@ def get_wr(high, low, close, lookback):
     wr = 100 * ((close - highh) / (highh - lowl))
     return wr
 
+def get_option_data(ticker):
+    chains = ib.reqSecDefOptParams(ticker.symbol, '', ticker.secType, ticker.conId)
+
+    chain = next(c for c in chains)
+
+    strikes = [strike for strike in chain.strikes]
+    expirations = sorted(exp for exp in chain.expirations)[:3]
+    rights = ['P', 'C']
+
+    contracts = [Option(ticker.symbol, expiration, strike, right, 'SMART')
+                 for right in rights
+                 for expiration in expirations
+                 for strike in strikes]
+
+    contracts = ib.qualifyContracts(*contracts)
+
+    tickers = ib.reqTickers(*contracts)
+
+    return tickers[0].volume
+
 
 # get 2 day data from IB API
 for x in stock_list:
@@ -25,9 +45,11 @@ for x in stock_list:
 
         stock = x['Ticker']
 
-        print(stock)
-
         security = Stock(stock, 'SMART', 'USD')
+
+        ib.qualifyContracts(security)
+
+        option_volume = get_option_data(security)
 
         # Fetching historical data when market is closed for testing purposes
         market_data = pd.DataFrame(
@@ -50,7 +72,7 @@ for x in stock_list:
 
         print(talib_rsi)
 
-        if williams_perc < -90 and talib_rsi < 20:
+        if williams_perc < -90 and talib_rsi < 10 and option_volume > 50:
             market_data.to_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF\\{stock}.csv')
 
     except Exception as err:
@@ -68,6 +90,10 @@ for x in stock_list:
 
         security = Stock(stock, 'SMART', 'USD')
 
+        ib.qualifyContracts(security)
+
+        option_volume = get_option_data(security)
+
         # Fetching historical data when market is closed for testing purposes
         market_data = pd.DataFrame(
             ib.reqHistoricalData(
@@ -86,7 +112,7 @@ for x in stock_list:
 
         market_data['Williams %'] = williams_perc
 
-        if williams_perc > -10 and talib_rsi > 80:
+        if williams_perc > -10 and talib_rsi > 90 and option_volume > 50:
             market_data.to_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF\\{stock}.csv')
 
     except Exception as err:
@@ -104,6 +130,10 @@ for x in stock_list:
 
         security = Stock(stock, 'SMART', 'USD')
 
+        ib.qualifyContracts(security)
+
+        option_volume = get_option_data(security)
+
         # Fetching historical data when market is closed for testing purposes
         market_data = pd.DataFrame(
             ib.reqHistoricalData(
@@ -122,7 +152,7 @@ for x in stock_list:
 
         market_data['Williams %'] = williams_perc
 
-        if williams_perc < -90 and talib_rsi < 20:
+        if williams_perc < -90 and talib_rsi < 10 and option_volume > 50:
             market_data.to_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma\\{stock}.csv')
 
     except Exception as err:
@@ -140,6 +170,9 @@ for x in stock_list:
 
         security = Stock(stock, 'SMART', 'USD')
 
+        ib.qualifyContracts(security)
+        option_volume = get_option_data(security)
+
         # Fetching historical data when market is closed for testing purposes
         market_data = pd.DataFrame(
             ib.reqHistoricalData(
@@ -158,7 +191,7 @@ for x in stock_list:
 
         market_data['Williams %'] = williams_perc
 
-        if williams_perc > -10 and talib_rsi > 80:
+        if williams_perc > -10 and talib_rsi > 90 and option_volume > 50:
             market_data.to_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma\\{stock}.csv')
 
     except Exception as err:
