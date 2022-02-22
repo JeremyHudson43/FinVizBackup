@@ -22,6 +22,15 @@ def get_wr(high, low, close, lookback):
     return wr
 
 
+def get_change(current, previous):
+    if current == previous:
+        return 100.0
+    try:
+        return (abs(current - previous) / previous) * 100.0
+    except ZeroDivisionError:
+        return 0
+
+
 def get_option_data(ticker, price):
 
     option_list = []
@@ -30,12 +39,10 @@ def get_option_data(ticker, price):
 
     chain = next(c for c in chains)
 
-    strikes = [strike for strike in chain.strikes if abs(price - strike) < 2]
+    strikes = [strike for strike in chain.strikes if get_change(price, strike) < 5]
 
     expirations = sorted(exp for exp in chain.expirations)
     expirations = sorted(exp for exp in expirations if (datetime.strptime(exp, '%Y%m%d') - datetime.now()).days < 30)
-
-    print(sorted(exp for exp in expirations))
 
     rights = ['P', 'C']
 
@@ -50,7 +57,7 @@ def get_option_data(ticker, price):
 
     for option in options:
         volume = option.volume
-        
+
         if volume > 10:
             option_list.append(option)
 
