@@ -6,7 +6,7 @@ from finviz.screener import Screener
 import traceback
 import pandas_ta as pta
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import finviz
 import time
 
@@ -32,9 +32,11 @@ def get_option_data(ticker, price):
 
     strikes = [strike for strike in chain.strikes if abs(price - strike) < 2]
 
-    print(strikes)
+    expirations = sorted(exp for exp in chain.expirations)
+    expirations = sorted(exp for exp in expirations if (datetime.strptime(exp, '%Y%m%d') - datetime.now()).days < 30)
 
-    expirations = sorted(exp for exp in chain.expirations)[:3]
+    print(sorted(exp for exp in expirations))
+
     rights = ['P', 'C']
 
     contracts = [Option(ticker.symbol, expiration, strike, right, 'SMART')
@@ -48,10 +50,9 @@ def get_option_data(ticker, price):
 
     for option in options:
         volume = option.volume
+        
         if volume > 10:
             option_list.append(option)
-            
-    time.sleep(1)
 
     return option_list
 
