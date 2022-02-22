@@ -4,6 +4,7 @@ import pandas as pd
 import random
 from finviz.screener import Screener
 import traceback
+import pandas_ta as pta
 
 ib = IB()
 
@@ -33,7 +34,7 @@ for x in stock_list:
             ib.reqHistoricalData(
                 security,
                 endDateTime='',
-                durationStr='3 D',
+                durationStr='7 D',
                 barSizeSetting='1 day',
                 whatToShow="TRADES",
                 useRTH=True,
@@ -42,9 +43,14 @@ for x in stock_list:
             ))
 
         williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
+
         market_data['Williams %'] = williams_perc
 
-        if williams_perc < -90:
+        talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
+
+        print(talib_rsi)
+
+        if williams_perc < -90 and talib_rsi < 20:
             market_data.to_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF\\{stock}.csv')
 
     except Exception as err:
@@ -67,7 +73,7 @@ for x in stock_list:
             ib.reqHistoricalData(
                 security,
                 endDateTime='',
-                durationStr='3 D',
+                durationStr='7 D',
                 barSizeSetting='1 day',
                 whatToShow="TRADES",
                 useRTH=True,
@@ -76,10 +82,11 @@ for x in stock_list:
             ))
 
         williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
+        talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
 
         market_data['Williams %'] = williams_perc
 
-        if williams_perc > -10:
+        if williams_perc > -10 and talib_rsi > 80:
             market_data.to_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF\\{stock}.csv')
 
     except Exception as err:
@@ -102,7 +109,7 @@ for x in stock_list:
             ib.reqHistoricalData(
                 security,
                 endDateTime='',
-                durationStr='3 D',
+                durationStr='7 D',
                 barSizeSetting='1 day',
                 whatToShow="TRADES",
                 useRTH=True,
@@ -111,10 +118,11 @@ for x in stock_list:
             ))
 
         williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
+        talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
 
         market_data['Williams %'] = williams_perc
 
-        if williams_perc < -90:
+        if williams_perc < -90 and talib_rsi < 20:
             market_data.to_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma\\{stock}.csv')
 
     except Exception as err:
@@ -137,7 +145,7 @@ for x in stock_list:
             ib.reqHistoricalData(
                 security,
                 endDateTime='',
-                durationStr='3 D',
+                durationStr='7 D',
                 barSizeSetting='1 day',
                 whatToShow="TRADES",
                 useRTH=True,
@@ -146,10 +154,11 @@ for x in stock_list:
             ))
 
         williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
+        talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
 
         market_data['Williams %'] = williams_perc
 
-        if williams_perc > -10:
+        if williams_perc > -10 and talib_rsi > 80:
             market_data.to_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma\\{stock}.csv')
 
     except Exception as err:
