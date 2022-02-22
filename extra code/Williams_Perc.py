@@ -36,13 +36,15 @@ def get_option_data(ticker, price):
     option_list = []
 
     chains = ib.reqSecDefOptParams(ticker.symbol, '', ticker.secType, ticker.conId)
-
     chain = next(c for c in chains)
 
     strikes = [strike for strike in chain.strikes if get_change(price, strike) < 5]
 
-    expirations = sorted(exp for exp in chain.expirations)
-    expirations = sorted(exp for exp in expirations if (datetime.strptime(exp, '%Y%m%d') - datetime.now()).days < 30)
+    for strike in strikes:
+        print(ticker.symbol, strike, price)
+
+    expirations = sorted(exp for exp in chain.expirations if
+                         (datetime.strptime(exp, '%Y%m%d') - datetime.now()).days < 30)
 
     rights = ['P', 'C']
 
@@ -60,11 +62,22 @@ def get_option_data(ticker, price):
 
         if volume > 10:
             option_list.append(option)
+            print(option)
 
     return option_list
 
 
 def iterate(stock_list, path, williams_val, rsi_val):
+
+    today = datetime.today().strftime('%Y-%m-%d')
+    path = f'{path}\\{today}'
+
+    # Check whether the specified path exists or not
+    isExist = os.path.exists(path)
+
+    if not isExist:
+        # Create a new directory because it does not exist
+        os.makedirs(path)
 
     # get 2 day data from IB API
     for stock in stock_list:
@@ -108,17 +121,6 @@ def iterate(stock_list, path, williams_val, rsi_val):
                 market_data['Option Expiration'] = date
                 market_data['Option Strike'] = strike
 
-                today = datetime.today().strftime('%Y-%m-%d')
-
-                path = f'{path}{today}'
-
-                # Check whether the specified path exists or not
-                isExist = os.path.exists(path)
-
-                if not isExist:
-                    # Create a new directory because it does not exist
-                    os.makedirs(path)
-
                 if williams_val == -90:
 
                     if williams_perc < williams_val and talib_rsi < rsi_val:
@@ -145,11 +147,10 @@ def iterate(stock_list, path, williams_val, rsi_val):
             print(traceback.format_exc())
 
 
-
-path_one = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF\\'
-path_two = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF\\'
-path_three = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma\\'
-path_four = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma\\'
+path_one = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF'
+path_two = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF'
+path_three = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma'
+path_four = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma'
 
 williams_one = -90
 williams_two = -10
