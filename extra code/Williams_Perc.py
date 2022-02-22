@@ -36,7 +36,10 @@ def get_option_data(ticker):
 
     tickers = ib.reqTickers(*contracts)
 
-    return tickers[0].volume
+    for ticker in tickers:
+        volume = ticker.volume
+        if volume > 50:
+            return volume
 
 
 # get 2 day data from IB API
@@ -72,7 +75,7 @@ for x in stock_list:
 
         print(talib_rsi)
 
-        if williams_perc < -90 and talib_rsi < 10 and option_volume > 50:
+        if option_volume > 50:
             market_data.to_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF\\{stock}.csv')
 
     except Exception as err:
