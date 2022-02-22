@@ -101,7 +101,7 @@ for x in stock_list:
                 # Create a new directory because it does not exist
                 os.makedirs(path)
 
-            if williams_perc < -90 and talib_rsi < 10 and option.volume > 50:
+            if williams_perc < -90 and talib_rsi < 10:
                 # append to dataframe if it exists, else create new dataframe
                 if os.path.isfile(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF\\{today}\\{stock}.csv'):
                     df = pd.read_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF\\{today}\\{stock}.csv')
@@ -170,8 +170,7 @@ for x in stock_list:
                 # Create a new directory because it does not exist
                 os.makedirs(path)
 
-            if williams_perc > -10 and talib_rsi > 90 and option.volume > 50:
-
+            if williams_perc > -10 and talib_rsi > 90:
                 # append to dataframe if it exists, else create new dataframe
                 if os.path.isfile(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF\\{today}\\{stock}.csv'):
                     df = pd.read_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF\\{today}\\{stock}.csv')
@@ -239,7 +238,7 @@ for x in stock_list:
                 # Create a new directory because it does not exist
                 os.makedirs(path)
 
-            if williams_perc < -90 and talib_rsi < 10 and option.volume > 50:
+            if williams_perc < -90 and talib_rsi < 10:
                 # append to dataframe if it exists, else create new dataframe
                 if os.path.isfile(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma\\{today}\\{stock}.csv'):
                     df = pd.read_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma\\{today}\\{stock}.csv')
@@ -295,7 +294,7 @@ for x in stock_list:
             market_data['Option Type'] = right
             market_data['Option Expiration'] = date
             market_data['Option Strike'] = strike
-            
+
             today = datetime.today().strftime('%Y-%m-%d')
 
             path = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma\\{today}'
@@ -307,8 +306,7 @@ for x in stock_list:
                 # Create a new directory because it does not exist
                 os.makedirs(path)
 
-            if williams_perc > -10 and talib_rsi > 90 and option.volume > 50:
-
+            if williams_perc > -10 and talib_rsi > 90:
                 # append to dataframe if it exists, else create new dataframe
                 if os.path.isfile(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma\\{today}\\{stock}.csv'):
                     df = pd.read_csv(f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma\\{today}\\{stock}.csv')
