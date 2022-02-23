@@ -9,6 +9,8 @@ import os
 from datetime import datetime, timedelta
 import finviz
 import time
+import functools
+import glob
 
 ib = IB()
 
@@ -116,6 +118,7 @@ def iterate(stock_list, path, williams_val, rsi_val):
 
                     print(williams_perc, talib_rsi)
 
+                    market_data['Ticker'] = stock
                     market_data['RSI (2)'] = talib_rsi
                     market_data['Williams % (2)'] = williams_perc
                     market_data['Option Volume'] = option.volume
@@ -148,6 +151,10 @@ def iterate(stock_list, path, williams_val, rsi_val):
         except Exception as err:
             print(traceback.format_exc())
 
+    df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
+                           glob.glob(path + "/*.csv")))
+    df.to_csv(f'{path}\\combined.csv', index=False)
+
 
 path_one = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF'
 path_two = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF'
@@ -166,8 +173,9 @@ iterate(stock_list_one, path_one, williams_one, rsi_one)
 stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'], table='Performance', order='price')
 iterate(stock_list_two, path_two, williams_two, rsi_two)
 
-stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
-iterate(stock_list_three, path_three, williams_one, rsi_one)
+# stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
+# iterate(stock_list_three, path_three, williams_one, rsi_one)
 
-stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
-iterate(stock_list_four, path_four, williams_two, rsi_two)
+# stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
+# iterate(stock_list_four, path_four, williams_two, rsi_two)
+
