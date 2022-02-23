@@ -40,9 +40,6 @@ def get_option_data(ticker, price):
 
     strikes = [strike for strike in chain.strikes if get_change(price, strike) < 5]
 
-    for strike in strikes:
-        print(ticker.symbol, strike, price)
-
     expirations = sorted(exp for exp in chain.expirations if
                          (datetime.strptime(exp, '%Y%m%d') - datetime.now()).days < 30)
 
@@ -59,8 +56,11 @@ def get_option_data(ticker, price):
     for option in options:
         volume = option.volume
 
-        if volume > 100:
+        if volume > 0:
             option_list.append(option)
+
+            for strike in strikes:
+                print(ticker.symbol, strike, price, volume)
 
     return option_list
 
@@ -83,10 +83,10 @@ def iterate(stock_list, path, williams_val, rsi_val):
             stock = stock['Ticker']
 
             security = Stock(stock, 'SMART', 'USD')
-
             ib.qualifyContracts(security)
 
-            price = float(finviz.get_stock(stock)['Price'])
+            [ticker_close] = ib.reqTickers(security)
+            price = ticker_close.marketPrice()
 
             options = get_option_data(security, price)
 
@@ -125,7 +125,7 @@ def iterate(stock_list, path, williams_val, rsi_val):
 
                     if williams_val == -85 and right == 'C':
 
-                        if williams_perc < williams_val and talib_rsi < rsi_val:
+                        if williams_perc < williams_val or talib_rsi < rsi_val:
                             # append to dataframe if it exists, else create new dataframe
                             if os.path.isfile(f'{path}\\{stock}.csv'):
                                 df = pd.read_csv(f'{path}\\{stock}.csv')
@@ -136,7 +136,7 @@ def iterate(stock_list, path, williams_val, rsi_val):
 
                     elif williams_val == -15 and right == 'P':
 
-                        if williams_perc > williams_val and talib_rsi > rsi_val:
+                        if williams_perc > williams_val or talib_rsi > rsi_val:
                             # append to dataframe if it exists, else create new dataframe
                             if os.path.isfile(f'{path}\\{stock}.csv'):
                                 df = pd.read_csv(f'{path}\\{stock}.csv')
