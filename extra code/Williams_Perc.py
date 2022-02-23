@@ -89,15 +89,15 @@ def iterate(stock_list, path, williams_val, rsi_val):
             price = float(finviz.get_stock(stock)['Price'])
 
             options = get_option_data(security, price)
-            
+
             if len(options) > 0:
 
                 for option in options:
-    
+
                     date = option.contract.lastTradeDateOrContractMonth
                     right = option.contract.right
                     strike = option.contract.strike
-    
+
                     # Fetching historical data when market is closed for testing purposes
                     market_data = pd.DataFrame(
                         ib.reqHistoricalData(
@@ -110,20 +110,22 @@ def iterate(stock_list, path, williams_val, rsi_val):
                             formatDate=1,
                             timeout=0
                         ))
-    
+
                     williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
                     talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
-    
+
+                    print(williams_perc, talib_rsi)
+
                     market_data['RSI (2)'] = talib_rsi
                     market_data['Williams % (2)'] = williams_perc
                     market_data['Option Volume'] = option.volume
                     market_data['Option Type'] = right
                     market_data['Option Expiration'] = date
                     market_data['Option Strike'] = strike
-    
-                    if williams_val == -90:
-    
-                        if williams_perc < williams_val or talib_rsi < rsi_val:
+
+                    if williams_val == -85 and right == 'C':
+
+                        if williams_perc < williams_val and talib_rsi < rsi_val:
                             # append to dataframe if it exists, else create new dataframe
                             if os.path.isfile(f'{path}\\{stock}.csv'):
                                 df = pd.read_csv(f'{path}\\{stock}.csv')
@@ -131,10 +133,10 @@ def iterate(stock_list, path, williams_val, rsi_val):
                                 df.to_csv(f'{path}\\{stock}.csv', index=False)
                             else:
                                 market_data.to_csv(f'{path}\\{stock}.csv', index=False)
-    
-                    elif williams_val == -10:
-    
-                        if williams_perc > williams_val or talib_rsi > rsi_val:
+
+                    elif williams_val == -15 and right == 'P':
+
+                        if williams_perc > williams_val and talib_rsi > rsi_val:
                             # append to dataframe if it exists, else create new dataframe
                             if os.path.isfile(f'{path}\\{stock}.csv'):
                                 df = pd.read_csv(f'{path}\\{stock}.csv')
@@ -152,11 +154,11 @@ path_two = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_m
 path_three = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma'
 path_four = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma'
 
-williams_one = -90
-williams_two = -10
+williams_one = -85
+williams_two = -15
 
-rsi_one = 10
-rsi_two = 90
+rsi_one = 15
+rsi_two = 85
 
 stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'], table='Performance', order='price')
 iterate(stock_list_one, path_one, williams_one, rsi_one)
