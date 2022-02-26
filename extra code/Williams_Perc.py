@@ -69,12 +69,16 @@ def get_option_data(ticker, price):
 
     rights = ['P', 'C']
 
-    contracts = [Option(ticker.symbol, expiration, strike, right, 'SMART')
-                 for right in rights
-                 for expiration in expirations
-                 for strike in strikes]
+    contracts_list = []
 
-    contracts = ib.qualifyContracts(*contracts)
+    for strike in strikes:
+        ib.sleep(1)
+        for expiration in expirations:
+            for right in rights:
+                contract = Option(ticker.symbol, expiration, strike, right, 'SMART')
+                contracts_list.append(contract)
+
+    contracts = ib.qualifyContracts(*contracts_list)
     options = ib.reqTickers(*contracts)
 
     for option in options:
@@ -85,7 +89,7 @@ def get_option_data(ticker, price):
 
             for strike in strikes:
                 print(ticker.symbol, strike, price, volume)
-
+    ib.sleep(1)
 
     return option_list
 
@@ -209,4 +213,3 @@ iterate(stock_list_three, path_three, williams_one, rsi_one)
 
 stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
 iterate(stock_list_four, path_four, williams_two, rsi_two)
-
