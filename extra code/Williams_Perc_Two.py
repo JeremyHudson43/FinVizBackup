@@ -41,8 +41,7 @@ def value_to_float(x):
     return 0.0
 
 
-
-def iterate(stock_list, path, williams_val, rsi_val, bear_bull):
+def iterate(stock_list, path, williams_val, rsi_val, bear_bull, ETF):
 
     ib = IB()
 
@@ -104,6 +103,8 @@ def iterate(stock_list, path, williams_val, rsi_val, bear_bull):
                     market_data['RSI (2)'] = talib_rsi
                     market_data['Williams % (2)'] = williams_perc
                     market_data['Avg Volume'] = avg_vol
+                    market_data['Bear/Bull'] = bear_bull
+                    market_data["ETF"] = ETF
 
                     if williams_perc <= williams_val and talib_rsi <= rsi_val and bear_bull == 'bull':
                         # append to dataframe if it exists, else create new dataframe
@@ -138,10 +139,8 @@ def iterate(stock_list, path, williams_val, rsi_val, bear_bull):
     ib.disconnect()
 
 
-path_one = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF'
-path_two = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF'
-path_three = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma'
-path_four = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma'
+path = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\results\\'
+
 
 williams_one = -85
 williams_two = -15
@@ -151,16 +150,16 @@ rsi_two = 85
 
 stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'],
                            table='Performance', order='price')
-iterate(stock_list_one, path_one, williams_one, rsi_one, 'bull')
+iterate(stock_list_one, path, williams_one, rsi_one, 'bull', True)
 
 stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'],
                            table='Performance', order='price')
-iterate(stock_list_two, path_two, williams_two, rsi_two, 'bear')
+iterate(stock_list_two, path, williams_two, rsi_two, 'bear', True)
 
 stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'],
                             table='Performance', order='price')
-iterate(stock_list_three, path_three, williams_one, rsi_one, 'bull')
+iterate(stock_list_three, path, williams_one, rsi_one, 'bull', False)
 
 stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'],
                            table='Performance', order='price')
-iterate(stock_list_four, path_four, williams_two, rsi_two, 'bear')
+iterate(stock_list_four, path, williams_two, rsi_two, 'bear', False)
