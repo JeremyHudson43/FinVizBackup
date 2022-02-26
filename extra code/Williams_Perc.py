@@ -194,6 +194,8 @@ def iterate(stock_list, path, williams_val, rsi_val):
 
     except Exception as err:
         print(traceback.format_exc())
+        
+    ib.disconnect()
 
 
 path_one = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF'
