@@ -54,12 +54,10 @@ def value_to_float(x):
 
 
 def get_option_data(ticker, price, ib):
-    option_list = []
-
     chains = ib.reqSecDefOptParams(ticker.symbol, '', ticker.secType, ticker.conId)
     chain = next(c for c in chains)
 
-    strikes = [strike for strike in chain.strikes if get_change(price, strike) < 25]
+    strikes = [strike for strike in chain.strikes if get_change(price, strike) < 25 or get_change(strike, price) > 25]
 
     expirations = sorted(exp for exp in chain.expirations if
                          (datetime.strptime(exp, '%Y%m%d') - datetime.now()).days < 90)
@@ -78,16 +76,7 @@ def get_option_data(ticker, price, ib):
     contracts = ib.qualifyContracts(*contracts_list)
     options = ib.reqTickers(*contracts)
 
-    for option in options:
-        volume = option.volume
-
-        if volume > 100:
-            option_list.append(option)
-
-            for strike in strikes:
-                print(ticker.symbol, strike, price, volume)
-
-    return option_list
+    return options
 
 
 def iterate(stock_list, path, williams_val, rsi_val):
@@ -167,14 +156,14 @@ def iterate(stock_list, path, williams_val, rsi_val):
                             market_data['Ticker'] = stock
                             market_data['RSI (2)'] = talib_rsi
                             market_data['Williams % (2)'] = williams_perc
-                            market_data['Option Volume'] = option.volume
+                            # market_data['Option Volume'] = option.volume
                             market_data['Option Type'] = right
                             market_data['Option Expiration'] = date
                             market_data['Option Strike'] = strike
 
-                            if williams_val == -85 and right == 'C':
+                            if williams_val == -80 and right == 'C':
 
-                                if williams_perc < williams_val or talib_rsi < rsi_val:
+                                if williams_perc < williams_val and talib_rsi < rsi_val:
                                     # append to dataframe if it exists, else create new dataframe
                                     if os.path.isfile(f'{path}\\{stock}.csv'):
                                         df = pd.read_csv(f'{path}\\{stock}.csv')
@@ -183,9 +172,9 @@ def iterate(stock_list, path, williams_val, rsi_val):
                                     else:
                                         market_data.to_csv(f'{path}\\{stock}.csv', index=False)
 
-                            elif williams_val == -15 and right == 'P':
+                            elif williams_val == -20 and right == 'P':
 
-                                if williams_perc > williams_val or talib_rsi > rsi_val:
+                                if williams_perc > williams_val and talib_rsi > rsi_val:
                                     # append to dataframe if it exists, else create new dataframe
                                     if os.path.isfile(f'{path}\\{stock}.csv'):
                                         df = pd.read_csv(f'{path}\\{stock}.csv')
@@ -212,11 +201,11 @@ path_two = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_m
 path_three = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma'
 path_four = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma'
 
-williams_one = -85
-williams_two = -15
+williams_one = -80
+williams_two = -20
 
-rsi_one = 15
-rsi_two = 85
+rsi_one = 20
+rsi_two = 80
 
 stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_exchangetradedfund'],
                           table='Performance', order='price')
