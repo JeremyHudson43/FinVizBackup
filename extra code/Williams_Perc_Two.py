@@ -47,9 +47,6 @@ def iterate(stock_list, path, williams_val, rsi_val, bear_bull, ETF):
 
     ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
 
-    today = datetime.today().strftime('%Y-%m-%d')
-    path = f'{path}\\{today}'
-
     # Check whether the specified path exists or not
     isExist = os.path.exists(path)
 
@@ -132,12 +129,14 @@ def iterate(stock_list, path, williams_val, rsi_val, bear_bull, ETF):
 
 path = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\results\\'
 
+today = datetime.today().strftime('%Y-%m-%d')
+path = f'{path}\\{today}'
 
-williams_one = -85
-williams_two = -15
+williams_one = -90
+williams_two = -10
 
-rsi_one = 15
-rsi_two = 85
+rsi_one = 10
+rsi_two = 90
 
 stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'],
                            table='Performance', order='price')
