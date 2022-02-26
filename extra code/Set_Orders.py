@@ -18,22 +18,24 @@ def sleep_until_market_open():
         time.sleep(time_until_market_open)
 
 
-def place_order(ticker, year, month, day, strike, right):
+def place_order(ticker, year, month, day, strike, right, qty):
 
     contract = Option(ticker, year + month + day, strike, right, "SMART")
 
     ib.qualifyContracts(contract)
     contract_data = ib.reqTickers(*[contract])[0]
 
-    bid = contract_data.bid
+    bid = contract_data.close
 
-    qty = 1
-
-    limit_price = bid * 1.03
+    limit_price = bid
     take_profit = bid * 1.15
-    stop_loss_price = bid * 0.5
+    stop_loss_price = bid * 0.9
 
-    print(bid)
+    limit_price = 0.05 * round(limit_price / 0.05)
+    take_profit = 0.05 * round(take_profit / 0.05)
+    stop_loss_price = 0.05 * round(stop_loss_price / 0.05)
+
+    print(limit_price, take_profit, stop_loss_price)
 
     buy_order = ib.bracketOrder(
                'BUY',
@@ -48,4 +50,16 @@ def place_order(ticker, year, month, day, strike, right):
 
 
 sleep_until_market_open()
-place_order('SPY', '2022', '02', '28', '437', 'P')
+
+# HYG March 18 $82 put ($0.45 bid)
+
+# IHI March 18 $59 put ($1.10 bid)
+
+# URA March 18 $22 put ($0.75 bid)
+
+# DBA March 18 $20 call ($0.80 bid)
+
+place_order('HYG', '2022', '03', '18', '82', 'P', 1)
+place_order('IHI', '2022', '03', '18', '59', 'P', 1)
+place_order('URA', '2022', '03', '18', '22', 'P', 1)
+place_order('DBA', '2022', '03', '18', '20', 'C', 1)
