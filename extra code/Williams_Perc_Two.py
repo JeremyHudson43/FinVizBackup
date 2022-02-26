@@ -6,12 +6,9 @@ from finviz.screener import Screener
 import traceback
 import pandas_ta as pta
 import os
-from datetime import datetime, timedelta
-import finviz
-import time
+from datetime import datetime
 import functools
 import glob
-
 
 
 def get_wr(high, low, close, lookback):
@@ -19,15 +16,6 @@ def get_wr(high, low, close, lookback):
     lowl = low.rolling(lookback).min()
     wr = 100 * ((close - highh) / (highh - lowl))
     return wr
-
-
-def get_change(current, previous):
-    if current == previous:
-        return 100.0
-    try:
-        return (abs(current - previous) / previous) * 100.0
-    except ZeroDivisionError:
-        return 0
 
 
 def value_to_float(x):
@@ -52,32 +40,6 @@ def value_to_float(x):
 
     return 0.0
 
-
-def get_option_data(ticker, price, ib):
-    chains = ib.reqSecDefOptParams(ticker.symbol, '', ticker.secType, ticker.conId)
-    chain = next(c for c in chains)
-
-    strikes = [strike for strike in chain.strikes if get_change(price, strike) < 25 or get_change(strike, price) > 25]
-
-    expirations = sorted(exp for exp in chain.expirations if
-                         (datetime.strptime(exp, '%Y%m%d') - datetime.now()).days < 90)
-
-    rights = ['P', 'C']
-
-    contracts_list = []
-
-    for strike in strikes:
-        ib.sleep(1)
-        for expiration in expirations:
-            ib.sleep(1)
-            for right in rights:
-                contract = Option(ticker.symbol, expiration, strike, right, 'SMART')
-                contracts_list.append(contract)
-
-    contracts = ib.qualifyContracts(*contracts_list)
-    options = ib.reqTickers(*contracts)
-
-    return options
 
 
 def iterate(stock_list, path, williams_val, rsi_val, bear_bull):
