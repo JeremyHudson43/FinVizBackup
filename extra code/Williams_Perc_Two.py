@@ -94,6 +94,8 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
                     williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
                     talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
 
+                    market_data = market_data.iloc[-1]
+
                     print(stock, williams_perc, talib_rsi)
 
                     market_data['Ticker'] = stock
