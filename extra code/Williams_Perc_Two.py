@@ -41,7 +41,7 @@ def value_to_float(x):
     return 0.0
 
 
-def iterate(stock_list, path, williams_val, rsi_val, bear_bull, ETF):
+def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
 
     ib = IB()
 
@@ -100,10 +100,10 @@ def iterate(stock_list, path, williams_val, rsi_val, bear_bull, ETF):
                     market_data['RSI (2)'] = talib_rsi
                     market_data['Williams % (2)'] = williams_perc
                     market_data['Avg Volume'] = avg_vol
-                    market_data['Bear/Bull'] = bear_bull
+                    market_data['Call/Put'] = call_put
                     market_data["ETF"] = ETF
 
-                    if williams_perc <= williams_val and talib_rsi <= rsi_val and bear_bull == 'bull':
+                    if williams_perc <= williams_val and talib_rsi <= rsi_val and call_put == 'call':
                         # append to dataframe if it exists, else create new dataframe
                         if os.path.isfile(f'{path}\\{stock}.csv'):
                             df = pd.read_csv(f'{path}\\{stock}.csv')
@@ -112,7 +112,7 @@ def iterate(stock_list, path, williams_val, rsi_val, bear_bull, ETF):
                         else:
                             market_data.to_csv(f'{path}\\{stock}.csv', index=False)
 
-                    elif williams_perc >= williams_val and talib_rsi >= rsi_val and bear_bull == 'bear':
+                    elif williams_perc >= williams_val and talib_rsi >= rsi_val and call_put == 'put':
                         # append to dataframe if it exists, else create new dataframe
                         if os.path.isfile(f'{path}\\{stock}.csv'):
                             df = pd.read_csv(f'{path}\\{stock}.csv')
@@ -140,19 +140,19 @@ rsi_two = 90
 
 stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'],
                            table='Performance', order='price')
-iterate(stock_list_one, path, williams_one, rsi_one, 'bull', True)
+iterate(stock_list_one, path, williams_one, rsi_one, 'call', True)
 
 stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'],
                            table='Performance', order='price')
-iterate(stock_list_two, path, williams_two, rsi_two, 'bear', True)
+iterate(stock_list_two, path, williams_two, rsi_two, 'put', True)
 
 stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'],
                             table='Performance', order='price')
-iterate(stock_list_three, path, williams_one, rsi_one, 'bull', False)
+iterate(stock_list_three, path, williams_one, rsi_one, 'call', False)
 
 stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'],
                            table='Performance', order='price')
-iterate(stock_list_four, path, williams_two, rsi_two, 'bear', False)
+iterate(stock_list_four, path, williams_two, rsi_two, 'put', False)
 
 try:
 
