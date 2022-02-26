@@ -127,15 +127,6 @@ def iterate(stock_list, path, williams_val, rsi_val, bear_bull, ETF):
         except Exception as err:
             print(traceback.format_exc())
 
-    try:
-
-        df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
-                           glob.glob(path + "/*.csv")))
-        df.to_csv(f'{path}\\combined.csv', index=False)
-
-    except Exception as err:
-        print(traceback.format_exc())
-
     ib.disconnect()
 
 
@@ -163,3 +154,12 @@ iterate(stock_list_three, path, williams_one, rsi_one, 'bull', False)
 stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'],
                            table='Performance', order='price')
 iterate(stock_list_four, path, williams_two, rsi_two, 'bear', False)
+
+try:
+
+    df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
+                       glob.glob(path + "/*.csv")))
+    df.to_csv(f'{path}\\combined.csv', index=False)
+
+except Exception as err:
+    print(traceback.format_exc())
