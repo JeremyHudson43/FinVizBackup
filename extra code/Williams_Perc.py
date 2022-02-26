@@ -116,12 +116,18 @@ def iterate(stock_list, path, williams_val, rsi_val):
             if avg_vol > 5000000:
 
                 f = open(f"{path}\\checked.txt", "a+")
-                f.write(stock + '\n')
                 f.close()
 
                 checked_stocks = open(f"{path}\\checked.txt", "r").readlines()
+                checked_stocks = [x.strip() for x in checked_stocks]
+
+                print(checked_stocks)
 
                 if stock not in checked_stocks:
+
+                    f = open(f"{path}\\checked.txt", "a+")
+                    f.write(stock + '\n')
+                    f.close()
 
                     security = Stock(stock, 'SMART', 'USD')
                     ib.qualifyContracts(security)
