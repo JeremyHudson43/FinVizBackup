@@ -12,9 +12,6 @@ import time
 import functools
 import glob
 
-ib = IB()
-
-ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
 
 
 def get_wr(high, low, close, lookback):
@@ -56,7 +53,7 @@ def value_to_float(x):
     return 0.0
 
 
-def get_option_data(ticker, price):
+def get_option_data(ticker, price, ib):
     option_list = []
 
     chains = ib.reqSecDefOptParams(ticker.symbol, '', ticker.secType, ticker.conId)
@@ -89,12 +86,15 @@ def get_option_data(ticker, price):
 
             for strike in strikes:
                 print(ticker.symbol, strike, price, volume)
-    ib.sleep(1)
 
     return option_list
 
 
 def iterate(stock_list, path, williams_val, rsi_val):
+
+    ib = IB()
+
+    ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
 
     today = datetime.today().strftime('%Y-%m-%d')
     path = f'{path}\\{today}'
@@ -115,69 +115,78 @@ def iterate(stock_list, path, williams_val, rsi_val):
 
             if avg_vol > 5000000:
 
-                security = Stock(stock, 'SMART', 'USD')
-                ib.qualifyContracts(security)
+                f = open(f"{path}\\checked.txt", "a+")
+                f.write(stock + '\n')
+                f.close()
 
-                [ticker_close] = ib.reqTickers(security)
-                price = ticker_close.marketPrice()
+                checked_stocks = open(f"{path}\\checked.txt", "r").readlines()
 
-                options = get_option_data(security, price)
+                if stock not in checked_stocks:
 
-                if len(options) > 0:
+                    security = Stock(stock, 'SMART', 'USD')
+                    ib.qualifyContracts(security)
 
-                    for option in options:
+                    [ticker_close] = ib.reqTickers(security)
+                    price = ticker_close.marketPrice()
 
-                        date = option.contract.lastTradeDateOrContractMonth
-                        right = option.contract.right
-                        strike = option.contract.strike
+                    options = get_option_data(security, price, ib)
 
-                        # Fetching historical data when market is closed for testing purposes
-                        market_data = pd.DataFrame(
-                            ib.reqHistoricalData(
-                                security,
-                                endDateTime='',
-                                durationStr='7 D',
-                                barSizeSetting='1 day',
-                                whatToShow="TRADES",
-                                useRTH=True,
-                                formatDate=1,
-                                timeout=0
-                            ))
+                    if len(options) > 0:
 
-                        williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
-                        talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
+                        for option in options:
 
-                        print(williams_perc, talib_rsi)
+                            date = option.contract.lastTradeDateOrContractMonth
+                            right = option.contract.right
+                            strike = option.contract.strike
 
-                        market_data['Ticker'] = stock
-                        market_data['RSI (2)'] = talib_rsi
-                        market_data['Williams % (2)'] = williams_perc
-                        market_data['Option Volume'] = option.volume
-                        market_data['Option Type'] = right
-                        market_data['Option Expiration'] = date
-                        market_data['Option Strike'] = strike
+                            # Fetching historical data when market is closed for testing purposes
+                            market_data = pd.DataFrame(
+                                ib.reqHistoricalData(
+                                    security,
+                                    endDateTime='',
+                                    durationStr='7 D',
+                                    barSizeSetting='1 day',
+                                    whatToShow="TRADES",
+                                    useRTH=True,
+                                    formatDate=1,
+                                    timeout=0
+                                ))
 
-                        if williams_val == -85 and right == 'C':
+                            williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[
+                                -1]
+                            talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
 
-                            if williams_perc < williams_val or talib_rsi < rsi_val:
-                                # append to dataframe if it exists, else create new dataframe
-                                if os.path.isfile(f'{path}\\{stock}.csv'):
-                                    df = pd.read_csv(f'{path}\\{stock}.csv')
-                                    df = df.append(market_data)
-                                    df.to_csv(f'{path}\\{stock}.csv', index=False)
-                                else:
-                                    market_data.to_csv(f'{path}\\{stock}.csv', index=False)
+                            print(williams_perc, talib_rsi)
 
-                        elif williams_val == -15 and right == 'P':
+                            market_data['Ticker'] = stock
+                            market_data['RSI (2)'] = talib_rsi
+                            market_data['Williams % (2)'] = williams_perc
+                            market_data['Option Volume'] = option.volume
+                            market_data['Option Type'] = right
+                            market_data['Option Expiration'] = date
+                            market_data['Option Strike'] = strike
 
-                            if williams_perc > williams_val or talib_rsi > rsi_val:
-                                # append to dataframe if it exists, else create new dataframe
-                                if os.path.isfile(f'{path}\\{stock}.csv'):
-                                    df = pd.read_csv(f'{path}\\{stock}.csv')
-                                    df = df.append(market_data)
-                                    df.to_csv(f'{path}\\{stock}.csv', index=False)
-                                else:
-                                    market_data.to_csv(f'{path}\\{stock}.csv', index=False)
+                            if williams_val == -85 and right == 'C':
+
+                                if williams_perc < williams_val or talib_rsi < rsi_val:
+                                    # append to dataframe if it exists, else create new dataframe
+                                    if os.path.isfile(f'{path}\\{stock}.csv'):
+                                        df = pd.read_csv(f'{path}\\{stock}.csv')
+                                        df = df.append(market_data)
+                                        df.to_csv(f'{path}\\{stock}.csv', index=False)
+                                    else:
+                                        market_data.to_csv(f'{path}\\{stock}.csv', index=False)
+
+                            elif williams_val == -15 and right == 'P':
+
+                                if williams_perc > williams_val or talib_rsi > rsi_val:
+                                    # append to dataframe if it exists, else create new dataframe
+                                    if os.path.isfile(f'{path}\\{stock}.csv'):
+                                        df = pd.read_csv(f'{path}\\{stock}.csv')
+                                        df = df.append(market_data)
+                                        df.to_csv(f'{path}\\{stock}.csv', index=False)
+                                    else:
+                                        market_data.to_csv(f'{path}\\{stock}.csv', index=False)
 
         except Exception as err:
             print(traceback.format_exc())
@@ -185,11 +194,12 @@ def iterate(stock_list, path, williams_val, rsi_val):
     try:
 
         df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
-                               glob.glob(path + "/*.csv")))
+                           glob.glob(path + "/*.csv")))
         df.to_csv(f'{path}\\combined.csv', index=False)
 
     except Exception as err:
         print(traceback.format_exc())
+
 
 path_one = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\above_ma_ETF'
 path_two = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\below_ma_ETF'
@@ -202,14 +212,18 @@ williams_two = -15
 rsi_one = 15
 rsi_two = 85
 
-stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_exchangetradedfund'], table='Performance', order='price')
+stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_exchangetradedfund'],
+                          table='Performance', order='price')
 iterate(stock_list_one, path_one, williams_one, rsi_one)
 
-stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_exchangetradedfund'], table='Performance', order='price')
+stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_exchangetradedfund'],
+                          table='Performance', order='price')
 iterate(stock_list_two, path_two, williams_two, rsi_two)
 
-stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
+stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_stocksonly'],
+                            table='Performance', order='price')
 iterate(stock_list_three, path_three, williams_one, rsi_one)
 
-stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_stocksonly'], table='Performance', order='price')
+stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_stocksonly'],
+                           table='Performance', order='price')
 iterate(stock_list_four, path_four, williams_two, rsi_two)
