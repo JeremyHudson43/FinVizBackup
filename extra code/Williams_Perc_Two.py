@@ -105,23 +105,41 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
                     market_data['Call/Put'] = call_put
                     market_data["ETF"] = ETF
 
+                    if williams_perc <= williams_val or talib_rsi <= rsi_val and call_put == 'call':
+                        # append to dataframe if it exists, else create new dataframe
+                        if os.path.isfile(f'{path}\\either\\{stock}.csv'):
+                            df = pd.read_csv(f'{path}\\either\\{stock}.csv')
+                            df = df.append(market_data)
+                            df.to_csv(f'{path}\\either\\{stock}.csv', index=False)
+                        else:
+                            market_data.to_csv(f'{path}\\either\\{stock}.csv', index=False)
+
+                    elif williams_perc >= williams_val or talib_rsi >= rsi_val and call_put == 'put':
+                        # append to dataframe if it exists, else create new dataframe
+                        if os.path.isfile(f'{path}\\either\\{stock}.csv'):
+                            df = pd.read_csv(f'{path}\\either\\{stock}.csv')
+                            df = df.append(market_data)
+                            df.to_csv(f'{path}\\either\\{stock}.csv', index=False)
+                        else:
+                            market_data.to_csv(f'{path}\\either\\{stock}.csv', index=False)
+
                     if williams_perc <= williams_val and talib_rsi <= rsi_val and call_put == 'call':
                         # append to dataframe if it exists, else create new dataframe
-                        if os.path.isfile(f'{path}\\{stock}.csv'):
-                            df = pd.read_csv(f'{path}\\{stock}.csv')
+                        if os.path.isfile(f'{path}\\both\\{stock}.csv'):
+                            df = pd.read_csv(f'{path}\\both\\{stock}.csv')
                             df = df.append(market_data)
-                            df.to_csv(f'{path}\\{stock}.csv', index=False)
+                            df.to_csv(f'{path}\\both\\{stock}.csv', index=False)
                         else:
-                            market_data.to_csv(f'{path}\\{stock}.csv', index=False)
+                            market_data.to_csv(f'{path}\\both\\{stock}.csv', index=False)
 
                     elif williams_perc >= williams_val and talib_rsi >= rsi_val and call_put == 'put':
                         # append to dataframe if it exists, else create new dataframe
-                        if os.path.isfile(f'{path}\\{stock}.csv'):
-                            df = pd.read_csv(f'{path}\\{stock}.csv')
+                        if os.path.isfile(f'{path}\\both\\{stock}.csv'):
+                            df = pd.read_csv(f'{path}\\both\\{stock}.csv')
                             df = df.append(market_data)
-                            df.to_csv(f'{path}\\{stock}.csv', index=False)
+                            df.to_csv(f'{path}\\both\\{stock}.csv', index=False)
                         else:
-                            market_data.to_csv(f'{path}\\{stock}.csv', index=False)
+                            market_data.to_csv(f'{path}\\both\\{stock}.csv', index=False)
 
         except Exception as err:
             print(traceback.format_exc())
@@ -133,6 +151,12 @@ path = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\results\\'
 
 today = datetime.today().strftime('%Y-%m-%d')
 path = f'{path}\\{today}'
+
+both = f'{path}\\both'
+either = f'{path}\\either'
+
+os.mkdir(both)
+os.mkdir(either)
 
 williams_one = -90
 williams_two = -10
@@ -159,8 +183,11 @@ iterate(stock_list_four, path, williams_two, rsi_two, 'put', False)
 try:
 
     df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
-                       glob.glob(path + "/*.csv")))
-    df.to_csv(f'{path}\\combined.csv', index=False)
+                       glob.glob(both + "/*.csv")))
+    df.to_csv(f'{path}\\combined_both.csv', index=False)
+    df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
+                       glob.glob(either + "/*.csv")))
+    df.to_csv(f'{path}\\combined_either.csv', index=False)
 
 except Exception as err:
     print(traceback.format_exc())
