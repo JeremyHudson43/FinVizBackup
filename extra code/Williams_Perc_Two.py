@@ -47,12 +47,6 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
 
     ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
 
-    # Check whether the specified path exists or not
-    isExist = os.path.exists(path)
-
-    if not isExist:
-        # Create a new directory because it does not exist
-        os.makedirs(path)
 
     # get 2 day data from IB API
     for ticker in stock_list:
@@ -105,7 +99,7 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
                     market_data['Call/Put'] = call_put
                     market_data["ETF"] = ETF
 
-                    if williams_perc <= williams_val or talib_rsi <= rsi_val and call_put == 'call':
+                    if williams_perc <= -100 or talib_rsi <= 0 and call_put == 'call':
                         # append to dataframe if it exists, else create new dataframe
                         if os.path.isfile(f'{path}\\either\\{stock}.csv'):
                             df = pd.read_csv(f'{path}\\either\\{stock}.csv')
@@ -114,7 +108,7 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
                         else:
                             market_data.to_csv(f'{path}\\either\\{stock}.csv', index=False)
 
-                    elif williams_perc >= williams_val or talib_rsi >= rsi_val and call_put == 'put':
+                    elif williams_perc >= 0 or talib_rsi >= 100 and call_put == 'put':
                         # append to dataframe if it exists, else create new dataframe
                         if os.path.isfile(f'{path}\\either\\{stock}.csv'):
                             df = pd.read_csv(f'{path}\\either\\{stock}.csv')
@@ -147,10 +141,17 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
     ib.disconnect()
 
 
-path = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\results\\'
+path = f'C:\\Users\\Frank Einstein\\PycharmProjects\\Williams_Alert\\results'
 
 today = datetime.today().strftime('%Y-%m-%d')
 path = f'{path}\\{today}'
+
+# Check whether the specified path exists or not
+isExist = os.path.exists(path)
+
+if not isExist:
+    # Create a new directory because it does not exist
+    os.makedirs(path)
 
 both = f'{path}\\both'
 either = f'{path}\\either'
@@ -158,11 +159,11 @@ either = f'{path}\\either'
 os.mkdir(both)
 os.mkdir(either)
 
-williams_one = -90
-williams_two = -10
+williams_one = -95
+williams_two = -5
 
-rsi_one = 10
-rsi_two = 90
+rsi_one = 5
+rsi_two = 95
 
 stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'],
                            table='Performance', order='price')
