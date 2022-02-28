@@ -26,11 +26,14 @@ def place_order(ticker, year, month, day, strike, right, qty):
     ib.qualifyContracts(contract)
     contract_data = ib.reqTickers(*[contract])[0]
 
-    last = contract_data.last
+    bid = contract_data.bid
+    ask = contract_data.ask
+    
+    mid = (bid + ask) / 2
 
-    limit_price = last
-    take_profit = last * 1.20
-    stop_loss_price = last * 0.50
+    limit_price = mid
+    take_profit = mid * 1.20
+    stop_loss_price = mid * 0.50
 
     limit_price = 0.05 * round(limit_price / 0.05)
     take_profit = 0.05 * round(take_profit / 0.05)
@@ -47,8 +50,8 @@ def place_order(ticker, year, month, day, strike, right, qty):
            )
 
     for o in buy_order:
-        o.tif='GTC'
-        o.transmit=True
+        o.tif = 'GTC'
+        o.transmit = True
         ib.placeOrder(contract, o)
 
 
@@ -62,7 +65,7 @@ sleep_until_market_open()
 
 # DBA March 18 $20 call ($0.80 bid)
 
-# place_order('HYG', '2022', '03', '18', '82', 'P', 1)
-# place_order('IHI', '2022', '03', '18', '59', 'P', 1)
-place_order('URA', '2022', '03', '18', '22', 'P', 1)
-# place_order('DBA', '2022', '03', '18', '20', 'C', 1)
+place_order('HYG', '2022', '03', '18', '82', 'P', 100)
+place_order('IHI', '2022', '03', '18', '59', 'P', 100)
+place_order('URA', '2022', '03', '18', '22', 'P', 100)
+place_order('DBA', '2022', '03', '18', '20', 'C', 100)
