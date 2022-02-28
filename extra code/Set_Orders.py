@@ -11,7 +11,7 @@ ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
 def sleep_until_market_open():
     now = datetime.now()  # time object
 
-    StartTime = pd.to_datetime("9:32").tz_localize('America/New_York')
+    StartTime = pd.to_datetime("9:31").tz_localize('America/New_York')
     TimeNow = pd.to_datetime(now).tz_localize('America/New_York')
 
     if StartTime > TimeNow:
@@ -29,7 +29,7 @@ def place_order(ticker, year, month, day, strike, right, qty):
     last = contract_data.last
 
     limit_price = last
-    take_profit = last * 1.25
+    take_profit = last * 1.20
     stop_loss_price = last * 0.50
 
     limit_price = 0.05 * round(limit_price / 0.05)
