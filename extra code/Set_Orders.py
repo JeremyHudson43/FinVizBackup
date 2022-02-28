@@ -48,6 +48,7 @@ def place_order(ticker, year, month, day, strike, right, qty):
 
     for o in buy_order:
         o.tif='GTC'
+        o.transmit=True
         ib.placeOrder(contract, o)
 
 
