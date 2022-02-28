@@ -10,7 +10,7 @@ ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
 def sleep_until_market_open():
     now = datetime.now()  # time object
 
-    StartTime = pd.to_datetime("9:30").tz_localize('America/New_York')
+    StartTime = pd.to_datetime("9:32").tz_localize('America/New_York')
     TimeNow = pd.to_datetime(now).tz_localize('America/New_York')
 
     if StartTime > TimeNow:
@@ -25,11 +25,15 @@ def place_order(ticker, year, month, day, strike, right, qty):
     ib.qualifyContracts(contract)
     contract_data = ib.reqTickers(*[contract])[0]
 
-    bid = contract_data.close
+    bid = contract_data.bid
+    ask = contract_data.ask
+    mid = (bid + ask) / 2
 
-    limit_price = bid
-    take_profit = bid * 1.15
-    stop_loss_price = bid * 0.9
+    print("Mid: " + str(mid))
+
+    limit_price = mid
+    take_profit = mid * 1.25
+    stop_loss_price = mid * 0.50
 
     limit_price = 0.05 * round(limit_price / 0.05)
     take_profit = 0.05 * round(take_profit / 0.05)
@@ -46,6 +50,7 @@ def place_order(ticker, year, month, day, strike, right, qty):
            )
 
     for o in buy_order:
+        o.goodTillDate = year + month + day
         ib.placeOrder(contract, o)
 
 
@@ -59,7 +64,7 @@ sleep_until_market_open()
 
 # DBA March 18 $20 call ($0.80 bid)
 
-place_order('HYG', '2022', '03', '18', '82', 'P', 1)
-place_order('IHI', '2022', '03', '18', '59', 'P', 1)
-place_order('URA', '2022', '03', '18', '22', 'P', 1)
+# place_order('HYG', '2022', '03', '18', '82', 'P', 1)
+# place_order('IHI', '2022', '03', '18', '59', 'P', 1)
+# place_order('URA', '2022', '03', '18', '22', 'P', 1)
 place_order('DBA', '2022', '03', '18', '20', 'C', 1)
