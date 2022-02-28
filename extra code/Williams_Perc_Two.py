@@ -47,7 +47,6 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
 
     ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
 
-
     # get 2 day data from IB API
     for ticker in stock_list:
         try:
@@ -99,7 +98,7 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
                     market_data['Call/Put'] = call_put
                     market_data["ETF"] = ETF
 
-                    if williams_perc <= -100 or talib_rsi <= 0 and call_put == 'call':
+                    if williams_perc <= williams_val or talib_rsi <= rsi_val and call_put == 'call':
                         # append to dataframe if it exists, else create new dataframe
                         if os.path.isfile(f'{path}\\either\\{stock}.csv'):
                             df = pd.read_csv(f'{path}\\either\\{stock}.csv')
@@ -108,7 +107,7 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
                         else:
                             market_data.to_csv(f'{path}\\either\\{stock}.csv', index=False)
 
-                    elif williams_perc >= 0 or talib_rsi >= 100 and call_put == 'put':
+                    elif williams_perc >= williams_val or talib_rsi >= rsi_val and call_put == 'put':
                         # append to dataframe if it exists, else create new dataframe
                         if os.path.isfile(f'{path}\\either\\{stock}.csv'):
                             df = pd.read_csv(f'{path}\\either\\{stock}.csv')
@@ -159,25 +158,25 @@ either = f'{path}\\either'
 os.mkdir(both)
 os.mkdir(either)
 
-williams_one = -95
-williams_two = -5
+williams_one = -90
+williams_two = -10
 
-rsi_one = 5
-rsi_two = 95
+rsi_one = 10
+rsi_two = 90
 
-stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'],
+stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund', 'sh_opt_option'],
                            table='Performance', order='price')
 iterate(stock_list_one, path, williams_one, rsi_one, 'call', True)
 
-stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund'],
+stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund', 'sh_opt_option'],
                            table='Performance', order='price')
 iterate(stock_list_two, path, williams_two, rsi_two, 'put', True)
 
-stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'],
+stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly', 'sh_opt_option'],
                             table='Performance', order='price')
 iterate(stock_list_three, path, williams_one, rsi_one, 'call', False)
 
-stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly'],
+stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly' ,'sh_opt_option'],
                            table='Performance', order='price')
 iterate(stock_list_four, path, williams_two, rsi_two, 'put', False)
 
