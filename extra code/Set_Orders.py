@@ -30,6 +30,7 @@ def place_order(ticker, year, month, day, strike, right, qty):
     ask = contract_data.ask
 
     mid = (bid + ask) / 2
+    mid = ask
 
     limit_price = mid
     take_profit = mid * 1.20
@@ -54,11 +55,11 @@ def place_order(ticker, year, month, day, strike, right, qty):
     for o in buy_order:
         o.transmit = True
         o.tif = 'GTC'
-        ib.sleep(1)
+        ib.sleep(0.01)
         ib.placeOrder(contract, o)
 
 
 # sleep_until_market_open()
 
-# place_order('GDX', '2022', '03', '11', '34', 'P', 2)
-place_order('UVXY', '2022', '03', '11', '18', 'P', 1)
+place_order('SPY', '2022', '03', '11', '438', 'P', 2)
+# place_order('UVXY', '2022', '03', '11', '18', 'P', 1)
