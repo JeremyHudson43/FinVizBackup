@@ -84,6 +84,24 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
             market_data['Call/Put'] = call_put
             market_data["ETF"] = ETF
 
+            if talib_rsi <= rsi_val and call_put == 'call':
+                # append to dataframe if it exists, else create new dataframe
+                if os.path.isfile(f'{path}\\both\\{stock}.csv'):
+                    df = pd.read_csv(f'{path}\\both\\{stock}.csv')
+                    df = df.append(market_data)
+                    df.to_csv(f'{path}\\both\\{stock}.csv', index=False)
+                else:
+                    market_data.to_csv(f'{path}\\both\\{stock}.csv', index=False)
+
+            elif talib_rsi >= rsi_val and call_put == 'put':
+                # append to dataframe if it exists, else create new dataframe
+                if os.path.isfile(f'{path}\\both\\{stock}.csv'):
+                    df = pd.read_csv(f'{path}\\both\\{stock}.csv')
+                    df = df.append(market_data)
+                    df.to_csv(f'{path}\\both\\{stock}.csv', index=False)
+                else:
+                    market_data.to_csv(f'{path}\\both\\{stock}.csv', index=False)
+
             if williams_perc <= williams_val and call_put == 'call':
                 # append to dataframe if it exists, else create new dataframe
                 if os.path.isfile(f'{path}\\both\\{stock}.csv'):
