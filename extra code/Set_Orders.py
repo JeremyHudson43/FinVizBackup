@@ -53,7 +53,6 @@ def place_order(ticker, year, month, day, strike, right, qty):
            )
 
     for o in buy_order:
-        o.transmit = True
         o.tif = 'GTC'
         ib.sleep(0.001)
         ib.placeOrder(contract, o)
@@ -61,5 +60,5 @@ def place_order(ticker, year, month, day, strike, right, qty):
 
 # sleep_until_market_open()
 
-place_order('SPY', '2022', '03', '11', '438', 'P', 2)
-# place_order('UVXY', '2022', '03', '11', '18', 'P', 1)
+# place_order('SPY', '2022', '03', '11', '438', 'P', 2)
+place_order('UVXY', '2022', '03', '11', '18', 'P', 1)
