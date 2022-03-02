@@ -98,24 +98,6 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
                     market_data['Call/Put'] = call_put
                     market_data["ETF"] = ETF
 
-                    if williams_perc <= williams_val or talib_rsi <= rsi_val and call_put == 'call':
-                        # append to dataframe if it exists, else create new dataframe
-                        if os.path.isfile(f'{path}\\either\\{stock}.csv'):
-                            df = pd.read_csv(f'{path}\\either\\{stock}.csv')
-                            df = df.append(market_data)
-                            df.to_csv(f'{path}\\either\\{stock}.csv', index=False)
-                        else:
-                            market_data.to_csv(f'{path}\\either\\{stock}.csv', index=False)
-
-                    elif williams_perc >= williams_val or talib_rsi >= rsi_val and call_put == 'put':
-                        # append to dataframe if it exists, else create new dataframe
-                        if os.path.isfile(f'{path}\\either\\{stock}.csv'):
-                            df = pd.read_csv(f'{path}\\either\\{stock}.csv')
-                            df = df.append(market_data)
-                            df.to_csv(f'{path}\\either\\{stock}.csv', index=False)
-                        else:
-                            market_data.to_csv(f'{path}\\either\\{stock}.csv', index=False)
-
                     if williams_perc <= williams_val and talib_rsi <= rsi_val and call_put == 'call':
                         # append to dataframe if it exists, else create new dataframe
                         if os.path.isfile(f'{path}\\both\\{stock}.csv'):
@@ -172,19 +154,20 @@ stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o
                            table='Performance', order='price')
 iterate(stock_list_two, path, williams_two, rsi_two, 'put', True)
 
-stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly', 'sh_opt_option'],
-                            table='Performance', order='price')
-iterate(stock_list_three, path, williams_one, rsi_one, 'call', False)
+# stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly', 'sh_opt_option'],
+#                             table='Performance', order='price')
+# iterate(stock_list_three, path, williams_one, rsi_one, 'call', False)
 
-stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly' ,'sh_opt_option'],
-                           table='Performance', order='price')
-iterate(stock_list_four, path, williams_two, rsi_two, 'put', False)
+# stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_stocksonly' ,'sh_opt_option'],
+#                            table='Performance', order='price')
+# iterate(stock_list_four, path, williams_two, rsi_two, 'put', False)
 
 try:
 
     df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
                        glob.glob(both + "/*.csv")))
     df.to_csv(f'{path}\\combined_both.csv', index=False)
+
     df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
                        glob.glob(either + "/*.csv")))
     df.to_csv(f'{path}\\combined_either.csv', index=False)
