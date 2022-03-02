@@ -28,7 +28,7 @@ def place_order(ticker, year, month, day, strike, right, qty):
 
     bid = contract_data.bid
     ask = contract_data.ask
-    
+
     mid = (bid + ask) / 2
 
     limit_price = mid
@@ -39,7 +39,11 @@ def place_order(ticker, year, month, day, strike, right, qty):
     take_profit = 0.05 * round(take_profit / 0.05)
     stop_loss_price = 0.05 * round(stop_loss_price / 0.05)
 
-    print(limit_price, take_profit, stop_loss_price)
+    limit_price = round(limit_price, 2)
+    take_profit = round(take_profit, 2)
+    stop_loss_price = round(stop_loss_price, 2)
+
+    print(ticker, limit_price, take_profit, stop_loss_price)
 
     buy_order = ib.bracketOrder(
                'BUY',
@@ -55,17 +59,7 @@ def place_order(ticker, year, month, day, strike, right, qty):
         ib.placeOrder(contract, o)
 
 
-sleep_until_market_open()
+# sleep_until_market_open()
 
-# HYG March 18 $82 put ($0.45 bid)
-
-# IHI March 18 $59 put ($1.10 bid)
-
-# URA March 18 $22 put ($0.75 bid)
-
-# DBA March 18 $20 call ($0.80 bid)
-
-place_order('HYG', '2022', '03', '18', '82', 'P', 100)
-place_order('IHI', '2022', '03', '18', '59', 'P', 100)
-place_order('URA', '2022', '03', '18', '22', 'P', 100)
-place_order('DBA', '2022', '03', '18', '20', 'C', 100)
+place_order('GDX', '2022', '03', '18', '34', 'P', 2)
+# place_order('UVXY', '2022', '03', '11', '18', 'P', 1)
