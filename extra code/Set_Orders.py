@@ -55,7 +55,7 @@ def place_order(ticker, year, month, day, strike, right, qty):
     for o in buy_order:
         o.transmit = True
         o.tif = 'GTC'
-        ib.sleep(0.01)
+        ib.sleep(0.001)
         ib.placeOrder(contract, o)
 
 
