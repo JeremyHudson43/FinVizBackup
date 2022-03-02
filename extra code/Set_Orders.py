@@ -43,8 +43,6 @@ def place_order(ticker, year, month, day, strike, right, qty):
     take_profit = round(take_profit, 2)
     stop_loss_price = round(stop_loss_price, 2)
 
-    print(ticker, limit_price, take_profit, stop_loss_price)
-
     buy_order = ib.bracketOrder(
                'BUY',
                quantity=qty,
@@ -54,12 +52,13 @@ def place_order(ticker, year, month, day, strike, right, qty):
            )
 
     for o in buy_order:
-        o.tif = 'GTC'
         o.transmit = True
+        o.tif = 'GTC'
+        ib.sleep(1)
         ib.placeOrder(contract, o)
 
 
 # sleep_until_market_open()
 
-place_order('GDX', '2022', '03', '18', '34', 'P', 2)
-# place_order('UVXY', '2022', '03', '11', '18', 'P', 1)
+# place_order('GDX', '2022', '03', '11', '34', 'P', 2)
+place_order('UVXY', '2022', '03', '11', '18', 'P', 1)
