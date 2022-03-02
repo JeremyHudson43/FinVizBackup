@@ -54,67 +54,53 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
             avg_vol = value_to_float(ticker['Avg Volume'])
             stock = ticker['Ticker']
 
-            if avg_vol > 0:
+            security = Stock(stock, 'SMART', 'USD')
+            ib.qualifyContracts(security)
 
-                f = open(f"{path}\\checked.txt", "a+")
-                f.close()
+            # Fetching historical data when market is closed for testing purposes
+            market_data = pd.DataFrame(
+                ib.reqHistoricalData(
+                    security,
+                    endDateTime='',
+                    durationStr='7 D',
+                    barSizeSetting='1 day',
+                    whatToShow="TRADES",
+                    useRTH=True,
+                    formatDate=1,
+                    timeout=0
+                ))
 
-                checked_stocks = open(f"{path}\\checked.txt", "r").readlines()
-                checked_stocks = [x.strip() for x in checked_stocks]
+            williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
+            talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
 
-                if stock not in checked_stocks:
+            market_data = market_data.iloc[-1:]
 
-                    f = open(f"{path}\\checked.txt", "a+")
-                    f.write(stock + '\n')
-                    f.close()
+            print(stock, williams_perc, talib_rsi)
 
-                    security = Stock(stock, 'SMART', 'USD')
-                    ib.qualifyContracts(security)
+            market_data['Ticker'] = stock
+            market_data['RSI (2)'] = talib_rsi
+            market_data['Williams % (2)'] = williams_perc
+            market_data['Avg Volume'] = avg_vol
+            market_data['Call/Put'] = call_put
+            market_data["ETF"] = ETF
 
-                    # Fetching historical data when market is closed for testing purposes
-                    market_data = pd.DataFrame(
-                        ib.reqHistoricalData(
-                            security,
-                            endDateTime='',
-                            durationStr='7 D',
-                            barSizeSetting='1 day',
-                            whatToShow="TRADES",
-                            useRTH=True,
-                            formatDate=1,
-                            timeout=0
-                        ))
+            if williams_perc <= williams_val and talib_rsi <= rsi_val and call_put == 'call':
+                # append to dataframe if it exists, else create new dataframe
+                if os.path.isfile(f'{path}\\both\\{stock}.csv'):
+                    df = pd.read_csv(f'{path}\\both\\{stock}.csv')
+                    df = df.append(market_data)
+                    df.to_csv(f'{path}\\both\\{stock}.csv', index=False)
+                else:
+                    market_data.to_csv(f'{path}\\both\\{stock}.csv', index=False)
 
-                    williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
-                    talib_rsi = pta.rsi(market_data['close'], length=2).iloc[-1]
-
-                    market_data = market_data.iloc[-1:]
-
-                    print(stock, williams_perc, talib_rsi)
-
-                    market_data['Ticker'] = stock
-                    market_data['RSI (2)'] = talib_rsi
-                    market_data['Williams % (2)'] = williams_perc
-                    market_data['Avg Volume'] = avg_vol
-                    market_data['Call/Put'] = call_put
-                    market_data["ETF"] = ETF
-
-                    if williams_perc <= williams_val and talib_rsi <= rsi_val and call_put == 'call':
-                        # append to dataframe if it exists, else create new dataframe
-                        if os.path.isfile(f'{path}\\both\\{stock}.csv'):
-                            df = pd.read_csv(f'{path}\\both\\{stock}.csv')
-                            df = df.append(market_data)
-                            df.to_csv(f'{path}\\both\\{stock}.csv', index=False)
-                        else:
-                            market_data.to_csv(f'{path}\\both\\{stock}.csv', index=False)
-
-                    elif williams_perc >= williams_val and talib_rsi >= rsi_val and call_put == 'put':
-                        # append to dataframe if it exists, else create new dataframe
-                        if os.path.isfile(f'{path}\\both\\{stock}.csv'):
-                            df = pd.read_csv(f'{path}\\both\\{stock}.csv')
-                            df = df.append(market_data)
-                            df.to_csv(f'{path}\\both\\{stock}.csv', index=False)
-                        else:
-                            market_data.to_csv(f'{path}\\both\\{stock}.csv', index=False)
+            elif williams_perc >= williams_val and talib_rsi >= rsi_val and call_put == 'put':
+                # append to dataframe if it exists, else create new dataframe
+                if os.path.isfile(f'{path}\\both\\{stock}.csv'):
+                    df = pd.read_csv(f'{path}\\both\\{stock}.csv')
+                    df = df.append(market_data)
+                    df.to_csv(f'{path}\\both\\{stock}.csv', index=False)
+                else:
+                    market_data.to_csv(f'{path}\\both\\{stock}.csv', index=False)
 
         except Exception as err:
             print(traceback.format_exc())
@@ -135,10 +121,8 @@ if not isExist:
     os.makedirs(path)
 
 both = f'{path}\\both'
-either = f'{path}\\either'
 
 os.mkdir(both)
-os.mkdir(either)
 
 williams_one = -90
 williams_two = -10
@@ -146,14 +130,21 @@ williams_two = -10
 rsi_one = 10
 rsi_two = 90
 
-stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund', 'sh_opt_option'],
+stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o1000', 'sh_price_o1', 'ind_exchangetradedfund', 'sh_opt_option'],
                            table='Performance', order='price')
 iterate(stock_list_one, path, williams_one, rsi_one, 'call', True)
 
-stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o500', 'sh_price_o1', 'ind_exchangetradedfund', 'sh_opt_option'],
+stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o1000', 'sh_price_o1', 'ind_exchangetradedfund', 'sh_opt_option'],
                            table='Performance', order='price')
 iterate(stock_list_two, path, williams_two, rsi_two, 'put', True)
 
+stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o1000', 'sh_price_o1', 'ind_stocksonly', 'sh_opt_option'],
+                             table='Performance', order='price')
+iterate(stock_list_three, path, williams_one, rsi_one, 'call', False)
+
+stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o1000', 'sh_price_o1', 'ind_stocksonly' ,'sh_opt_option'],
+                            table='Performance', order='price')
+iterate(stock_list_four, path, williams_two, rsi_two, 'put', False)
 
 try:
 
