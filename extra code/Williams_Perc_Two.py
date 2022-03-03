@@ -41,7 +41,7 @@ def value_to_float(x):
     return 0.0
 
 
-def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
+def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF, timeframe):
 
     ib = IB()
 
@@ -62,8 +62,8 @@ def iterate(stock_list, path, williams_val, rsi_val, call_put, ETF):
                 ib.reqHistoricalData(
                     security,
                     endDateTime='',
-                    durationStr='7 D',
-                    barSizeSetting='1 day',
+                    durationStr='7 ' + timeframe + 's',
+                    barSizeSetting='1 ' + timeframe,
                     whatToShow="TRADES",
                     useRTH=True,
                     formatDate=1,
@@ -148,25 +148,25 @@ williams_two = -10
 rsi_one = 10
 rsi_two = 90
 
-stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o1000', 'sh_price_o1', 'ind_exchangetradedfund',
+stock_list_one = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_exchangetradedfund',
                                    'sh_opt_option', 'ipodate_more1'],
                            table='Performance', order='price')
-iterate(stock_list_one, path, williams_one, rsi_one, 'call', True)
+iterate(stock_list_one, path, williams_one, rsi_one, 'call', True, 'day')
 
-stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o1000', 'sh_price_o1', 'ind_exchangetradedfund',
+stock_list_two = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_exchangetradedfund',
                                    'sh_opt_option', 'ipodate_more1'],
                            table='Performance', order='price')
-iterate(stock_list_two, path, williams_two, rsi_two, 'put', True)
+iterate(stock_list_two, path, williams_two, rsi_two, 'put', True, 'day')
 
-stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o1000', 'sh_price_o1', 'ind_stocksonly',
+stock_list_three = Screener(filters=['ta_sma200_pa', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_stocksonly',
                                      'sh_opt_option', 'ipodate_more1'],
                              table='Performance', order='price')
-iterate(stock_list_three, path, williams_one, rsi_one, 'call', False)
+iterate(stock_list_three, path, williams_one, rsi_one, 'call', False, 'day')
 
-stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o1000', 'sh_price_o1', 'ind_stocksonly',
+stock_list_four = Screener(filters=['ta_sma200_pb', 'sh_avgvol_o2000', 'sh_price_o1', 'ind_stocksonly',
                                     'sh_opt_option', 'ipodate_more1'],
                             table='Performance', order='price')
-iterate(stock_list_four, path, williams_two, rsi_two, 'put', False)
+iterate(stock_list_four, path, williams_two, rsi_two, 'put', False, 'day')
 
 try:
 
