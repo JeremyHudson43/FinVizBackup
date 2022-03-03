@@ -172,6 +172,7 @@ try:
 
     df = pd.concat(map(functools.partial(pd.read_csv, encoding='latin-1', compression=None, error_bad_lines=False),
                        glob.glob(both + "/*.csv")))
+    df = df.drop_duplicates()
     df.to_csv(f'{path}\\combined_both.csv', index=False)
 
 except Exception as err:
