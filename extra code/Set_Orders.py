@@ -42,7 +42,7 @@ def place_order(ticker, year, month, day, strike, right, qty):
 
     mid = (bid + ask) / 2
 
-    if (mid * 100) > (acc_vals * 0.2) and get_percent(bid, ask) < 25:
+    if (mid * 100) > (acc_vals * 0.2) or get_percent(bid, ask) < 25:
         print(ticker + ' option too big for account')
 
     else:
@@ -75,7 +75,7 @@ def place_order(ticker, year, month, day, strike, right, qty):
 
 sleep_until_market_open()
 
-# ASHR,
+# ASHR, EFA,
 
 place_order('CARR', '2022', '03', '18', '43', 'P', 2)
 place_order('PARA', '2022', '03', '18', '35', 'P', 1)
