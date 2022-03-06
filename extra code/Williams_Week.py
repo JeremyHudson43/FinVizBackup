@@ -132,25 +132,29 @@ os.mkdir(both)
 williams_one = -90
 williams_two = -10
 
-rsi_one = 5
-rsi_two = 95
+rsi_one = 10
+rsi_two = 90
 
 
-stock_list_one = Screener(filters=['sh_avgvol_o2000', 'ipodate_more5', 'sh_price_o20', 'ind_exchangetradedfund'],
+stock_list_one = Screener(filters=['sh_avgvol_o2000', 'ipodate_more5', 'sh_price_o20', 'ind_exchangetradedfund',
+                                   'sh_opt_option'],
                              table='Performance', order='price')
 
 iterate(stock_list_one, path, williams_one, rsi_one, 'call', True)
 
-stock_list_two = Screener(filters=['sh_avgvol_o2000', 'ipodate_more5', 'sh_price_o20', 'ind_exchangetradedfund'],
+stock_list_two = Screener(filters=['sh_avgvol_o2000', 'ipodate_more5', 'sh_price_o20', 'ind_exchangetradedfund',
+                                   'sh_opt_option'],
                             table='Performance', order='price')
 
 iterate(stock_list_two, path, williams_two, rsi_two, 'put', True)
 
-stock_list_three = Screener(filters=['sh_avgvol_o2000', 'ipodate_more5', 'sh_price_o20',  'ind_stocksonly'],
+stock_list_three = Screener(filters=['sh_avgvol_o2000', 'ipodate_more5', 'sh_price_o20',  'ind_stocksonly', 
+                                     'sh_opt_option'],
                            table='Performance', order='price')
 iterate(stock_list_three, path, williams_one, rsi_one, 'call', False)
 
-stock_list_four = Screener(filters=['sh_avgvol_o2000', 'ipodate_more5', 'sh_price_o20',  'ind_stocksonly'],
+stock_list_four = Screener(filters=['sh_avgvol_o2000', 'ipodate_more5', 'sh_price_o20',  'ind_stocksonly', 
+                                    'sh_opt_option'],
                            table='Performance', order='price')
 
 iterate(stock_list_four, path, williams_two, rsi_two, 'put', False)
