@@ -62,8 +62,10 @@ def place_order(call, put, qty):
 
         ticker_contract = Stock('SPY', 'SMART', 'USD')
 
-        minutesToSleep = 5 - datetime.now().minute % 5
-        time.sleep(minutesToSleep * 60 + 2)
+        secondsToSleep = 900 - datetime.now().minute % 900
+        print("Sleeping for " + str(secondsToSleep) + " seconds")
+
+        time.sleep(secondsToSleep)
 
         market_data = pd.DataFrame(
             ib.reqHistoricalData(
@@ -85,6 +87,7 @@ def place_order(call, put, qty):
         print(last_close, last_sma)
 
         williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
+        market_data['SMA'] = talib.SMA(market_data['close'], timeperiod=200)
 
         market_data['williams_perc'] = get_wr(market_data['high'], market_data['low'], market_data['close'], 2)
 
@@ -138,8 +141,10 @@ def place_order(call, put, qty):
            ib.sleep(0.00001)
            ib.placeOrder(contract, o)
 
-    minutesToSleep = 5 - datetime.now().minute % 5
-    time.sleep(minutesToSleep * 60)
+    secondsToSleep = 900 - datetime.now().minute % 900
+    print("Sleeping for " + str(secondsToSleep) + " seconds")
+
+    time.sleep(secondsToSleep)
 
     sell_stock(ib, qty, contract)
 
@@ -159,9 +164,9 @@ call_day = '11'
 put_strike = '425'
 call_strike = '430'
 
-qty = 1
+qty = 5
 
 put = Option(ticker, put_year + put_month + put_day, put_strike, 'P',  "SMART")
 call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMART")
 
-place_order(call, put, 5)
+place_order(call, put, qty)
