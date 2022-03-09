@@ -42,18 +42,14 @@ def place_order(ticker, year, month, day, strike, right, qty):
 
     mid = (bid + ask) / 2
 
-    if (mid * 100) > (acc_vals * 0.2) or get_percent(bid, ask) < 25:
+    if (mid * 100) > (acc_vals * 0.2):
         print(ticker + ' option too big for account')
 
     else:
 
         limit_price = mid
-        take_profit = mid * 1.20
+        take_profit = mid * 1.25
         stop_loss_price = mid * 0.50
-
-        limit_price = 0.05 * round(limit_price / 0.05)
-        take_profit = 0.05 * round(take_profit / 0.05)
-        stop_loss_price = 0.05 * round(stop_loss_price / 0.05)
 
         limit_price = round(limit_price, 2)
         take_profit = round(take_profit, 2)
@@ -75,8 +71,4 @@ def place_order(ticker, year, month, day, strike, right, qty):
 
 sleep_until_market_open()
 
-# ASHR, EFA,
-
-place_order('CARR', '2022', '03', '18', '43', 'P', 2)
-place_order('PARA', '2022', '03', '18', '35', 'P', 1)
-place_order('WMT', '2022', '03', '18', '135', 'P', 1)
+place_order('SPY', '2022', '03', '11', '425', 'P', 5)
