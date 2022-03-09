@@ -62,10 +62,10 @@ def place_order(call, put, qty):
 
         ticker_contract = Stock('SPY', 'SMART', 'USD')
 
-        secondsToSleep = 900 - datetime.now().minute % 900
-        print("Sleeping for " + str(secondsToSleep) + " seconds")
+        minutesToSleep = 15 - datetime.now().minute % 15
+        print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
 
-        time.sleep(secondsToSleep)
+        time.sleep(minutesToSleep * 60)
 
         market_data = pd.DataFrame(
             ib.reqHistoricalData(
@@ -141,10 +141,12 @@ def place_order(call, put, qty):
            ib.sleep(0.00001)
            ib.placeOrder(contract, o)
 
-    secondsToSleep = 900 - datetime.now().minute % 900
-    print("Sleeping for " + str(secondsToSleep) + " seconds")
+    minutesToSleep = 15 - datetime.now().minute % 15
+    print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
 
-    time.sleep(secondsToSleep)
+    time.sleep(minutesToSleep * 60)
+
+    time.sleep(minutesToSleep)
 
     sell_stock(ib, qty, contract)
 
