@@ -36,6 +36,7 @@ def sleep_until_market_open():
         time_until_market_open = (StartTime - TimeNow).total_seconds()
         time.sleep(time_until_market_open)
 
+
 def sell_stock(ib, qty, ticker):
 
    ib.reqGlobalCancel()
@@ -55,10 +56,9 @@ def sell_stock(ib, qty, ticker):
 
 def place_order(call, put, qty):
 
-    extreme_value_call = False
-    extreme_value_put = False
+    extreme_value = False
 
-    while not extreme_value_put or not extreme_value_call:
+    while not extreme_value:
 
         ticker_contract = Stock('SPY', 'SMART', 'USD')
 
@@ -84,8 +84,6 @@ def place_order(call, put, qty):
         last_sma = talib.SMA(market_data['close'], timeperiod=200).iloc[-1]
         last_close = market_data['close'].iloc[-1]
 
-        print(last_close, last_sma)
-
         williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
         market_data['SMA'] = talib.SMA(market_data['close'], timeperiod=200)
 
@@ -94,18 +92,15 @@ def place_order(call, put, qty):
         market_data.to_csv('C:\\Users\\Frank Einstein\\Desktop\\results\\market_data.csv')
 
         if williams_perc < -90 and last_close > last_sma:
-            extreme_value_call = True
+            extreme_value = True
+            contract = put
         elif williams_perc > -10 and last_close < last_sma:
-            extreme_value_put = True
+            extreme_value = True
+            contract = call
         else:
             print("Waiting for extreme value...")
 
     acc_vals = float([v.value for v in ib.accountValues() if v.tag == 'CashBalance' and v.currency == 'USD'][0])
-
-    if extreme_value_put:
-        contract = put
-    elif extreme_value_call:
-        contract = call
 
     ib.qualifyContracts(contract)
     contract_data = ib.reqTickers(*[contract])[0]
@@ -141,7 +136,7 @@ def place_order(call, put, qty):
            ib.sleep(0.00001)
            ib.placeOrder(contract, o)
 
-    minutesToSleep = 15 - datetime.now().minute % 15
+    minutesToSleep = 10 - datetime.now().minute % 10
     print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
 
     time.sleep(minutesToSleep * 60)
