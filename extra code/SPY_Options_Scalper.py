@@ -29,7 +29,7 @@ def get_percent(first, second):
 def sleep_until_market_open():
     now = datetime.now()  # time object
 
-    StartTime = pd.to_datetime("9:45").tz_localize('America/New_York')
+    StartTime = pd.to_datetime("10:00").tz_localize('America/New_York')
     TimeNow = pd.to_datetime(now).tz_localize('America/New_York')
 
     if StartTime > TimeNow:
@@ -75,7 +75,7 @@ def place_order(call, put, qty):
                 barSizeSetting='15 mins',
                 whatToShow="TRADES",
                 formatDate=1,
-                useRTH=True,
+                useRTH=False,
                 timeout=0
             ))
 
@@ -93,10 +93,10 @@ def place_order(call, put, qty):
 
         if williams_perc < -90 and last_close > last_sma:
             extreme_value = True
-            contract = put
+            contract = call
         elif williams_perc > -10 and last_close < last_sma:
             extreme_value = True
-            contract = call
+            contract = put
         else:
             print("Waiting for extreme value...")
 
@@ -136,7 +136,7 @@ def place_order(call, put, qty):
            ib.sleep(0.00001)
            ib.placeOrder(contract, o)
 
-    minutesToSleep = 10 - datetime.now().minute % 10
+    minutesToSleep = 15 - datetime.now().minute % 15
     print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
 
     time.sleep(minutesToSleep * 60)
