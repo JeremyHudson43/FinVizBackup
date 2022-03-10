@@ -17,19 +17,10 @@ def get_wr(high, low, close, lookback):
     wr = 100 * ((close - highh) / (highh - lowl))
     return wr
 
-
-def get_percent(first, second):
-    if first == 0 or second == 0:
-        return 0
-    else:
-        percent = first / second * 100
-    return percent
-
-
 def sleep_until_market_open():
     now = datetime.now()  # time object
 
-    StartTime = pd.to_datetime("10:00").tz_localize('America/New_York')
+    StartTime = pd.to_datetime("9:45").tz_localize('America/New_York')
     TimeNow = pd.to_datetime(now).tz_localize('America/New_York')
 
     if StartTime > TimeNow:
@@ -62,10 +53,11 @@ def place_order(call, put, qty):
 
         ticker_contract = Stock('SPY', 'SMART', 'USD')
 
-        minutesToSleep = 15 - datetime.now().minute % 15
-        print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
+        if not extreme_value:
 
-        time.sleep(minutesToSleep * 60)
+            minutesToSleep = 15 - datetime.now().minute % 15
+            print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
+            time.sleep(minutesToSleep * 60)
 
         market_data = pd.DataFrame(
             ib.reqHistoricalData(
@@ -75,7 +67,7 @@ def place_order(call, put, qty):
                 barSizeSetting='15 mins',
                 whatToShow="TRADES",
                 formatDate=1,
-                useRTH=False,
+                useRTH=True,
                 timeout=0
             ))
 
@@ -110,7 +102,7 @@ def place_order(call, put, qty):
 
     mid = (bid + ask) / 2
 
-    if (mid * 100) > (acc_vals * 0.2):
+    if (mid * 100) > (acc_vals * 0.3):
         print("SPY option too big for account")
 
     else:
@@ -136,14 +128,11 @@ def place_order(call, put, qty):
            ib.sleep(0.00001)
            ib.placeOrder(contract, o)
 
-    minutesToSleep = 15 - datetime.now().minute % 15
-    print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
-
-    time.sleep(minutesToSleep * 60)
-
-    time.sleep(minutesToSleep)
-
-    sell_stock(ib, qty, contract)
+    if extreme_value:
+        minutesToSleep = 15 - datetime.now().minute % 15
+        print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
+        time.sleep(minutesToSleep * 60)
+        sell_stock(ib, qty, contract)
 
 
 sleep_until_market_open()
@@ -158,7 +147,7 @@ call_year = '2022'
 call_month = '03'
 call_day = '11'
 
-put_strike = '425'
+put_strike = '420'
 call_strike = '430'
 
 qty = 5
