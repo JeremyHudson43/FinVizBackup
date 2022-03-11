@@ -86,10 +86,10 @@ def place_order(call, put, qty):
 
         market_data.to_csv('C:\\Users\\Frank Einstein\\Desktop\\results\\market_data.csv')
 
-        if williams_perc < -90 and last_close > hundred_sma and last_close > fifty_sma and last_close > twenty_sma:
+        if williams_perc < -90:
             extreme_value = True
             contract = call
-        elif williams_perc > -10 and last_close < hundred_sma and last_close < fifty_sma and last_close < twenty_sma:
+        elif williams_perc > -10:
             extreme_value = True
             contract = put
         else:
@@ -131,11 +131,7 @@ def place_order(call, put, qty):
            ib.sleep(0.00001)
            ib.placeOrder(contract, o)
 
-    if extreme_value:
-        minutesToSleep = 60 - datetime.now().minute % 60
-        print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
-        time.sleep(minutesToSleep * 60)
-        sell_stock(ib, qty, contract)
+    return extreme_value, contract, qty
 
 
 sleep_until_market_open()
@@ -144,11 +140,11 @@ ticker = 'SPY'
 
 put_year = '2022'
 put_month = '03'
-put_day = '11'
+put_day = '14'
 
 call_year = '2022'
 call_month = '03'
-call_day = '11'
+call_day = '14'
 
 put_strike = '420'
 call_strike = '430'
@@ -158,4 +154,10 @@ qty = 5
 put = Option(ticker, put_year + put_month + put_day, put_strike, 'P',  "SMART")
 call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMART")
 
-place_order(call, put, qty)
+extreme_value, contract, qty = place_order(call, put, qty)
+
+if extreme_value:
+    minutesToSleep = 60 - datetime.now().minute % 60
+    print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
+    time.sleep(minutesToSleep * 60)
+    sell_stock(ib, qty, contract)
