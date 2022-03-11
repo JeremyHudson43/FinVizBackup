@@ -75,7 +75,7 @@ def place_order(call, put, qty):
 
         hundred_sma = talib.SMA(market_data['close'], timeperiod=100).iloc[-1]
         fifty_sma = talib.SMA(market_data['close'], timeperiod=50).iloc[-1]
-        twenty_sma = talib.SMA(market_data['close'], timeperiod=20).iloc[-1]
+        ten_sma = talib.SMA(market_data['close'], timeperiod=10).iloc[-1]
 
         last_close = market_data['close'].iloc[-1]
 
@@ -86,10 +86,10 @@ def place_order(call, put, qty):
 
         market_data.to_csv('C:\\Users\\Frank Einstein\\Desktop\\results\\market_data.csv')
 
-        if williams_perc < -90:
+        if williams_perc < -10 and last_close > hundred_sma and last_close > fifty_sma and last_close > ten_sma:
             extreme_value = True
             contract = call
-        elif williams_perc > -10:
+        elif williams_perc > -90 and last_close < hundred_sma and last_close < fifty_sma and last_close < ten_sma:
             extreme_value = True
             contract = put
         else:
@@ -112,7 +112,7 @@ def place_order(call, put, qty):
 
         limit_price = mid
         take_profit = mid * 1.05
-        stop_loss_price = mid * 0.8
+        stop_loss_price = mid * 0.85
 
         limit_price = round(limit_price, 2)
         take_profit = round(take_profit, 2)
