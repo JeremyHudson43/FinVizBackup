@@ -56,8 +56,11 @@ def place_order(call, put, qty):
         if not extreme_value:
 
             minutesToSleep = 5 - datetime.now().minute % 5
-            print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
-            time.sleep(minutesToSleep * 60)
+            secondsToSleep = 60 - datetime.now().second % 60
+
+            timeToSleep = minutesToSleep * 60 + secondsToSleep
+            print("Sleeping for " + str(timeToSleep) + " seconds")
+            time.sleep(timeToSleep * 60)
 
             year = str(datetime.now().year)
             month = "0" + str(datetime.now().month)
@@ -65,7 +68,7 @@ def place_order(call, put, qty):
             hour = str(datetime.now().hour)
             minute = str(datetime.now().minute)
 
-            formatted_datetime = year + month + day + " " + hour + ":" + minute + ":" + "05"
+            formatted_datetime = year + month + day + " " + hour + ":" + minute + ":" + "00"
 
         market_data = pd.DataFrame(
             ib.reqHistoricalData(
@@ -170,7 +173,11 @@ call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMA
 extreme_value, contract, qty = place_order(call, put, qty)
 
 if extreme_value:
-    minutesToSleep = 30 - datetime.now().minute % 30
+    minutesToSleep = 20 - datetime.now().minute % 20
+    secondsToSleep = 60 - datetime.now().second % 60
+    timeToSleep = minutesToSleep * 60 + secondsToSleep
+    
     print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
-    time.sleep(minutesToSleep * 60)
+    
+    time.sleep(timeToSleep)
     sell_stock(ib, qty, contract)
