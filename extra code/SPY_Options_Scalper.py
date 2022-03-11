@@ -86,20 +86,20 @@ def place_order(call, put, qty):
 
         market_data.to_csv('C:\\Users\\Frank Einstein\\Desktop\\results\\market_data.csv')
 
-        print("Last Close: " + str(last_close) + '\n')
+        print("\nLast Close: " + str(last_close) + '\n')
+        print("Williams %: " + str(williams_perc) + '\n')
         print("Hundred SMA: " + str(hundred_sma) + '\n')
         print("Fifty SMA: " + str(fifty_sma) + '\n')
         print("Ten SMA: " + str(ten_sma) + '\n')
-        print("Williams %: " + str(williams_perc) + '\n')
 
-        if williams_perc < -10 and last_close > hundred_sma and last_close > fifty_sma and last_close > ten_sma:
+        if williams_perc < -90 and last_close > hundred_sma and last_close > fifty_sma and last_close > ten_sma:
             extreme_value = True
             contract = call
-        elif williams_perc > -90 and last_close < hundred_sma and last_close < fifty_sma and last_close < ten_sma:
+        elif williams_perc > -10 and last_close < hundred_sma and last_close < fifty_sma and last_close < ten_sma:
             extreme_value = True
             contract = put
         else:
-            print("Waiting for extreme value...")
+            print("Waiting for extreme value...\n")
 
     acc_vals = float([v.value for v in ib.accountValues() if v.tag == 'CashBalance' and v.currency == 'USD'][0])
 
@@ -163,7 +163,7 @@ call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMA
 extreme_value, contract, qty = place_order(call, put, qty)
 
 if extreme_value:
-    minutesToSleep = 60 - datetime.now().minute % 60
+    minutesToSleep = 30 - datetime.now().minute % 30
     print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
     time.sleep(minutesToSleep * 60)
     sell_stock(ib, qty, contract)
