@@ -20,7 +20,7 @@ def get_wr(high, low, close, lookback):
 def sleep_until_market_open():
     now = datetime.now()  # time object
 
-    StartTime = pd.to_datetime("9:45").tz_localize('America/New_York')
+    StartTime = pd.to_datetime("9:35").tz_localize('America/New_York')
     TimeNow = pd.to_datetime(now).tz_localize('America/New_York')
 
     if StartTime > TimeNow:
@@ -55,7 +55,7 @@ def place_order(call, put, qty):
 
         if not extreme_value:
 
-            minutesToSleep = 15 - datetime.now().minute % 15
+            minutesToSleep = 5 - datetime.now().minute % 5
             print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
             time.sleep(minutesToSleep * 60)
 
@@ -63,8 +63,8 @@ def place_order(call, put, qty):
             ib.reqHistoricalData(
                 ticker_contract,
                 endDateTime='',
-                durationStr='14 D',
-                barSizeSetting='15 mins',
+                durationStr='7 D',
+                barSizeSetting='5 mins',
                 whatToShow="TRADES",
                 formatDate=1,
                 useRTH=True,
@@ -73,7 +73,10 @@ def place_order(call, put, qty):
 
         market_data.drop(market_data.tail(1).index, inplace=True)
 
-        last_sma = talib.SMA(market_data['close'], timeperiod=200).iloc[-1]
+        hundred_sma = talib.SMA(market_data['close'], timeperiod=100).iloc[-1]
+        fifty_sma = talib.SMA(market_data['close'], timeperiod=50).iloc[-1]
+        twenty_sma = talib.SMA(market_data['close'], timeperiod=20).iloc[-1]
+
         last_close = market_data['close'].iloc[-1]
 
         williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
@@ -83,10 +86,10 @@ def place_order(call, put, qty):
 
         market_data.to_csv('C:\\Users\\Frank Einstein\\Desktop\\results\\market_data.csv')
 
-        if williams_perc < -90 and last_close > last_sma:
+        if williams_perc < -90 and last_close > hundred_sma and last_close > fifty_sma and last_close > twenty_sma:
             extreme_value = True
             contract = call
-        elif williams_perc > -10 and last_close < last_sma:
+        elif williams_perc > -10 and last_close < hundred_sma and last_close < fifty_sma and last_close < twenty_sma:
             extreme_value = True
             contract = put
         else:
@@ -108,7 +111,7 @@ def place_order(call, put, qty):
     else:
 
         limit_price = mid
-        take_profit = mid * 1.1
+        take_profit = mid * 1.05
         stop_loss_price = mid * 0.8
 
         limit_price = round(limit_price, 2)
@@ -129,7 +132,7 @@ def place_order(call, put, qty):
            ib.placeOrder(contract, o)
 
     if extreme_value:
-        minutesToSleep = 15 - datetime.now().minute % 15
+        minutesToSleep = 60 - datetime.now().minute % 60
         print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
         time.sleep(minutesToSleep * 60)
         sell_stock(ib, qty, contract)
