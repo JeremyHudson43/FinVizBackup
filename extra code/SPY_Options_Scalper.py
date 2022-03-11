@@ -59,10 +59,18 @@ def place_order(call, put, qty):
             print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
             time.sleep(minutesToSleep * 60)
 
+            year = str(datetime.now().year)
+            month = "0" + str(datetime.now().month)
+            day = str(datetime.now().day)
+            hour = str(datetime.now().hour)
+            minute = str(datetime.now().minute)
+
+            formatted_datetime = year + month + day + " " + hour + ":" + minute + ":" + "05"
+
         market_data = pd.DataFrame(
             ib.reqHistoricalData(
                 ticker_contract,
-                endDateTime='',
+                endDateTime=formatted_datetime,
                 durationStr='7 D',
                 barSizeSetting='5 mins',
                 whatToShow="TRADES",
@@ -70,8 +78,6 @@ def place_order(call, put, qty):
                 useRTH=True,
                 timeout=0
             ))
-
-        market_data.drop(market_data.tail(1).index, inplace=True)
 
         hundred_sma = talib.SMA(market_data['close'], timeperiod=100).iloc[-1]
         fifty_sma = talib.SMA(market_data['close'], timeperiod=50).iloc[-1]
