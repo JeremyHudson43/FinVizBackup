@@ -92,10 +92,10 @@ def place_order(call, put, qty):
         print("Fifty SMA: " + str(fifty_sma) + '\n')
         print("Ten SMA: " + str(ten_sma) + '\n')
 
-        if williams_perc < -90 or last_close > hundred_sma or last_close > fifty_sma or last_close > ten_sma:
+        if williams_perc < -90 and last_close > hundred_sma and last_close > fifty_sma and last_close > ten_sma:
             extreme_value = True
             contract = call
-        elif williams_perc > -10 or last_close < hundred_sma or last_close < fifty_sma or last_close < ten_sma:
+        elif williams_perc > -10 and last_close < hundred_sma and last_close < fifty_sma and last_close < ten_sma:
             extreme_value = True
             contract = put
         else:
@@ -106,11 +106,9 @@ def place_order(call, put, qty):
     ib.qualifyContracts(contract)
     contract_data = ib.reqTickers(*[contract])[0]
 
-    print("\nContract Data: " + str(contract_data) + '\n')
-
     bid = contract_data.bid
     ask = contract_data.ask
-    delta = contract_data.delta
+    delta = contract_data.bidGreeks.delta
 
     mid = (bid + ask) / 2
 
@@ -120,7 +118,7 @@ def place_order(call, put, qty):
     else:
 
         limit_price = mid
-        take_profit = mid + (delta / 2)
+        take_profit = mid + (delta * 0.4)
         stop_loss_price = mid - delta
 
         limit_price = round(limit_price, 2)
