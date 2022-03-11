@@ -86,6 +86,12 @@ def place_order(call, put, qty):
 
         market_data.to_csv('C:\\Users\\Frank Einstein\\Desktop\\results\\market_data.csv')
 
+        print("Last Close: " + str(last_close) + '\n')
+        print("Hundred SMA: " + str(hundred_sma) + '\n')
+        print("Fifty SMA: " + str(fifty_sma) + '\n')
+        print("Ten SMA: " + str(ten_sma) + '\n')
+        print("Williams %: " + str(williams_perc) + '\n')
+
         if williams_perc < -10 and last_close > hundred_sma and last_close > fifty_sma and last_close > ten_sma:
             extreme_value = True
             contract = call
