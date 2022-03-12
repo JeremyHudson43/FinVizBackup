@@ -61,18 +61,10 @@ def place_order(call, put, qty):
             print("Sleeping for " + str(timeToSleep) + " seconds")
             time.sleep(timeToSleep)
 
-            year = str(datetime.now().year)
-            month = "0" + str(datetime.now().month)
-            day = str(datetime.now().day)
-            hour = str(datetime.now().hour)
-            minute = str(datetime.now().minute)
-
-            formatted_datetime = year + month + day + " " + hour + ":" + minute + ":" + "00"
-
         market_data = pd.DataFrame(
             ib.reqHistoricalData(
                 ticker_contract,
-                endDateTime=formatted_datetime,
+                endDateTime='',
                 durationStr='7 D',
                 barSizeSetting='5 mins',
                 whatToShow="TRADES",
