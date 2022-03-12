@@ -32,7 +32,7 @@ def sell_stock(ib, ticker):
 
    ib.reqGlobalCancel()
 
-   qty = [v for v in ib.positions() if v.contract.secType == 'OPT' and v.contract.symbol == 'DBA'][0].position
+   qty = [v for v in ib.positions() if v.contract.secType == 'OPT' and v.contract.symbol == 'SPY'][0].position
 
    if qty > 0:
 
