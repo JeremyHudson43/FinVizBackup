@@ -59,7 +59,7 @@ def place_order(call, put, qty):
             timeToSleep = (5*60 - time.time() % (5*60))
 
             print("Sleeping for " + str(timeToSleep) + " seconds")
-            time.sleep(timeToSleep * 60)
+            time.sleep(timeToSleep)
 
             year = str(datetime.now().year)
             month = "0" + str(datetime.now().month)
@@ -173,7 +173,7 @@ extreme_value, contract = place_order(call, put, qty)
 
 if extreme_value:
     timeToSleep = (5 * 60 - time.time() % (5 * 60))
-    print("Sleeping for " + str(timeToSleep * 60) + " seconds")
+    print("Sleeping for " + str(timeToSleep) + " seconds")
 
     time.sleep(timeToSleep)
     sell_stock(ib, qty, contract)
