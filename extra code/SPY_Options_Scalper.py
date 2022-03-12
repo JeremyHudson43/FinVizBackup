@@ -56,10 +56,8 @@ def place_order(call, put, qty):
         ticker_contract = Stock('SPY', 'SMART', 'USD')
 
         if not extreme_value:
-            minutesToSleep = 5 - datetime.now().minute % 5
-            secondsToSleep = 60 - datetime.now().second % 60
+            timeToSleep = (5*60 - time.time() % (5*60))
 
-            timeToSleep = (minutesToSleep * 60) - secondsToSleep
             print("Sleeping for " + str(timeToSleep) + " seconds")
             time.sleep(timeToSleep * 60)
 
@@ -174,10 +172,7 @@ call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMA
 extreme_value, contract = place_order(call, put, qty)
 
 if extreme_value:
-    minutesToSleep = 20 - datetime.now().minute % 20
-    secondsToSleep = 60 - datetime.now().second % 60
-    timeToSleep = (minutesToSleep * 60) - secondsToSleep
-
+    timeToSleep = (5 * 60 - time.time() % (5 * 60))
     print("Sleeping for " + str(timeToSleep * 60) + " seconds")
 
     time.sleep(timeToSleep)
