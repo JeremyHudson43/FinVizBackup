@@ -28,9 +28,11 @@ def sleep_until_market_open():
         time.sleep(time_until_market_open)
 
 
-def sell_stock(ib, qty, ticker):
+def sell_stock(ib, ticker):
 
    ib.reqGlobalCancel()
+
+   qty = [v for v in ib.positions() if v.contract.secType == 'OPT' and v.contract.symbol == 'DBA'][0].position
 
    if qty > 0:
 
@@ -54,7 +56,6 @@ def place_order(call, put, qty):
         ticker_contract = Stock('SPY', 'SMART', 'USD')
 
         if not extreme_value:
-
             minutesToSleep = 5 - datetime.now().minute % 5
             secondsToSleep = 60 - datetime.now().second % 60
 
@@ -147,10 +148,10 @@ def place_order(call, put, qty):
            ib.sleep(0.00001)
            ib.placeOrder(contract, o)
 
-    return extreme_value, contract, qty
+    return extreme_value, contract
 
 
-sleep_until_market_open()
+# sleep_until_market_open()
 
 ticker = 'SPY'
 
@@ -170,14 +171,14 @@ qty = 5
 put = Option(ticker, put_year + put_month + put_day, put_strike, 'P',  "SMART")
 call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMART")
 
-extreme_value, contract, qty = place_order(call, put, qty)
+extreme_value, contract = place_order(call, put, qty)
 
 if extreme_value:
     minutesToSleep = 20 - datetime.now().minute % 20
     secondsToSleep = 60 - datetime.now().second % 60
-    timeToSleep = minutesToSleep * 60 + secondsToSleep
-    
+    timeToSleep = (minutesToSleep * 60) + secondsToSleep
+
     print("Sleeping for " + str(minutesToSleep * 60) + " seconds")
-    
+
     time.sleep(timeToSleep)
     sell_stock(ib, qty, contract)
