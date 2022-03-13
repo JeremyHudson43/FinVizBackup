@@ -76,7 +76,7 @@ def place_order(call, put, qty):
         two_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=200).iloc[-2]
         one_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=100).iloc[-2]
         fifty_ema = talib.EMA(market_data['close'].values, timeperiod=50).iloc[-2]
-        twenty_ema = talib.SMA(market_data['close'].values, timeperiod=20).iloc[-2]
+        twenty_ema = talib.EMA(market_data['close'].values, timeperiod=20).iloc[-2]
 
         last_close = market_data['close'].iloc[-2]
 
