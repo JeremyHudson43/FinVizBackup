@@ -76,7 +76,7 @@ def place_order(call, put, qty):
         two_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=200).iloc[-2]
         one_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=100).iloc[-2]
         fifty_ema = talib.EMA(market_data['close'].values, timeperiod=50).iloc[-2]
-        ten_ema = talib.SMA(market_data['close'].values, timeperiod=10).iloc[-2]
+        twenty_ema = talib.SMA(market_data['close'].values, timeperiod=20).iloc[-2]
 
         last_close = market_data['close'].iloc[-2]
 
@@ -92,16 +92,16 @@ def place_order(call, put, qty):
         print('200 EMA: ' + str(two_hundred_ema) + '\n')
         print('100 EMA: ' + str(one_hundred_ema) + '\n')
         print('50 EMA: ' + str(fifty_ema) + '\n')
-        print("10 EMA: " + str(ten_ema) + '\n')
+        print("20 EMA: " + str(twenty_ema) + '\n')
         print('- - - - - - - - - - - - - - - - - - - - \n')
 
         if williams_perc <= -95 and last_close > two_hundred_ema and last_close > one_hundred_ema\
-            and last_close > fifty_ema and last_close > ten_ema:
+            and last_close > fifty_ema and last_close > twenty_ema:
             extreme_value = True
             contract = call
 
         elif williams_perc >= -5 and last_close < two_hundred_ema and last_close < one_hundred_ema\
-            and last_close < fifty_ema and last_close < ten_ema:
+            and last_close < fifty_ema and last_close < twenty_ema:
             extreme_value = True
             contract = put
         else:
