@@ -73,11 +73,9 @@ def place_order(call, put, qty):
                 timeout=0
             ))
 
-        twenty_one_ema = talib.EMA(market_data['close'].values, timeperiod=21).iloc[-2]
-        eight_ema = talib.EMA(market_data['close'].values, timeperiod=8).iloc[-2]
-        ten_ema = talib.EMA(market_data['close'].values, timeperiod=10).iloc[-2]
+        two_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=200).iloc[-2]
         one_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=100).iloc[-2]
-        two_hundred_sma = talib.SMA(market_data['close'].values, timeperiod=200).iloc[-2]
+        ten_ema = talib.SMA(market_data['close'].values, timeperiod=10).iloc[-2]
 
         last_close = market_data['close'].iloc[-2]
 
@@ -90,22 +88,19 @@ def place_order(call, put, qty):
 
         print("\nLast Close: " + str(last_close) + '\n')
         print("Williams %: " + str(williams_perc) + '\n')
-        print("200 SMA: " + str(two_hundred_sma) + '\n')
-        print('200 EMA: ' + str(one_hundred_ema) + '\n')
-        print("21 EMA: " + str(twenty_one_ema) + '\n')
-        print("8 EMA: " + str(eight_ema) + '\n')
+        print('200 EMA: ' + str(two_hundred_ema) + '\n')
+        print('100 EMA: ' + str(one_hundred_ema) + '\n')
         print("10 EMA: " + str(ten_ema) + '\n')
         print('- - - - - - - - - - - - - - - - - - - - \n')
 
-        if williams_perc <= -85 and twenty_one_ema < eight_ema \
-                and last_close > one_hundred_ema and last_close > two_hundred_sma\
-                and last_close > eight_ema:
+        if williams_perc <= -95 and last_close > two_hundred_ema and last_close > one_hundred_ema\
+                and last_close > ten_ema:
             extreme_value = True
             contract = call
 
-        elif williams_perc >= -15 and twenty_one_ema > eight_ema and\
-                last_close < one_hundred_ema  and last_close < two_hundred_sma\
-                and last_close < eight_ema:
+        elif williams_perc >= -5 and\
+                last_close < two_hundred_ema and last_close < one_hundred_ema\
+                and last_close < ten_ema:
             extreme_value = True
             contract = put
         else:
@@ -174,7 +169,7 @@ call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMA
 extreme_value, contract = place_order(call, put, qty)
 
 if extreme_value:
-    timeToSleep = (15 * 60 - time.time() % (15 * 60))
+    timeToSleep = (5 * 60 - time.time() % (5 * 60))
     print("Sleeping for " + str(timeToSleep) + " seconds")
 
     time.sleep(timeToSleep)
