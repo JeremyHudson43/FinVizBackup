@@ -99,11 +99,11 @@ def place_order(call, put, qty):
         print("20 EMA: " + str(twenty_ema) + '\n')
         print('- - - - - - - - - - - - - - - - - - - - \n')
 
-        if williams_perc <= -90 and last_close > two_hundred_ema and last_close > one_hundred_ema and last_close > fifty_ema:
+        if williams_perc <= -90 and last_close > two_hundred_ema and last_close > one_hundred_ema and last_close > fifty_ema and last_close > twenty_ema:
             extreme_value = True
             contract = call
 
-        elif williams_perc >= -10 and last_close < two_hundred_ema and last_close < one_hundred_ema and last_close < fifty_ema:
+        elif williams_perc >= -10 and last_close < two_hundred_ema and last_close < one_hundred_ema and last_close < fifty_ema and last_close < twenty_ema:
             extreme_value = True
             contract = put
         else:
