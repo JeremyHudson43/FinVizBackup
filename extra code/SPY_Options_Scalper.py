@@ -28,19 +28,23 @@ def sleep_until_market_open():
         time.sleep(time_until_market_open)
 
 
-def sell_stock(ib, ticker):
+def sell_stock(ib, contract):
 
    ib.reqGlobalCancel()
 
-   qty = [v for v in ib.positions() if v.contract.secType == 'OPT' and v.contract.symbol == 'SPY'][0].position
+   option = [v for v in ib.positions() if v.contract.secType == 'OPT' and v.contract.symbol == 'SPY'][0]
+   qty = option.position
 
    if qty > 0:
 
-       order = Order(orderId=27, action='Sell', orderType='MKT', totalQuantity=qty)
+       contract_data = ib.reqTickers(*[contract])[0]
+       lmt_price = (contract_data.bid + contract_data.ask) / 2
 
-       ib.placeOrder(ticker, order)
+       order = Order(orderId=270, action='Sell', orderType='LMT', lmtPrice=lmt_price, totalQuantity=qty)
 
-       print('\nSold ' + str(ticker) + " at the end of the day!")
+       ib.placeOrder(contract, order)
+
+       print('\nSold ' + str(contract.symbol) + " at the end of the day!")
 
        time.sleep(10)
 
@@ -95,13 +99,11 @@ def place_order(call, put, qty):
         print("20 EMA: " + str(twenty_ema) + '\n')
         print('- - - - - - - - - - - - - - - - - - - - \n')
 
-        if williams_perc <= -95 and last_close > two_hundred_ema and last_close > one_hundred_ema\
-            and last_close > fifty_ema and last_close > twenty_ema:
+        if williams_perc <= -90 and last_close > two_hundred_ema and last_close > one_hundred_ema and last_close > fifty_ema:
             extreme_value = True
             contract = call
 
-        elif williams_perc >= -5 and last_close < two_hundred_ema and last_close < one_hundred_ema\
-            and last_close < fifty_ema and last_close < twenty_ema:
+        elif williams_perc >= -10 and last_close < two_hundred_ema and last_close < one_hundred_ema and last_close < fifty_ema:
             extreme_value = True
             contract = put
         else:
@@ -147,22 +149,22 @@ def place_order(call, put, qty):
     return extreme_value, contract
 
 
-# sleep_until_market_open()
+sleep_until_market_open()
 
 ticker = 'SPY'
 
 put_year = '2022'
 put_month = '03'
-put_day = '14'
+put_day = '16'
 
 call_year = '2022'
 call_month = '03'
-call_day = '14'
+call_day = '16'
 
-put_strike = '420'
+put_strike = '410'
 call_strike = '430'
 
-qty = 5
+qty = 1
 
 put = Option(ticker, put_year + put_month + put_day, put_strike, 'P',  "SMART")
 call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMART")
@@ -170,8 +172,8 @@ call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMA
 extreme_value, contract = place_order(call, put, qty)
 
 if extreme_value:
-    timeToSleep = (5 * 60 - time.time() % (5 * 60))
+    timeToSleep = 300
     print("Sleeping for " + str(timeToSleep) + " seconds")
 
     time.sleep(timeToSleep)
-    sell_stock(ib, qty, contract)
+    sell_stock(ib, contract)
