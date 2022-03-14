@@ -73,14 +73,14 @@ def place_order(call, put, qty):
                 timeout=0
             ))
 
-        two_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=200).iloc[-2]
-        one_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=100).iloc[-2]
-        fifty_ema = talib.EMA(market_data['close'].values, timeperiod=50).iloc[-2]
-        twenty_ema = talib.EMA(market_data['close'].values, timeperiod=20).iloc[-2]
+        two_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=200)[-1]
+        one_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=100)[-1]
+        fifty_ema = talib.EMA(market_data['close'].values, timeperiod=50)[-1]
+        twenty_ema = talib.EMA(market_data['close'].values, timeperiod=20)[-1]
 
-        last_close = market_data['close'].iloc[-2]
+        last_close = market_data['close'].iloc[-1]
 
-        williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-2]
+        williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
         market_data['SMA'] = talib.SMA(market_data['close'], timeperiod=200)
 
         market_data['williams_perc'] = get_wr(market_data['high'], market_data['low'], market_data['close'], 2)
