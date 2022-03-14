@@ -114,7 +114,7 @@ def place_order(call, put, qty):
 
     bid = contract_data.bid
     ask = contract_data.ask
-    delta = contract_data.bidGreeks.delta
+    delta = abs(contract_data.bidGreeks.delta)
 
     mid = (bid + ask) / 2
 
