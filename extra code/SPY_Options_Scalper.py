@@ -77,10 +77,10 @@ def place_order(call, put, qty):
                 timeout=0
             ))
 
-        two_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=200)[-1]
-        one_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=100)[-1]
-        fifty_ema = talib.EMA(market_data['close'].values, timeperiod=50)[-1]
-        twenty_ema = talib.EMA(market_data['close'].values, timeperiod=20)[-1]
+        two_hundred_sma = talib.SMA(market_data['close'].values, timeperiod=200)[-1]
+        one_hundred_sma = talib.SMA(market_data['close'].values, timeperiod=100)[-1]
+        fifty_sma = talib.SMA(market_data['close'].values, timeperiod=50)[-1]
+        twenty_sma = talib.SMA(market_data['close'].values, timeperiod=20)[-1]
 
         last_close = market_data['close'].iloc[-1]
 
@@ -93,17 +93,17 @@ def place_order(call, put, qty):
 
         print("\nLast Close: " + str(last_close) + '\n')
         print("Williams %: " + str(williams_perc) + '\n')
-        print('200 EMA: ' + str(two_hundred_ema) + '\n')
-        print('100 EMA: ' + str(one_hundred_ema) + '\n')
-        print('50 EMA: ' + str(fifty_ema) + '\n')
-        print("20 EMA: " + str(twenty_ema) + '\n')
+        print('200 SMA: ' + str(two_hundred_sma) + '\n')
+        print('100 SMA: ' + str(one_hundred_sma) + '\n')
+        print('50 SMA: ' + str(fifty_sma) + '\n')
+        print("20 SMA: " + str(twenty_sma) + '\n')
         print('- - - - - - - - - - - - - - - - - - - - \n')
 
-        if williams_perc <= -90 and last_close > two_hundred_ema and last_close > one_hundred_ema and last_close > fifty_ema and last_close > twenty_ema:
+        if williams_perc <= -80 and last_close > two_hundred_sma and last_close > one_hundred_sma and last_close > fifty_sma and last_close > twenty_sma:
             extreme_value = True
             contract = call
 
-        elif williams_perc >= -10 and last_close < two_hundred_ema and last_close < one_hundred_ema and last_close < fifty_ema and last_close < twenty_ema:
+        elif williams_perc >= -20 and last_close < two_hundred_sma and last_close < one_hundred_sma and last_close < fifty_sma and last_close < twenty_sma:
             extreme_value = True
             contract = put
         else:
@@ -120,7 +120,7 @@ def place_order(call, put, qty):
 
     mid = (bid + ask) / 2
 
-    if (mid * 100) > (acc_vals * 0.3):
+    if (mid * 100) > (acc_vals * 0.5):
         print("SPY option too big for account")
 
     else:
