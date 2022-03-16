@@ -28,9 +28,10 @@ def sleep_until_market_open():
         time.sleep(time_until_market_open)
 
 
-def sell_stock(ib, contract):
+def sell_stock(ib, contract, orders):
 
-   ib.reqGlobalCancel()
+   for order in orders:
+       ib.cancelOrder(order)
 
    option = [v for v in ib.positions() if v.contract.secType == 'OPT' and v.contract.symbol == 'SPY'][0]
    qty = option.position
@@ -52,6 +53,8 @@ def sell_stock(ib, contract):
 
 
 def place_order(call, put, qty):
+
+    orders = []
 
     extreme_value = False
 
@@ -145,8 +148,9 @@ def place_order(call, put, qty):
            o.tif = 'GTC'
            ib.sleep(0.00001)
            ib.placeOrder(contract, o)
+           orders.append(o)
 
-    return extreme_value, contract
+    return extreme_value, contract, orders
 
 
 sleep_until_market_open()
@@ -169,11 +173,11 @@ qty = 1
 put = Option(ticker, put_year + put_month + put_day, put_strike, 'P',  "SMART")
 call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMART")
 
-extreme_value, contract = place_order(call, put, qty)
+extreme_value, contract, orders = place_order(call, put, qty)
 
 if extreme_value:
     timeToSleep = 300
     print("Sleeping for " + str(timeToSleep) + " seconds")
 
     time.sleep(timeToSleep)
-    sell_stock(ib, contract)
+    sell_stock(ib, contract, orders)
