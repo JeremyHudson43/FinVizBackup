@@ -6,6 +6,7 @@ import pandas as pd
 from dateutil import parser
 import sys
 import talib
+import math
 
 ib = IB()
 ib.connect('127.0.0.1', 7497, clientId=random.randint(0, 300))
@@ -18,8 +19,8 @@ def get_wr(high, low, close, lookback):
     return wr
 
 def check_time():
-    # check if it is before 3:30 PM
-    if datetime.now().hour == 15 and datetime.now().minute > 30:
+    # check if it is before 2:30 PM
+    if datetime.now().hour == 14 and datetime.now().minute > 30:
         return True
     else:
         return False
@@ -62,7 +63,7 @@ def sell_stock(ib, contract, orders):
        sys.exit(0)
 
 
-def place_order(call, put, qty):
+def place_order():
 
     orders = []
 
@@ -70,9 +71,19 @@ def place_order(call, put, qty):
 
     while not extreme_value:
 
-        past_three_thirty = check_time()
+        past_two_thirty = check_time()
 
-        if not past_three_thirty:
+        if not past_two_thirty:
+
+            ticker = 'SPY'
+
+            put_year = '2022'
+            put_month = '03'
+            put_day = '18'
+
+            call_year = '2022'
+            call_month = '03'
+            call_day = '18'
 
             ticker_contract = Stock('SPY', 'SMART', 'USD')
 
@@ -116,13 +127,30 @@ def place_order(call, put, qty):
 
             print('- - - - - - - - - - - - - - - - - - - - \n')
 
-            if williams_perc <= -85 and last_close > two_hundred_ema and last_close > twenty_five_ema and five_ema > ten_ema:
+            if williams_perc <= -85 and last_close > two_hundred_ema and last_close > twenty_five_ema and five_ema > ten_ema
+
+                [SPY_close] = ib.reqTickers(ticker_contract)
+                Current_SPY_Value = SPY_close.marketPrice()
+
                 extreme_value = True
+
+                call_strike = math.ceil(Current_SPY_Value)
+                call = Option(ticker, call_year + call_month + call_day, call_strike, 'C', "SMART")
+
                 contract = call
 
             elif williams_perc >= -15 and last_close < two_hundred_ema and last_close < twenty_five_ema and five_ema < ten_ema:
+
+                [SPY_close] = ib.reqTickers(ticker_contract)
+                Current_SPY_Value = SPY_close.marketPrice()
+
                 extreme_value = True
+
+                put_strike = math.floor(Current_SPY_Value)
+                put = Option(ticker, put_year + put_month + put_day, put_strike, 'P', "SMART")
+
                 contract = put
+
             else:
                 print("Waiting for extreme value...\n")
 
@@ -137,57 +165,37 @@ def place_order(call, put, qty):
 
         mid = (bid + ask) / 2
 
-        if (mid * 100) > (acc_vals * 0.5):
-            print("SPY option too big for account")
+        qty = (acc_vals // mid) - 1
 
-        else:
+        limit_price = mid
+        take_profit = mid + (delta * 0.2)
+        stop_loss_price = mid * 0.9 
 
-            limit_price = mid
-            take_profit = mid + (delta * 0.4)
-            stop_loss_price = mid - delta
+        limit_price = round(limit_price, 2)
+        take_profit = round(take_profit, 2)
+        stop_loss_price = round(stop_loss_price, 2)
 
-            limit_price = round(limit_price, 2)
-            take_profit = round(take_profit, 2)
-            stop_loss_price = round(stop_loss_price, 2)
+        buy_order = ib.bracketOrder(
+                   'BUY',
+                   quantity=qty,
+                   limitPrice=limit_price,
+                   takeProfitPrice=take_profit,
+                   stopLossPrice=stop_loss_price
+               )
 
-            buy_order = ib.bracketOrder(
-                       'BUY',
-                       quantity=qty,
-                       limitPrice=limit_price,
-                       takeProfitPrice=take_profit,
-                       stopLossPrice=stop_loss_price
-                   )
-
-            for o in buy_order:
-               o.tif = 'GTC'
-               ib.sleep(0.00001)
-               ib.placeOrder(contract, o)
-               orders.append(o)
+        for o in buy_order:
+           o.tif = 'GTC'
+           ib.sleep(0.00001)
+           ib.placeOrder(contract, o)
+           orders.append(o)
 
     return extreme_value, contract, orders
 
 
 sleep_until_market_open()
 
-ticker = 'SPY'
 
-put_year = '2022'
-put_month = '03'
-put_day = '18'
-
-call_year = '2022'
-call_month = '03'
-call_day = '18'
-
-put_strike = '420'
-call_strike = '440'
-
-qty = 1
-
-put = Option(ticker, put_year + put_month + put_day, put_strike, 'P',  "SMART")
-call = Option(ticker, call_year + call_month + call_day, call_strike, 'C',  "SMART")
-
-extreme_value, contract, orders = place_order(call, put, qty)
+extreme_value, contract, orders = place_order()
 
 if extreme_value:
     timeToSleep = 300
