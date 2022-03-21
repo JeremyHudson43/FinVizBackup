@@ -18,8 +18,8 @@ def get_wr(high, low, close, lookback):
     return wr
 
 def check_time():
-    # check if it is before 3:00 PM
-    if datetime.now().hour < 15:
+    # check if it is before 3:30 PM
+    if datetime.now().hour == 15 and datetime.now().minute > 30:
         return True
     else:
         return False
@@ -70,9 +70,9 @@ def place_order(call, put, qty):
 
     while not extreme_value:
 
-        past_three = check_time()
+        past_three_thirty = check_time()
 
-        if not past_three:
+        if not past_three_thirty:
 
             ticker_contract = Stock('SPY', 'SMART', 'USD')
 
@@ -102,7 +102,6 @@ def place_order(call, put, qty):
             last_close = market_data['close'].iloc[-1]
 
             williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
-            market_data['SMA'] = talib.SMA(market_data['close'], timeperiod=200)
 
             market_data['williams_perc'] = get_wr(market_data['high'], market_data['low'], market_data['close'], 2)
 
@@ -144,7 +143,7 @@ def place_order(call, put, qty):
         else:
 
             limit_price = mid
-            take_profit = mid + (delta * 0.3)
+            take_profit = mid + (delta * 0.4)
             stop_loss_price = mid - delta
 
             limit_price = round(limit_price, 2)
