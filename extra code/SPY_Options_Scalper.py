@@ -79,11 +79,11 @@ def place_order():
 
             put_year = '2022'
             put_month = '03'
-            put_day = '18'
+            put_day = '22'
 
             call_year = '2022'
             call_month = '03'
-            call_day = '18'
+            call_day = '22'
 
             ticker_contract = Stock('SPY', 'SMART', 'USD')
 
@@ -127,7 +127,7 @@ def place_order():
 
             print('- - - - - - - - - - - - - - - - - - - - \n')
 
-            if williams_perc <= -85 and last_close > two_hundred_ema and last_close > twenty_five_ema and five_ema > ten_ema
+            if williams_perc <= -80 and last_close > two_hundred_ema:
 
                 [SPY_close] = ib.reqTickers(ticker_contract)
                 Current_SPY_Value = SPY_close.marketPrice()
@@ -139,7 +139,7 @@ def place_order():
 
                 contract = call
 
-            elif williams_perc >= -15 and last_close < two_hundred_ema and last_close < twenty_five_ema and five_ema < ten_ema:
+            elif williams_perc >= -20 and last_close < two_hundred_ema:
 
                 [SPY_close] = ib.reqTickers(ticker_contract)
                 Current_SPY_Value = SPY_close.marketPrice()
@@ -154,40 +154,40 @@ def place_order():
             else:
                 print("Waiting for extreme value...\n")
 
-        acc_vals = float([v.value for v in ib.accountValues() if v.tag == 'CashBalance' and v.currency == 'USD'][0])
+            acc_vals = float([v.value for v in ib.accountValues() if v.tag == 'CashBalance' and v.currency == 'USD'][0]) // 1000
 
-        ib.qualifyContracts(contract)
-        contract_data = ib.reqTickers(*[contract])[0]
+            ib.qualifyContracts(contract)
+            contract_data = ib.reqTickers(*[contract])[0]
 
-        bid = contract_data.bid
-        ask = contract_data.ask
-        delta = abs(contract_data.bidGreeks.delta)
+            bid = contract_data.bid
+            ask = contract_data.ask
+            delta = abs(contract_data.bidGreeks.delta)
 
-        mid = (bid + ask) / 2
+            mid = (bid + ask) / 2
 
-        qty = (acc_vals // mid) - 1
+            qty = (acc_vals // mid) - 1
 
-        limit_price = mid
-        take_profit = mid + (delta * 0.2)
-        stop_loss_price = mid * 0.9 
+            limit_price = mid
+            take_profit = mid + (delta * 0.2)
+            stop_loss_price = mid * 0.9
 
-        limit_price = round(limit_price, 2)
-        take_profit = round(take_profit, 2)
-        stop_loss_price = round(stop_loss_price, 2)
+            limit_price = round(limit_price, 2)
+            take_profit = round(take_profit, 2)
+            stop_loss_price = round(stop_loss_price, 2)
 
-        buy_order = ib.bracketOrder(
-                   'BUY',
-                   quantity=qty,
-                   limitPrice=limit_price,
-                   takeProfitPrice=take_profit,
-                   stopLossPrice=stop_loss_price
-               )
+            buy_order = ib.bracketOrder(
+                       'BUY',
+                       quantity=qty,
+                       limitPrice=limit_price,
+                       takeProfitPrice=take_profit,
+                       stopLossPrice=stop_loss_price
+                   )
 
-        for o in buy_order:
-           o.tif = 'GTC'
-           ib.sleep(0.00001)
-           ib.placeOrder(contract, o)
-           orders.append(o)
+            for o in buy_order:
+               o.tif = 'GTC'
+               ib.sleep(0.00001)
+               ib.placeOrder(contract, o)
+               orders.append(o)
 
     return extreme_value, contract, orders
 
