@@ -99,7 +99,7 @@ def finish_order(ib, contract, orders):
         ib.placeOrder(contract, o)
         orders.append(o)
 
-    return extreme_value, contract, orders
+    return contract, orders
 
 
 def place_order():
@@ -118,11 +118,11 @@ def place_order():
 
             put_year = '2022'
             put_month = '03'
-            put_day = '22'
+            put_day = '23'
 
             call_year = '2022'
             call_month = '03'
-            call_day = '22'
+            call_day = '23'
 
             ticker_contract = Stock('SPY', 'SMART', 'USD')
 
@@ -166,7 +166,7 @@ def place_order():
 
             print('- - - - - - - - - - - - - - - - - - - - \n')
 
-            if williams_perc <= -80 and last_close > two_hundred_ema:
+            if williams_perc <= -80:
 
                 [SPY_close] = ib.reqTickers(ticker_contract)
                 Current_SPY_Value = SPY_close.marketPrice()
@@ -180,7 +180,10 @@ def place_order():
 
                 contract, orders = finish_order(ib, contract, orders)
 
-            elif williams_perc >= -20 and last_close < two_hundred_ema:
+                return extreme_value, contract, orders
+
+
+            elif williams_perc >= -20:
 
                 [SPY_close] = ib.reqTickers(ticker_contract)
                 Current_SPY_Value = SPY_close.marketPrice()
@@ -194,11 +197,11 @@ def place_order():
 
                 contract, orders = finish_order(ib, contract, orders)
 
+                return extreme_value, contract, orders
+
+
             else:
                 print("Waiting for extreme value...\n")
-
-
-    return extreme_value, contract, orders
 
 
 sleep_until_market_open()
