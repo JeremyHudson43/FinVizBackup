@@ -18,12 +18,14 @@ def get_wr(high, low, close, lookback):
     wr = 100 * ((close - highh) / (highh - lowl))
     return wr
 
+
 def check_time():
     # check if it is before 2:30 PM
     if datetime.now().hour == 14 and datetime.now().minute > 30:
         return True
     else:
         return False
+
 
 def sleep_until_market_open():
     now = datetime.now()  # time object
@@ -64,7 +66,7 @@ def sell_stock(ib, contract, orders):
 
 
 def finish_order(ib, contract, orders):
-    acc_vals = float([v.value for v in ib.accountValues() if v.tag == 'CashBalance' and v.currency == 'USD'][0]) // 1000
+    acc_vals = float([v.value for v in ib.accountValues() if v.tag == 'CashBalance' and v.currency == 'USD'][0])
 
     ib.qualifyContracts(contract)
     contract_data = ib.reqTickers(*[contract])[0]
@@ -75,11 +77,11 @@ def finish_order(ib, contract, orders):
 
     mid = (bid + ask) / 2
 
-    qty = (acc_vals // mid) - 1
+    qty = ((acc_vals // mid) // 100) - 1
 
     limit_price = mid
-    take_profit = mid + (delta * 0.2)
-    stop_loss_price = mid * 0.9
+    take_profit = mid + 0.08
+    stop_loss_price = mid - 0.08
 
     limit_price = round(limit_price, 2)
     take_profit = round(take_profit, 2)
@@ -117,12 +119,12 @@ def place_order():
             ticker = 'SPY'
 
             put_year = '2022'
-            put_month = '03'
-            put_day = '23'
+            put_month = '04'
+            put_day = '11'
 
             call_year = '2022'
-            call_month = '03'
-            call_day = '23'
+            call_month = '04'
+            call_day = '11'
 
             ticker_contract = Stock('SPY', 'SMART', 'USD')
 
@@ -144,10 +146,10 @@ def place_order():
                     timeout=0
                 ))
 
-            two_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=200)[-1]
+            one_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=200)[-1]
             twenty_five_ema = talib.EMA(market_data['close'].values, timeperiod=25)[-1]
-            five_ema = talib.EMA(market_data['close'].values, timeperiod=5)[-1]
-            ten_ema = talib.EMA(market_data['close'].values, timeperiod=10)[-1]
+            thirteen_ema = talib.EMA(market_data['close'].values, timeperiod=13)[-1]
+            thirty_nine_ema = talib.EMA(market_data['close'].values, timeperiod=36)[-1]
 
             last_close = market_data['close'].iloc[-1]
 
@@ -159,21 +161,20 @@ def place_order():
 
             print("\nLast Close: " + str(last_close) + '\n')
             print("Williams %: " + str(williams_perc) + '\n')
-            print('200 SMA: ' + str(two_hundred_ema) + '\n')
+            print('100 SMA: ' + str(one_hundred_ema) + '\n')
             print('25 EMA: ' + str(twenty_five_ema) + '\n')
-            print('10 EMA: ' + str(ten_ema) + '\n')
-            print('5 EMA: ' + str(five_ema) + '\n')
+            print('13 EMA: ' + str(thirteen_ema) + '\n')
+            print('39 EMA: ' + str(thirty_nine_ema) + '\n')
 
             print('- - - - - - - - - - - - - - - - - - - - \n')
 
-            if williams_perc <= -80:
+            call_strike = math.ceil(last_close)
+            put_strike = math.floor(last_close)
 
-                [SPY_close] = ib.reqTickers(ticker_contract)
-                Current_SPY_Value = SPY_close.marketPrice()
+            if williams_perc <= -80 and last_close > one_hundred_ema and thirteen_ema > thirty_nine_ema:
 
                 extreme_value = True
 
-                call_strike = math.ceil(Current_SPY_Value)
                 call = Option(ticker, call_year + call_month + call_day, call_strike, 'C', "SMART")
 
                 contract = call
@@ -182,15 +183,10 @@ def place_order():
 
                 return extreme_value, contract, orders
 
-
-            elif williams_perc >= -20:
-
-                [SPY_close] = ib.reqTickers(ticker_contract)
-                Current_SPY_Value = SPY_close.marketPrice()
+            elif williams_perc >= -20 and last_close < one_hundred_ema and thirteen_ema < thirty_nine_ema:
 
                 extreme_value = True
 
-                put_strike = math.floor(Current_SPY_Value)
                 put = Option(ticker, put_year + put_month + put_day, put_strike, 'P', "SMART")
 
                 contract = put
