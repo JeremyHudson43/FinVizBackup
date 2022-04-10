@@ -147,7 +147,6 @@ def place_order():
                 ))
 
             one_hundred_ema = talib.EMA(market_data['close'].values, timeperiod=200)[-1]
-            twenty_five_ema = talib.EMA(market_data['close'].values, timeperiod=25)[-1]
             thirteen_ema = talib.EMA(market_data['close'].values, timeperiod=13)[-1]
             thirty_nine_ema = talib.EMA(market_data['close'].values, timeperiod=36)[-1]
 
@@ -162,7 +161,6 @@ def place_order():
             print("\nLast Close: " + str(last_close) + '\n')
             print("Williams %: " + str(williams_perc) + '\n')
             print('100 SMA: ' + str(one_hundred_ema) + '\n')
-            print('25 EMA: ' + str(twenty_five_ema) + '\n')
             print('13 EMA: ' + str(thirteen_ema) + '\n')
             print('39 EMA: ' + str(thirty_nine_ema) + '\n')
 
