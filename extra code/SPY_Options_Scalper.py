@@ -157,7 +157,6 @@ def place_order():
 
             print("\nLast Close: " + str(last_close) + '\n')
             print("Williams %: " + str(williams_perc) + '\n')
-            print("150 SMA: " + str(one_hundred_fifty_sma) + '\n')
             print('100 SMA: ' + str(one_hundred_sma) + '\n')
             print('50 SMA: ' + str(fifty_sma) + '\n')
             print('20 SMA: ' + str(twenty_sma) + '\n')
@@ -167,8 +166,8 @@ def place_order():
             call_strike = math.ceil(last_close)
             put_strike = math.floor(last_close)
 
-            if williams_perc <= -80 and last_close > one_hundred_fifty_sma and \
-                    last_close > one_hundred_sma and last_close > fifty_sma and last_close > twenty_sma:
+            if williams_perc <= -80 and last_close > one_hundred_sma and last_close > fifty_sma \
+                    and last_close > twenty_sma:
 
                 extreme_value = True
 
@@ -180,8 +179,8 @@ def place_order():
 
                 return extreme_value, contract, orders
 
-            elif williams_perc >= -20 and last_close < one_hundred_fifty_sma and \
-                    last_close < one_hundred_sma and last_close < fifty_sma and last_close < twenty_sma:
+            elif williams_perc >= -20 and last_close < one_hundred_sma and last_close < fifty_sma \
+                    and last_close < twenty_sma:
 
                 extreme_value = True
 
