@@ -155,10 +155,6 @@ def place_order():
 
             williams_perc = get_wr(market_data['high'], market_data['low'], market_data['close'], 2).iloc[-1]
 
-            market_data['williams_perc'] = get_wr(market_data['high'], market_data['low'], market_data['close'], 2)
-
-            market_data.to_csv('C:\\Users\\Frank Einstein\\Desktop\\results\\market_data.csv')
-
             print("\nLast Close: " + str(last_close) + '\n')
             print("Williams %: " + str(williams_perc) + '\n')
             print("150 SMA: " + str(one_hundred_fifty_sma) + '\n')
