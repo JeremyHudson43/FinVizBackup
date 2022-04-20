@@ -20,8 +20,8 @@ def get_wr(high, low, close, lookback):
 
 
 def check_time():
-    # check if it is before 2:30 PM
-    if datetime.now().hour == 14 and datetime.now().minute > 30:
+    # check if it is before 2:00 PM
+    if datetime.now().hour == 14:
         return True
     else:
         return False
@@ -112,9 +112,9 @@ def place_order():
 
     while not extreme_value:
 
-        past_two_thirty = check_time()
+        past_two = check_time()
 
-        if not past_two_thirty:
+        if not past_two:
 
             ticker = 'SPY'
 
@@ -125,6 +125,11 @@ def place_order():
             year = str(year)
             month = str(month)
             day = str(day)
+
+            if len(month) == 1:
+                month = '0' + month
+            if len(day) == 1:
+                day = '0' + day
 
             ticker_contract = Stock('SPY', 'SMART', 'USD')
 
