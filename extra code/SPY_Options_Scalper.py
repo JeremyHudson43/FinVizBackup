@@ -80,8 +80,8 @@ def finish_order(ib, contract, orders):
     qty = ((acc_vals // mid) // 100)
 
     limit_price = mid
-    take_profit = mid + 0.04
-    stop_loss_price = mid - 0.08
+    take_profit = mid + (delta * 0.45)
+    stop_loss_price = mid - (delta * 0.3)
 
     limit_price = round(limit_price, 2)
     take_profit = round(take_profit, 2)
@@ -118,13 +118,13 @@ def place_order():
 
             ticker = 'SPY'
 
-            put_year = '2022'
-            put_month = '04'
-            put_day = '13'
+            year = datetime.now().year
+            month = datetime.now().month
+            day = datetime.now().day
 
-            call_year = '2022'
-            call_month = '04'
-            call_day = '13'
+            year = str(year)
+            month = str(month)
+            day = str(day)
 
             ticker_contract = Stock('SPY', 'SMART', 'USD')
 
@@ -146,10 +146,8 @@ def place_order():
                     timeout=0
                 ))
 
-            one_hundred_fifty_sma = talib.SMA(market_data['close'].values, timeperiod=150)[-1]
             one_hundred_sma = talib.SMA(market_data['close'].values, timeperiod=100)[-1]
-            fifty_sma = talib.SMA(market_data['close'].values, timeperiod=50)[-1]
-            twenty_sma = talib.SMA(market_data['close'].values, timeperiod=20)[-1]
+            five_ema = talib.EMA(market_data['close'].values, timeperiod=5)[-1]
 
             last_close = market_data['close'].iloc[-1]
 
@@ -158,20 +156,18 @@ def place_order():
             print("\nLast Close: " + str(last_close) + '\n')
             print("Williams %: " + str(williams_perc) + '\n')
             print('100 SMA: ' + str(one_hundred_sma) + '\n')
-            print('50 SMA: ' + str(fifty_sma) + '\n')
-            print('20 SMA: ' + str(twenty_sma) + '\n')
+            print('5 EMA: ' + str(five_ema) + '\n')
 
             print('- - - - - - - - - - - - - - - - - - - - \n')
 
             call_strike = math.ceil(last_close)
             put_strike = math.floor(last_close)
 
-            if williams_perc <= -80 and last_close > one_hundred_sma and last_close > fifty_sma \
-                    and last_close > twenty_sma:
+            if williams_perc <= -80 and last_close > one_hundred_sma and last_close > five_ema:
 
                 extreme_value = True
 
-                call = Option(ticker, call_year + call_month + call_day, call_strike, 'C', "SMART")
+                call = Option(ticker, year + month + day, call_strike, 'C', "SMART")
 
                 contract = call
 
@@ -179,12 +175,11 @@ def place_order():
 
                 return extreme_value, contract, orders
 
-            elif williams_perc >= -20 and last_close < one_hundred_sma and last_close < fifty_sma \
-                    and last_close < twenty_sma:
+            elif williams_perc >= -20 and last_close < one_hundred_sma and last_close < five_ema:
 
                 extreme_value = True
 
-                put = Option(ticker, put_year + put_month + put_day, put_strike, 'P', "SMART")
+                put = Option(ticker, year + month + day, put_strike, 'P', "SMART")
 
                 contract = put
 
@@ -203,7 +198,7 @@ sleep_until_market_open()
 extreme_value, contract, orders = place_order()
 
 if extreme_value:
-    timeToSleep = 300
+    timeToSleep = 600
     print("Sleeping for " + str(timeToSleep) + " seconds")
 
     time.sleep(timeToSleep)
